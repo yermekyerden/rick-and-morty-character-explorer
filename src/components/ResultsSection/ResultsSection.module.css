@@ -12,6 +12,12 @@
   backdrop-filter: blur(18px);
 }
 
+.portalInline {
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+}
+
 .portal {
   width: 136px;
   height: 136px;
@@ -23,6 +29,16 @@
     0 0 32px rgba(34, 197, 94, 0.62),
     0 0 96px rgba(20, 184, 166, 0.3);
   animation: portalPulse 1.8s ease-in-out infinite;
+}
+
+.portalDanger {
+  background:
+    radial-gradient(circle at 35% 35%, #ffe4e6 0 8%, transparent 9%),
+    radial-gradient(circle, #fb7185 0 18%, #ef4444 36%, #7f1d1d 68%);
+  box-shadow:
+    0 0 32px rgba(239, 68, 68, 0.58),
+    0 0 96px rgba(244, 63, 94, 0.26);
+  animation: portalDangerPulse 1.5s ease-in-out infinite;
 }
 
 .status {
@@ -53,6 +69,39 @@
   color: #fca5a5;
 }
 
+.errorCard {
+  display: grid;
+  gap: 10px;
+  padding: 24px;
+  border: 1px solid rgba(248, 113, 113, 0.18);
+  border-radius: 20px;
+  background: rgba(127, 29, 29, 0.08);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.16);
+  text-align: left;
+}
+
+.errorKicker {
+  margin: 0;
+  color: #fca5a5;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.errorTitle {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+.errorHint {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
 .content {
   min-height: 420px;
   display: grid;
@@ -79,9 +128,18 @@
 }
 
 .stateError {
-  max-width: 560px;
+  max-width: 520px;
   margin: 0;
-  color: #fca5a5;
+  color: #fecaca;
+}
+
+.noResultsLayout {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+  width: min(100%, 720px);
+  margin-inline: auto;
 }
 
 @keyframes portalPulse {
@@ -97,11 +155,34 @@
   }
 }
 
+@keyframes portalDangerPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: saturate(1);
+  }
+
+  50% {
+    transform: scale(1.07);
+    filter: saturate(1.15);
+  }
+}
+
 @media (max-width: 720px) {
   .placeholder {
     grid-template-columns: 1fr;
     padding: 32px 24px;
     text-align: center;
+  }
+
+  .noResultsLayout {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .portalInline {
+    width: 104px;
+    height: 104px;
   }
 
   .portal {
@@ -114,5 +195,9 @@
 
   .footer {
     justify-content: center;
+  }
+
+  .errorCard {
+    text-align: center;
   }
 }

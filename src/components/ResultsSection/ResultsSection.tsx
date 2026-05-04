@@ -38,7 +38,24 @@ class ResultsSection extends Component<ResultsSectionProps> {
     if (this.props.errorMessage !== null) {
       return (
         <div className={styles.state}>
-          <p className={styles.stateError}>{this.props.errorMessage}</p>
+          <div className={styles.noResultsLayout}>
+            <div
+              className={`${styles.portal} ${styles.portalDanger} ${styles.portalInline}`}
+              aria-hidden="true"
+            />
+
+            <div className={styles.errorCard}>
+              <p className={styles.errorKicker}>No matching signal</p>
+
+              <h3 className={styles.errorTitle}>No characters found</h3>
+
+              <p className={styles.stateError}>{this.props.errorMessage}</p>
+
+              <p className={styles.errorHint}>
+                Try another name like Rick, Morty, Summer, or Beth.
+              </p>
+            </div>
+          </div>
         </div>
       );
     }
@@ -59,7 +76,9 @@ class ResultsSection extends Component<ResultsSectionProps> {
   render() {
     return (
       <div className={styles.placeholder}>
-        <div className={styles.portal} aria-hidden="true" />
+        {this.props.errorMessage === null ? (
+          <div className={styles.portal} aria-hidden="true" />
+        ) : null}
 
         <div>
           <p className={styles.status}>{this.renderStatusText()}</p>
