@@ -37,11 +37,15 @@ class ResultsSection extends Component<ResultsSectionProps> {
 
     if (this.props.errorMessage !== null) {
       return (
-        <div className={styles.state}>
-          <div className={styles.errorCard}>
-            <p className={styles.errorKicker}>No matching signal</p>
+        <article className={styles.errorCard}>
+          <div className={styles.errorIcon} aria-hidden="true" />
 
-            <h3 className={styles.errorTitle}>No characters found</h3>
+          <div>
+            <div className={styles.errorHeader}>
+              <h3 className={styles.errorTitle}>No characters found</h3>
+
+              <span className={styles.errorBadge}>No signal</span>
+            </div>
 
             <p className={styles.stateError}>{this.props.errorMessage}</p>
 
@@ -49,7 +53,7 @@ class ResultsSection extends Component<ResultsSectionProps> {
               Try another name like Rick, Morty, Summer, or Beth.
             </p>
           </div>
-        </div>
+        </article>
       );
     }
 
