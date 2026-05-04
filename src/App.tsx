@@ -1,8 +1,23 @@
 import { Component } from 'react';
 import ResultsSection from './components/ResultsSection/ResultsSection';
+import SearchPanel from './components/SearchPanel/SearchPanel';
 import styles from './App.module.css';
 
-class App extends Component {
+interface AppState {
+  activeSearchTerm: string;
+}
+
+class App extends Component<Record<string, never>, AppState> {
+  state: AppState = {
+    activeSearchTerm: '',
+  };
+
+  handleSearch = (searchTerm: string) => {
+    this.setState({
+      activeSearchTerm: searchTerm,
+    });
+  };
+
   render() {
     return (
       <main className={styles.shell}>
@@ -18,32 +33,11 @@ class App extends Component {
             </p>
           </header>
 
-          <div className={styles.panel}>
-            <label className={styles.label} htmlFor="character-search">
-              Character name
-            </label>
-
-            <div className={styles.field}>
-              <input
-                id="character-search"
-                type="text"
-                placeholder="Try Rick, Morty, Summer..."
-                disabled
-              />
-
-              <button type="button" disabled>
-                Search
-              </button>
-            </div>
-
-            <p className={styles.hint}>
-              The real search panel will arrive in the next commit.
-            </p>
-          </div>
+          <SearchPanel onSearch={this.handleSearch} />
         </section>
 
         <section className={styles.resultsSection} aria-label="Search results">
-          <ResultsSection />
+          <ResultsSection searchTerm={this.state.activeSearchTerm} />
         </section>
       </main>
     );
