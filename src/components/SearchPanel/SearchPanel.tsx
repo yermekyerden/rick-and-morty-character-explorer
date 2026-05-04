@@ -1,8 +1,10 @@
 import { Component } from 'react';
 import type { ChangeEvent, SubmitEvent as ReactSubmitEvent } from 'react';
+import { LAST_SEARCH_TERM_STORAGE_KEY } from '../../constants/storageKeys';
 import styles from './SearchPanel.module.css';
 
 interface SearchPanelProps {
+  onInitialSearchTermLoaded: (searchTerm: string) => void;
   onSearch: (searchTerm: string) => void;
 }
 
@@ -15,6 +17,23 @@ class SearchPanel extends Component<SearchPanelProps, SearchPanelState> {
     inputValue: '',
   };
 
+  private lastSubmittedSearchTerm = '';
+
+  componentDidMount() {
+    const savedSearchTerm =
+      localStorage.getItem(LAST_SEARCH_TERM_STORAGE_KEY) ?? '';
+
+    const trimmedSearchTerm = savedSearchTerm.trim();
+
+    this.lastSubmittedSearchTerm = trimmedSearchTerm;
+
+    this.setState({
+      inputValue: trimmedSearchTerm,
+    });
+
+    this.props.onInitialSearchTermLoaded(trimmedSearchTerm);
+  }
+
   handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       inputValue: event.target.value,
@@ -25,6 +44,14 @@ class SearchPanel extends Component<SearchPanelProps, SearchPanelState> {
     event.preventDefault();
 
     const trimmedSearchTerm = this.state.inputValue.trim();
+
+    if (trimmedSearchTerm === this.lastSubmittedSearchTerm) {
+      return;
+    }
+
+    localStorage.setItem(LAST_SEARCH_TERM_STORAGE_KEY, trimmedSearchTerm);
+
+    this.lastSubmittedSearchTerm = trimmedSearchTerm;
 
     this.setState({
       inputValue: trimmedSearchTerm,
@@ -53,7 +80,7 @@ class SearchPanel extends Component<SearchPanelProps, SearchPanelState> {
         </div>
 
         <p className={styles.hint}>
-          Type a name and launch the portal. No guarantees about who comes out.
+          Your last portal coordinates are saved in this browser.
         </p>
       </form>
     );

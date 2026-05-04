@@ -12,6 +12,12 @@ class App extends Component<Record<string, never>, AppState> {
     activeSearchTerm: '',
   };
 
+  handleInitialSearchTermLoaded = (searchTerm: string) => {
+    this.setState({
+      activeSearchTerm: searchTerm,
+    });
+  };
+
   handleSearch = (searchTerm: string) => {
     this.setState({
       activeSearchTerm: searchTerm,
@@ -33,7 +39,10 @@ class App extends Component<Record<string, never>, AppState> {
             </p>
           </header>
 
-          <SearchPanel onSearch={this.handleSearch} />
+          <SearchPanel
+            onInitialSearchTermLoaded={this.handleInitialSearchTermLoaded}
+            onSearch={this.handleSearch}
+          />
         </section>
 
         <section className={styles.resultsSection} aria-label="Search results">
