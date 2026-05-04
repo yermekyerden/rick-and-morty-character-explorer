@@ -1,5 +1,7 @@
 import { Component } from 'react';
 import { fetchCharacterCards } from './api/charactersApi';
+import { delay } from './utils/delay';
+import { MIN_LOADING_TIME_IN_MS } from './constants/timing';
 import ResultsSection from './components/ResultsSection/ResultsSection';
 import SearchPanel from './components/SearchPanel/SearchPanel';
 import type { CharacterCardModel } from './types/character';
@@ -11,14 +13,6 @@ interface AppState {
   errorMessage: string | null;
   isLoading: boolean;
   shouldSimulateError: boolean;
-}
-
-const MIN_LOADING_TIME_IN_MS = 300;
-
-function wait(delayInMilliseconds: number): Promise<void> {
-  return new Promise((resolve) => {
-    window.setTimeout(resolve, delayInMilliseconds);
-  });
 }
 
 class App extends Component<Record<string, never>, AppState> {
@@ -61,7 +55,7 @@ class App extends Component<Record<string, never>, AppState> {
     try {
       const [characters] = await Promise.all([
         fetchCharacterCards(searchTerm),
-        wait(MIN_LOADING_TIME_IN_MS),
+        delay(MIN_LOADING_TIME_IN_MS),
       ]);
 
       this.setState({
@@ -69,7 +63,7 @@ class App extends Component<Record<string, never>, AppState> {
         isLoading: false,
       });
     } catch (error) {
-      await wait(MIN_LOADING_TIME_IN_MS);
+      await delay(MIN_LOADING_TIME_IN_MS);
 
       this.setState({
         characters: [],
