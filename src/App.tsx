@@ -8,8 +8,9 @@ import styles from './App.module.css';
 interface AppState {
   activeSearchTerm: string;
   characters: CharacterCardModel[];
-  isLoading: boolean;
   errorMessage: string | null;
+  isLoading: boolean;
+  shouldSimulateError: boolean;
 }
 
 const MIN_LOADING_TIME_IN_MS = 300;
@@ -26,6 +27,7 @@ class App extends Component<Record<string, never>, AppState> {
     characters: [],
     isLoading: false,
     errorMessage: null,
+    shouldSimulateError: false,
   };
 
   handleInitialSearchTermLoaded = (searchTerm: string) => {
@@ -42,6 +44,12 @@ class App extends Component<Record<string, never>, AppState> {
     });
 
     void this.loadCharacters(searchTerm);
+  };
+
+  handleTriggerError = () => {
+    this.setState({
+      shouldSimulateError: true,
+    });
   };
 
   loadCharacters = async (searchTerm: string) => {
@@ -75,6 +83,10 @@ class App extends Component<Record<string, never>, AppState> {
   };
 
   render() {
+    if (this.state.shouldSimulateError) {
+      throw new Error('Simulated application error triggered by test button.');
+    }
+
     return (
       <main className={styles.shell}>
         <section className={styles.searchSection} aria-label="Character search">
@@ -100,6 +112,7 @@ class App extends Component<Record<string, never>, AppState> {
             characters={this.state.characters}
             errorMessage={this.state.errorMessage}
             isLoading={this.state.isLoading}
+            onTriggerError={this.handleTriggerError}
             searchTerm={this.state.activeSearchTerm}
           />
         </section>

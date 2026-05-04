@@ -1,0 +1,27 @@
+.button {
+  min-width: 148px;
+  min-height: 44px;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: 14px;
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.22);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(248, 113, 113, 0.55);
+  background: rgba(127, 29, 29, 0.3);
+  box-shadow: 0 12px 28px rgba(127, 29, 29, 0.22);
+}
+
+.button:focus-visible {
+  outline: 2px solid #fca5a5;
+  outline-offset: 2px;
+}

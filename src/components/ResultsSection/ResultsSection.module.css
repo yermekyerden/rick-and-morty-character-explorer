@@ -22,6 +22,7 @@
   box-shadow:
     0 0 32px rgba(34, 197, 94, 0.62),
     0 0 96px rgba(20, 184, 166, 0.3);
+  animation: portalPulse 1.8s ease-in-out infinite;
 }
 
 .status {
@@ -58,8 +59,10 @@
   align-content: start;
 }
 
-.portal {
-  animation: portalPulse 1.8s ease-in-out infinite;
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
 }
 
 @keyframes portalPulse {
@@ -88,5 +91,9 @@
 
   .text {
     margin-inline: auto;
+  }
+
+  .footer {
+    justify-content: center;
   }
 }

@@ -2,12 +2,14 @@ import { Component } from 'react';
 import type { CharacterCardModel } from '../../types/character';
 import Loader from '../Loader/Loader';
 import CharacterList from '../CharacterList/CharacterList';
+import ErrorTestButton from '../ErrorTestButton/ErrorTestButton';
 import styles from './ResultsSection.module.css';
 
 interface ResultsSectionProps {
   characters: CharacterCardModel[];
   errorMessage: string | null;
   isLoading: boolean;
+  onTriggerError: () => void;
   searchTerm: string;
 }
 
@@ -59,6 +61,10 @@ class ResultsSection extends Component<ResultsSectionProps> {
           <h2 className={styles.title}>Character results</h2>
 
           <div className={styles.content}>{this.renderContent()}</div>
+
+          <div className={styles.footer}>
+            <ErrorTestButton onTriggerError={this.props.onTriggerError} />
+          </div>
         </div>
       </div>
     );
