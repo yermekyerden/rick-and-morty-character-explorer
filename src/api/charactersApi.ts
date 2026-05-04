@@ -7,6 +7,7 @@ import type {
   CharacterApiResponse,
   CharacterCardModel,
   CharacterDto,
+  CharacterStatus,
 } from '../types/character';
 
 export async function fetchCharacterCards(
@@ -48,6 +49,7 @@ function mapCharacterDtoToCardModel(
     name: character.name,
     description: createCharacterDescription(character),
     imageUrl: character.image,
+    status: normalizeCharacterStatus(character.status),
   };
 }
 
@@ -64,4 +66,12 @@ function createCharacterApiErrorMessage(statusCode: number): string {
   }
 
   return 'Could not load characters from the API. Please try again later.';
+}
+
+function normalizeCharacterStatus(status: string): CharacterStatus {
+  if (status === 'Alive' || status === 'Dead') {
+    return status;
+  }
+
+  return 'unknown';
 }

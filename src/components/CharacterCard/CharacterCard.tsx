@@ -6,6 +6,18 @@ interface CharacterCardProps {
   character: CharacterCardModel;
 }
 
+function getStatusClassName(status: CharacterCardModel['status']): string {
+  if (status === 'Alive') {
+    return styles.alive;
+  }
+
+  if (status === 'Dead') {
+    return styles.dead;
+  }
+
+  return styles.unknown;
+}
+
 class CharacterCard extends Component<CharacterCardProps> {
   render() {
     return (
@@ -17,7 +29,18 @@ class CharacterCard extends Component<CharacterCardProps> {
         />
 
         <div>
-          <h3 className={styles.name}>{this.props.character.name}</h3>
+          <div className={styles.header}>
+            <h3 className={styles.name}>{this.props.character.name}</h3>
+
+            <span
+              className={`${styles.badge} ${getStatusClassName(
+                this.props.character.status
+              )}`}
+            >
+              {this.props.character.status}
+            </span>
+          </div>
+
           <p className={styles.description}>
             {this.props.character.description}
           </p>

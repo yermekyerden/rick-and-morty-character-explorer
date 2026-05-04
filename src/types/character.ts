@@ -1,3 +1,5 @@
+export type CharacterStatus = 'Alive' | 'Dead' | 'unknown';
+
 export interface CharacterLocationDto {
   name: string;
   url: string;
@@ -31,4 +33,5 @@ export interface CharacterCardModel {
   name: string;
   description: string;
   imageUrl: string;
+  status: CharacterStatus;
 }
