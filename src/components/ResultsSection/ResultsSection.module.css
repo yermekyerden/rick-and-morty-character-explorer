@@ -52,6 +52,29 @@
   color: #fca5a5;
 }
 
+.content {
+  min-height: 420px;
+  display: grid;
+  align-content: start;
+}
+
+.portal {
+  animation: portalPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes portalPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: saturate(1);
+  }
+
+  50% {
+    transform: scale(1.06);
+    filter: saturate(1.2);
+  }
+}
+
 @media (max-width: 720px) {
   .placeholder {
     grid-template-columns: 1fr;

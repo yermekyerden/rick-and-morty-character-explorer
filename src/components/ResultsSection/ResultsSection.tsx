@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import type { CharacterCardModel } from '../../types/character';
+import Loader from '../Loader/Loader';
 import CharacterList from '../CharacterList/CharacterList';
 import styles from './ResultsSection.module.css';
 
@@ -29,11 +30,7 @@ class ResultsSection extends Component<ResultsSectionProps> {
 
   renderContent() {
     if (this.props.isLoading) {
-      return (
-        <p className={styles.text}>
-          Loading characters from another dimension...
-        </p>
-      );
+      return <Loader />;
     }
 
     if (this.props.errorMessage !== null) {
@@ -61,7 +58,7 @@ class ResultsSection extends Component<ResultsSectionProps> {
 
           <h2 className={styles.title}>Character results</h2>
 
-          {this.renderContent()}
+          <div className={styles.content}>{this.renderContent()}</div>
         </div>
       </div>
     );

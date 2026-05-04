@@ -12,6 +12,14 @@ interface AppState {
   errorMessage: string | null;
 }
 
+const MIN_LOADING_TIME_IN_MS = 300;
+
+function wait(delayInMilliseconds: number): Promise<void> {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, delayInMilliseconds);
+  });
+}
+
 class App extends Component<Record<string, never>, AppState> {
   state: AppState = {
     activeSearchTerm: '',
@@ -43,13 +51,18 @@ class App extends Component<Record<string, never>, AppState> {
     });
 
     try {
-      const characters = await fetchCharacterCards(searchTerm);
+      const [characters] = await Promise.all([
+        fetchCharacterCards(searchTerm),
+        wait(MIN_LOADING_TIME_IN_MS),
+      ]);
 
       this.setState({
         characters,
         isLoading: false,
       });
     } catch (error) {
+      await wait(MIN_LOADING_TIME_IN_MS);
+
       this.setState({
         characters: [],
         isLoading: false,
