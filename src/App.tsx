@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import ResultsSection from './components/ResultsSection/ResultsSection';
 import styles from './App.module.css';
 
 class App extends Component {
@@ -42,22 +43,7 @@ class App extends Component {
         </section>
 
         <section className={styles.resultsSection} aria-label="Search results">
-          <div className={styles.placeholder}>
-            <div className={styles.portal} aria-hidden="true" />
-
-            <div>
-              <p className={styles.status}>Waiting for coordinates</p>
-
-              <h2 className={styles.placeholderTitle}>
-                No characters loaded yet
-              </h2>
-
-              <p className={styles.placeholderText}>
-                Soon this area will show cards with character names,
-                descriptions, and API-powered chaos.
-              </p>
-            </div>
-          </div>
+          <ResultsSection />
         </section>
       </main>
     );
