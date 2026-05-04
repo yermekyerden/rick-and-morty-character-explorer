@@ -1,17 +1,63 @@
 import { Component } from 'react';
+import styles from './App.module.css';
 
 class App extends Component {
   render() {
     return (
-      <main>
-        <section aria-label="Character search">
-          <h1>Character Explorer</h1>
-          <p>Search panel will be added in the next steps.</p>
+      <main className={styles.shell}>
+        <section className={styles.searchSection} aria-label="Character search">
+          <header className={styles.intro}>
+            <p className={styles.kicker}>Rick and Morty API Explorer</p>
+
+            <h1 className={styles.title}>Character Explorer</h1>
+
+            <p className={styles.description}>
+              Type a name, open a tiny portal, and hope the API sends back
+              someone less dangerous than Rick.
+            </p>
+          </header>
+
+          <div className={styles.panel}>
+            <label className={styles.label} htmlFor="character-search">
+              Character name
+            </label>
+
+            <div className={styles.field}>
+              <input
+                id="character-search"
+                type="text"
+                placeholder="Try Rick, Morty, Summer..."
+                disabled
+              />
+
+              <button type="button" disabled>
+                Search
+              </button>
+            </div>
+
+            <p className={styles.hint}>
+              The real search panel will arrive in the next commit.
+            </p>
+          </div>
         </section>
 
-        <section aria-label="Search results">
-          <h2>No characters loaded yet</h2>
-          <p>Results will appear here after the first portal opens.</p>
+        <section className={styles.resultsSection} aria-label="Search results">
+          <div className={styles.placeholder}>
+            <div className={styles.portal} aria-hidden="true" />
+
+            <div>
+              <p className={styles.status}>Waiting for coordinates</p>
+
+              <h2 className={styles.placeholderTitle}>
+                No characters loaded yet
+              </h2>
+
+              <p className={styles.placeholderText}>
+                Soon this area will show cards with character names,
+                descriptions, and API-powered chaos.
+              </p>
+            </div>
+          </div>
         </section>
       </main>
     );
