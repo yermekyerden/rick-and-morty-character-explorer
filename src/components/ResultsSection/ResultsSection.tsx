@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import type { CharacterCardModel } from '../../types/character';
 import CharacterList from '../CharacterList/CharacterList';
+import NoResultsCard from '../NoResultsCard/NoResultsCard';
 import ErrorTestButton from '../ErrorTestButton/ErrorTestButton';
 import Loader from '../Loader/Loader';
 import styles from './ResultsSection.module.css';
@@ -36,25 +37,7 @@ class ResultsSection extends Component<ResultsSectionProps> {
     }
 
     if (this.props.errorMessage !== null) {
-      return (
-        <article className={styles.errorCard}>
-          <div className={styles.errorIcon} aria-hidden="true" />
-
-          <div>
-            <div className={styles.errorHeader}>
-              <h3 className={styles.errorTitle}>No characters found</h3>
-
-              <span className={styles.errorBadge}>No signal</span>
-            </div>
-
-            <p className={styles.stateError}>{this.props.errorMessage}</p>
-
-            <p className={styles.errorHint}>
-              Try another name like Rick, Morty, Summer, or Beth.
-            </p>
-          </div>
-        </article>
-      );
+      return <NoResultsCard message={this.props.errorMessage} />;
     }
 
     if (this.props.characters.length === 0) {
