@@ -57,7 +57,7 @@ function createCharacterDescription(character: CharacterDto): string {
   const typeSuffix = character.type.length > 0 ? ` (${character.type})` : '';
   const locationName = character.location.name;
 
-  return `${character.status} ${character.species}${typeSuffix}, ${character.gender}. Last known location: ${locationName}.`;
+  return `${character.species}${typeSuffix}, ${character.gender}. Last known location: ${locationName}.`;
 }
 
 function createCharacterApiErrorMessage(statusCode: number): string {
