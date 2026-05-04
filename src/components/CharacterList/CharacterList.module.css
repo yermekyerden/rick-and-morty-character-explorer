@@ -1,0 +1,9 @@
+.list {
+  display: grid;
+  gap: 14px;
+  max-height: 640px;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}

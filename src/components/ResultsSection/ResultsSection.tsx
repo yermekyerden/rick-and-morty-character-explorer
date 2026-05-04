@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import type { CharacterCardModel } from '../../types/character';
+import CharacterList from '../CharacterList/CharacterList';
 import styles from './ResultsSection.module.css';
 
 interface ResultsSectionProps {
@@ -47,20 +48,7 @@ class ResultsSection extends Component<ResultsSectionProps> {
       );
     }
 
-    return (
-      <ul className={styles.list}>
-        {this.props.characters.map((character) => (
-          <li className={styles.item} key={character.id}>
-            <img src={character.imageUrl} alt={character.name} />
-
-            <div>
-              <h3>{character.name}</h3>
-              <p>{character.description}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
-    );
+    return <CharacterList characters={this.props.characters} />;
   }
 
   render() {
