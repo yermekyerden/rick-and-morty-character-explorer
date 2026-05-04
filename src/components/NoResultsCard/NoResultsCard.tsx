@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { APP_MESSAGES } from '../../constants/messages';
 import styles from './NoResultsCard.module.css';
 
 interface NoResultsCardProps {
@@ -13,16 +14,14 @@ class NoResultsCard extends Component<NoResultsCardProps> {
 
         <div>
           <div className={styles.header}>
-            <h3 className={styles.title}>No characters found</h3>
+            <h3 className={styles.title}>{APP_MESSAGES.noResults.title}</h3>
 
-            <span className={styles.badge}>No signal</span>
+            <span className={styles.badge}>{APP_MESSAGES.noResults.badge}</span>
           </div>
 
           <p className={styles.message}>{this.props.message}</p>
 
-          <p className={styles.hint}>
-            Try another name like Rick, Morty, Summer, or Beth.
-          </p>
+          <p className={styles.hint}>{APP_MESSAGES.noResults.hint}</p>
         </div>
       </article>
     );

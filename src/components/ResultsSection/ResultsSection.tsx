@@ -1,9 +1,10 @@
 import { Component } from 'react';
 import type { CharacterCardModel } from '../../types/character';
 import CharacterList from '../CharacterList/CharacterList';
-import NoResultsCard from '../NoResultsCard/NoResultsCard';
 import ErrorTestButton from '../ErrorTestButton/ErrorTestButton';
 import Loader from '../Loader/Loader';
+import NoResultsCard from '../NoResultsCard/NoResultsCard';
+import { APP_MESSAGES } from '../../constants/messages';
 import styles from './ResultsSection.module.css';
 
 interface ResultsSectionProps {
@@ -17,18 +18,18 @@ interface ResultsSectionProps {
 class ResultsSection extends Component<ResultsSectionProps> {
   renderStatusText() {
     if (this.props.isLoading) {
-      return 'Opening portal';
+      return APP_MESSAGES.results.status.loading;
     }
 
     if (this.props.errorMessage !== null) {
-      return 'Portal unstable';
+      return APP_MESSAGES.results.status.unstable;
     }
 
     if (this.props.searchTerm.length === 0) {
-      return 'Showing first page';
+      return APP_MESSAGES.results.status.firstPage;
     }
 
-    return `Coordinates locked: "${this.props.searchTerm}"`;
+    return APP_MESSAGES.results.status.coordinatesLocked(this.props.searchTerm);
   }
 
   renderContent() {
@@ -43,9 +44,7 @@ class ResultsSection extends Component<ResultsSectionProps> {
     if (this.props.characters.length === 0) {
       return (
         <div className={styles.state}>
-          <p className={styles.stateText}>
-            No characters loaded yet. The portal is suspiciously quiet.
-          </p>
+          <p className={styles.stateText}>{APP_MESSAGES.results.empty}</p>
         </div>
       );
     }
@@ -71,7 +70,7 @@ class ResultsSection extends Component<ResultsSectionProps> {
           <header className={styles.header}>
             <p className={styles.status}>{this.renderStatusText()}</p>
 
-            <h2 className={styles.title}>Character results</h2>
+            <h2 className={styles.title}>{APP_MESSAGES.results.title}</h2>
           </header>
 
           <div className={styles.content}>{this.renderContent()}</div>

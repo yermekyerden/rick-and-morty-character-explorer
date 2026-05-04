@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { APP_MESSAGES } from '../../constants/messages';
 import styles from './ErrorTestButton.module.css';
 
 interface ErrorTestButtonProps {
@@ -13,7 +14,7 @@ class ErrorTestButton extends Component<ErrorTestButtonProps> {
         type="button"
         onClick={this.props.onTriggerError}
       >
-        Trigger error
+        {APP_MESSAGES.errorTest.button}
       </button>
     );
   }

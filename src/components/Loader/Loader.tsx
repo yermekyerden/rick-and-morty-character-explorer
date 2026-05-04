@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { APP_MESSAGES } from '../../constants/messages';
 import styles from './Loader.module.css';
 
 const SKELETON_ITEMS = [1, 2, 3, 4, 5];
@@ -7,11 +8,9 @@ class Loader extends Component {
   render() {
     return (
       <div className={styles.loader}>
-        <p className={styles.message}>
-          Loading characters from another dimension...
-        </p>
+        <p className={styles.message}>{APP_MESSAGES.loader.message}</p>
 
-        <ul className={styles.list} aria-label="Loading characters">
+        <ul className={styles.list} aria-label={APP_MESSAGES.loader.ariaLabel}>
           {SKELETON_ITEMS.map((itemId) => (
             <li className={styles.card} key={itemId}>
               <div className={styles.avatar} aria-hidden="true" />

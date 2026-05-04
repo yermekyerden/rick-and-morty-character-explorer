@@ -1,10 +1,11 @@
 import { Component } from 'react';
 import { fetchCharacterCards } from './api/charactersApi';
-import { delay } from './utils/delay';
-import { MIN_LOADING_TIME_IN_MS } from './constants/timing';
 import ResultsSection from './components/ResultsSection/ResultsSection';
 import SearchPanel from './components/SearchPanel/SearchPanel';
+import { APP_MESSAGES } from './constants/messages';
+import { MIN_LOADING_TIME_IN_MS } from './constants/timing';
 import type { CharacterCardModel } from './types/character';
+import { delay } from './utils/delay';
 import styles from './App.module.css';
 
 interface AppState {
@@ -71,28 +72,25 @@ class App extends Component<Record<string, never>, AppState> {
         errorMessage:
           error instanceof Error
             ? error.message
-            : 'Something went wrong while loading characters.',
+            : APP_MESSAGES.apiErrors.unknown,
       });
     }
   };
 
   render() {
     if (this.state.shouldSimulateError) {
-      throw new Error('Simulated application error triggered by test button.');
+      throw new Error(APP_MESSAGES.errorBoundary.simulatedError);
     }
 
     return (
       <main className={styles.shell}>
         <section className={styles.searchSection} aria-label="Character search">
           <header className={styles.intro}>
-            <p className={styles.kicker}>Rick and Morty API Explorer</p>
+            <p className={styles.kicker}>{APP_MESSAGES.app.kicker}</p>
 
-            <h1 className={styles.title}>Character Explorer</h1>
+            <h1 className={styles.title}>{APP_MESSAGES.app.title}</h1>
 
-            <p className={styles.description}>
-              Type a name, open a tiny portal, and hope the API sends back
-              someone less dangerous than Rick.
-            </p>
+            <p className={styles.description}>{APP_MESSAGES.app.description}</p>
           </header>
 
           <SearchPanel

@@ -1,8 +1,9 @@
 import {
-  RICK_AND_MORTY_API_BASE_URL,
   CHARACTER_ENDPOINT_PATH,
   FIRST_PAGE_NUMBER,
+  RICK_AND_MORTY_API_BASE_URL,
 } from '../constants/api';
+import { APP_MESSAGES } from '../constants/messages';
 import type {
   CharacterApiResponse,
   CharacterCardModel,
@@ -62,10 +63,10 @@ function createCharacterDescription(character: CharacterDto): string {
 
 function createCharacterApiErrorMessage(statusCode: number): string {
   if (statusCode === 404) {
-    return 'No characters found for this search. Maybe the portal opened into an empty dimension.';
+    return APP_MESSAGES.apiErrors.notFound;
   }
 
-  return 'Could not load characters from the API. Please try again later.';
+  return APP_MESSAGES.apiErrors.generic;
 }
 
 function normalizeCharacterStatus(status: string): CharacterStatus {

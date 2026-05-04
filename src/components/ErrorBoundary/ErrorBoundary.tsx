@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import type { ErrorInfo, ReactNode } from 'react';
+import { APP_MESSAGES } from '../../constants/messages';
 import styles from './ErrorBoundary.module.css';
 
 interface ErrorBoundaryProps {
@@ -22,11 +23,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error(
-      'Application error caught by ErrorBoundary:',
-      error,
-      errorInfo
-    );
+    console.error(APP_MESSAGES.errorBoundary.consolePrefix, error, errorInfo);
   }
 
   handleReloadClick = () => {
@@ -38,14 +35,11 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       return (
         <main className={styles.shell}>
           <section className={styles.card} aria-live="assertive">
-            <p className={styles.kicker}>Emergency shutdown</p>
+            <p className={styles.kicker}>{APP_MESSAGES.errorBoundary.kicker}</p>
 
-            <h1 className={styles.title}>The portal collapsed</h1>
+            <h1 className={styles.title}>{APP_MESSAGES.errorBoundary.title}</h1>
 
-            <p className={styles.text}>
-              A rendering error was caught by the application boundary. Reload
-              the page to reopen the portal and continue exploring characters.
-            </p>
+            <p className={styles.text}>{APP_MESSAGES.errorBoundary.text}</p>
 
             <div className={styles.actions}>
               <button
@@ -53,7 +47,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
                 type="button"
                 onClick={this.handleReloadClick}
               >
-                Reload app
+                {APP_MESSAGES.errorBoundary.reloadButton}
               </button>
             </div>
           </section>
