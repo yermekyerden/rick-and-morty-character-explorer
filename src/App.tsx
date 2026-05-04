@@ -1,27 +1,64 @@
 import { Component } from 'react';
+import { fetchCharacterCards } from './api/charactersApi';
 import ResultsSection from './components/ResultsSection/ResultsSection';
 import SearchPanel from './components/SearchPanel/SearchPanel';
+import type { CharacterCardModel } from './types/character';
 import styles from './App.module.css';
 
 interface AppState {
   activeSearchTerm: string;
+  characters: CharacterCardModel[];
+  isLoading: boolean;
+  errorMessage: string | null;
 }
 
 class App extends Component<Record<string, never>, AppState> {
   state: AppState = {
     activeSearchTerm: '',
+    characters: [],
+    isLoading: false,
+    errorMessage: null,
   };
 
   handleInitialSearchTermLoaded = (searchTerm: string) => {
     this.setState({
       activeSearchTerm: searchTerm,
     });
+
+    void this.loadCharacters(searchTerm);
   };
 
   handleSearch = (searchTerm: string) => {
     this.setState({
       activeSearchTerm: searchTerm,
     });
+
+    void this.loadCharacters(searchTerm);
+  };
+
+  loadCharacters = async (searchTerm: string) => {
+    this.setState({
+      isLoading: true,
+      errorMessage: null,
+    });
+
+    try {
+      const characters = await fetchCharacterCards(searchTerm);
+
+      this.setState({
+        characters,
+        isLoading: false,
+      });
+    } catch (error) {
+      this.setState({
+        characters: [],
+        isLoading: false,
+        errorMessage:
+          error instanceof Error
+            ? error.message
+            : 'Something went wrong while loading characters.',
+      });
+    }
   };
 
   render() {
@@ -46,7 +83,12 @@ class App extends Component<Record<string, never>, AppState> {
         </section>
 
         <section className={styles.resultsSection} aria-label="Search results">
-          <ResultsSection searchTerm={this.state.activeSearchTerm} />
+          <ResultsSection
+            characters={this.state.characters}
+            errorMessage={this.state.errorMessage}
+            isLoading={this.state.isLoading}
+            searchTerm={this.state.activeSearchTerm}
+          />
         </section>
       </main>
     );
