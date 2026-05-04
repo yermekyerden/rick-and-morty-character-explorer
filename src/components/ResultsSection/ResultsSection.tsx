@@ -36,14 +36,20 @@ class ResultsSection extends Component<ResultsSectionProps> {
     }
 
     if (this.props.errorMessage !== null) {
-      return <p className={styles.error}>{this.props.errorMessage}</p>;
+      return (
+        <div className={styles.state}>
+          <p className={styles.stateError}>{this.props.errorMessage}</p>
+        </div>
+      );
     }
 
     if (this.props.characters.length === 0) {
       return (
-        <p className={styles.text}>
-          No characters loaded yet. The portal is suspiciously quiet.
-        </p>
+        <div className={styles.state}>
+          <p className={styles.stateText}>
+            No characters loaded yet. The portal is suspiciously quiet.
+          </p>
+        </div>
       );
     }
 
