@@ -5,5 +5,21 @@
   margin: 0;
   padding: 0;
   overflow: auto;
+  scrollbar-color: var(--border-control) transparent;
   list-style: none;
+}
+
+.list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.list::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: var(--radius-pill);
+  background: var(--border-control);
+  background-clip: content-box;
 }

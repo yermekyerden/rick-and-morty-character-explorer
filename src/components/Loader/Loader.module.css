@@ -5,7 +5,7 @@
 
 .message {
   margin: 0;
-  color: #94a3b8;
+  color: var(--color-text-muted);
 }
 
 .list {
@@ -22,9 +22,9 @@
   gap: 16px;
   align-items: center;
   padding: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  border-radius: 18px;
-  background: rgba(2, 6, 23, 0.42);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-card);
 }
 
 .avatar,
@@ -38,7 +38,7 @@
 .avatar {
   width: 76px;
   height: 76px;
-  border-radius: 14px;
+  border-radius: var(--radius-image);
 }
 
 .textBlock {
@@ -48,13 +48,13 @@
 
 .line {
   height: 14px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
 }
 
 .lineShort {
   width: 72%;
   height: 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
 }
 
 .avatar::after,
