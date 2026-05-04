@@ -1,9 +1,9 @@
 .list {
   display: grid;
   gap: 14px;
-  max-height: 640px;
+  max-height: 100%;
   margin: 0;
-  padding: 0;
+  padding: 0 8px 0 0;
   overflow: auto;
   scrollbar-color: var(--border-control) transparent;
   list-style: none;

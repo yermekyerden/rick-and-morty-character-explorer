@@ -59,8 +59,8 @@
 .body {
   min-width: 0;
   min-height: 464px;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
 .header {
@@ -84,7 +84,7 @@
 }
 
 .content {
-  min-height: 360px;
+  min-height: 0;
   display: grid;
   align-content: start;
 }
@@ -104,7 +104,7 @@
 .footer {
   display: flex;
   justify-content: flex-end;
-  margin-top: auto;
+  margin-top: 24px;
 }
 
 @keyframes portalPulse {
