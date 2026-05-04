@@ -1,8 +1,8 @@
 import { Component } from 'react';
 import type { CharacterCardModel } from '../../types/character';
-import Loader from '../Loader/Loader';
 import CharacterList from '../CharacterList/CharacterList';
 import ErrorTestButton from '../ErrorTestButton/ErrorTestButton';
+import Loader from '../Loader/Loader';
 import styles from './ResultsSection.module.css';
 
 interface ResultsSectionProps {
@@ -20,7 +20,7 @@ class ResultsSection extends Component<ResultsSectionProps> {
     }
 
     if (this.props.errorMessage !== null) {
-      return 'Portal failed';
+      return 'Portal unstable';
     }
 
     if (this.props.searchTerm.length === 0) {
@@ -38,23 +38,16 @@ class ResultsSection extends Component<ResultsSectionProps> {
     if (this.props.errorMessage !== null) {
       return (
         <div className={styles.state}>
-          <div className={styles.noResultsLayout}>
-            <div
-              className={`${styles.portal} ${styles.portalDanger} ${styles.portalInline}`}
-              aria-hidden="true"
-            />
+          <div className={styles.errorCard}>
+            <p className={styles.errorKicker}>No matching signal</p>
 
-            <div className={styles.errorCard}>
-              <p className={styles.errorKicker}>No matching signal</p>
+            <h3 className={styles.errorTitle}>No characters found</h3>
 
-              <h3 className={styles.errorTitle}>No characters found</h3>
+            <p className={styles.stateError}>{this.props.errorMessage}</p>
 
-              <p className={styles.stateError}>{this.props.errorMessage}</p>
-
-              <p className={styles.errorHint}>
-                Try another name like Rick, Morty, Summer, or Beth.
-              </p>
-            </div>
+            <p className={styles.errorHint}>
+              Try another name like Rick, Morty, Summer, or Beth.
+            </p>
           </div>
         </div>
       );
@@ -74,16 +67,25 @@ class ResultsSection extends Component<ResultsSectionProps> {
   }
 
   render() {
+    const isPortalUnstable = this.props.errorMessage !== null;
+
     return (
-      <div className={styles.placeholder}>
-        {this.props.errorMessage === null ? (
-          <div className={styles.portal} aria-hidden="true" />
-        ) : null}
+      <div className={styles.panel}>
+        <div className={styles.portalRail}>
+          <div
+            className={`${styles.portal} ${
+              isPortalUnstable ? styles.portalDanger : ''
+            }`}
+            aria-hidden="true"
+          />
+        </div>
 
-        <div>
-          <p className={styles.status}>{this.renderStatusText()}</p>
+        <div className={styles.body}>
+          <header className={styles.header}>
+            <p className={styles.status}>{this.renderStatusText()}</p>
 
-          <h2 className={styles.title}>Character results</h2>
+            <h2 className={styles.title}>Character results</h2>
+          </header>
 
           <div className={styles.content}>{this.renderContent()}</div>
 
