@@ -29,7 +29,7 @@ export const testUnknownCharacterDto: CharacterDto = {
     name: 'Unknown Dimension',
     url: '',
   },
-  image: 'https://example.com/mystery.jpeg',
+  image: 'https://rickandmortyapi.com/api/character/avatar/2.jpeg',
 };
 
 export const testCharacterCard: CharacterCardModel = {
@@ -39,6 +39,19 @@ export const testCharacterCard: CharacterCardModel = {
   imageUrl: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg',
   status: 'Alive',
 };
+
+export const testMortyCharacterCard: CharacterCardModel = {
+  id: 2,
+  name: 'Morty Smith',
+  description: 'Human, Male. Last known location: Earth.',
+  imageUrl: 'https://rickandmortyapi.com/api/character/avatar/2.jpeg',
+  status: 'Alive',
+};
+
+export const testCharacterCards: CharacterCardModel[] = [
+  testCharacterCard,
+  testMortyCharacterCard,
+];
 
 export const testCharacterApiResponse: CharacterApiResponse = {
   info: {
