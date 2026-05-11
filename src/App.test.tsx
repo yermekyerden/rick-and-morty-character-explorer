@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fetchCharacterCards } from './api/charactersApi';
 import App from './App';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import { APP_MESSAGES } from './constants/messages';
 import { LAST_SEARCH_TERM_STORAGE_KEY } from './constants/storageKeys';
 import {
@@ -25,6 +26,7 @@ const delayMock = vi.mocked(delay);
 describe('App', () => {
   beforeEach(() => {
     localStorage.clear();
+
     fetchCharacterCardsMock.mockReset();
     delayMock.mockReset();
 
@@ -32,7 +34,7 @@ describe('App', () => {
     delayMock.mockResolvedValue(undefined);
   });
 
-  it('renders application intro and search form', async () => {
+  it('renders application intro and search form', () => {
     const expectedTitle = APP_MESSAGES.app.title;
     const expectedDescription = APP_MESSAGES.app.description;
     const expectedSearchLabel = APP_MESSAGES.search.label;
@@ -125,6 +127,21 @@ describe('App', () => {
     ).toBeVisible();
   });
 
+  it('shows unknown API error message when rejected value is not an Error', async () => {
+    const expectedErrorMessage = APP_MESSAGES.apiErrors.unknown;
+
+    fetchCharacterCardsMock.mockRejectedValue('Unexpected API failure');
+
+    render(<App />);
+
+    expect(await screen.findByText(expectedErrorMessage)).toBeVisible();
+    expect(
+      screen.getByRole('heading', {
+        name: APP_MESSAGES.noResults.title,
+      })
+    ).toBeVisible();
+  });
+
   it('stores submitted search term in localStorage', async () => {
     const user = userEvent.setup();
     const searchTerm = 'Summer';
@@ -152,5 +169,38 @@ describe('App', () => {
         searchTerm
       );
     });
+  });
+
+  it('shows error boundary fallback when simulated error is triggered', async () => {
+    const user = userEvent.setup();
+    const expectedFallbackTitle = APP_MESSAGES.errorBoundary.title;
+
+    const consoleError = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    render(
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    );
+
+    await screen.findByRole('heading', {
+      name: testCharacterCard.name,
+    });
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.errorTest.button,
+      })
+    );
+
+    expect(
+      screen.getByRole('heading', {
+        name: expectedFallbackTitle,
+      })
+    ).toBeVisible();
+
+    consoleError.mockRestore();
   });
 });
