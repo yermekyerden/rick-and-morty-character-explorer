@@ -1,8 +1,11 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig({
-  base: '/rs-react-2026/',
+const GITHUB_PAGES_BASE_PATH = '/rs-react-2026/';
+const LOCAL_BASE_PATH = '/';
+
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? GITHUB_PAGES_BASE_PATH : LOCAL_BASE_PATH,
   plugins: [react()],
   test: {
     environment: 'jsdom',
@@ -28,4 +31,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));
