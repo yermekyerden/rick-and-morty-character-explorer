@@ -95,7 +95,7 @@ describe('ResultsSection', () => {
     expect(screen.getByText(expectedEmptyMessage)).toBeVisible();
   });
 
-  it('renders character list when characters are available', () => {
+  it('renders character grid when characters are available', () => {
     const expectedName = testCharacterCard.name;
     const expectedLocation = testCharacterCard.locationName;
 

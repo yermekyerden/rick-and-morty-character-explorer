@@ -1,6 +1,6 @@
 .shell {
   min-height: 100vh;
-  padding: 48px 24px;
+  padding: clamp(2rem, 4vw, 4rem) clamp(1rem, 3vw, 3rem);
   background:
     radial-gradient(
       circle at 12% 8%,
@@ -20,14 +20,15 @@
     );
 }
 
-.searchSection,
-.resultsSection {
-  width: min(100%, var(--page-max-width));
+.searchSection {
+  width: min(100%, 1120px);
   margin-inline: auto;
+  margin-bottom: 32px;
 }
 
-.searchSection {
-  margin-bottom: 32px;
+.resultsSection {
+  width: min(100%, 1580px);
+  margin-inline: auto;
 }
 
 .intro {
