@@ -5,11 +5,29 @@ import styles from './Loader.module.css';
 function renderSkeletonCards() {
   return Array.from({ length: SKELETON_CARD_COUNT }, (_, itemIndex) => (
     <li className={styles.card} key={itemIndex}>
-      <div className={styles.avatar} aria-hidden="true" />
+      <div className={styles.imageFrame} aria-hidden="true">
+        <div className={styles.image} />
+      </div>
 
-      <div className={styles.textBlock}>
-        <div className={styles.line} aria-hidden="true" />
-        <div className={styles.lineShort} aria-hidden="true" />
+      <div className={styles.content}>
+        <div className={styles.nameLine} aria-hidden="true" />
+
+        <div className={styles.metaList} aria-hidden="true">
+          <div className={styles.metaRow}>
+            <div className={styles.metaLabel} />
+            <div className={styles.metaValue} />
+          </div>
+
+          <div className={styles.metaRow}>
+            <div className={styles.metaLabel} />
+            <div className={styles.metaValue} />
+          </div>
+
+          <div className={styles.metaRow}>
+            <div className={styles.metaLabel} />
+            <div className={styles.metaValueLong} />
+          </div>
+        </div>
       </div>
     </li>
   ));
@@ -17,10 +35,10 @@ function renderSkeletonCards() {
 
 function Loader() {
   return (
-    <div className={styles.loader}>
+    <div className={styles.loader} aria-live="polite">
       <p className={styles.message}>{APP_MESSAGES.loader.message}</p>
 
-      <ul className={styles.list} aria-label={APP_MESSAGES.loader.ariaLabel}>
+      <ul className={styles.grid} aria-label={APP_MESSAGES.loader.ariaLabel}>
         {renderSkeletonCards()}
       </ul>
     </div>
