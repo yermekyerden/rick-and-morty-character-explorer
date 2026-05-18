@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { APP_ROUTES } from '../../constants/routes';
+import { APP_ROUTES } from '../../router/routes';
 import styles from './NotFoundPage.module.css';
 
 function NotFoundPage() {

@@ -6,6 +6,11 @@ export const APP_MESSAGES = {
       'Type a name, open a tiny portal, and hope the API sends back someone less dangerous than Rick.',
   },
 
+  bootstrap: {
+    rootElementMissing:
+      'Portal root element was not found. Check that index.html contains <div id="root"></div>.',
+  },
+
   search: {
     label: 'Character name',
     placeholder: 'Try Rick, Morty, Summer...',

@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router';
-import { APP_ROUTES } from '../../constants/routes';
+import { APP_ROUTES } from '../../router/routes';
 import styles from './AppLayout.module.css';
 
 function AppLayout() {
