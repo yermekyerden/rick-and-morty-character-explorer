@@ -4,13 +4,16 @@ import {
   testCharacterApiResponse,
   testCharacterCard,
 } from '../test/testCharacters';
-import { fetchCharacterCards } from './charactersApi';
+import { fetchCharacterCards, fetchCharacterPage } from './charactersApi';
 
 const allCharactersRequestUrl =
   'https://rickandmortyapi.com/api/character?page=1';
 
 const rickSearchRequestUrl =
   'https://rickandmortyapi.com/api/character?page=1&name=Rick';
+
+const mortySecondPageRequestUrl =
+  'https://rickandmortyapi.com/api/character?page=2&name=Morty';
 
 function createJsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -69,5 +72,44 @@ describe('fetchCharacterCards', () => {
     await expect(fetchCharacterCards('Rick')).rejects.toThrow(
       APP_MESSAGES.apiErrors.generic
     );
+  });
+});
+
+describe('fetchCharacterPage', () => {
+  const fetchMock = vi.fn<typeof fetch>();
+
+  beforeEach(() => {
+    fetchMock.mockReset();
+    vi.stubGlobal('fetch', fetchMock);
+  });
+
+  it('fetches requested page and returns pagination metadata', async () => {
+    fetchMock.mockResolvedValue(createJsonResponse(testCharacterApiResponse));
+
+    const characterPage = await fetchCharacterPage({
+      searchTerm: '  Morty  ',
+      page: 2,
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(mortySecondPageRequestUrl);
+    expect(characterPage).toEqual({
+      characters: [testCharacterCard],
+      currentPage: 2,
+      totalPages: testCharacterApiResponse.info.pages,
+      totalCount: testCharacterApiResponse.info.count,
+    });
+  });
+
+  it('normalizes invalid page number to first page', async () => {
+    fetchMock.mockResolvedValue(createJsonResponse(testCharacterApiResponse));
+
+    const characterPage = await fetchCharacterPage({
+      searchTerm: '',
+      page: -10,
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(allCharactersRequestUrl);
+    expect(characterPage.currentPage).toBe(1);
   });
 });

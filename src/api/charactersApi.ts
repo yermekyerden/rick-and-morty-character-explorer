@@ -8,12 +8,27 @@ import { mapCharacterDtoToCardModel } from '../mappers/characterMapper';
 import type {
   CharacterApiResponse,
   CharacterCardModel,
+  CharacterPageModel,
+  CharacterPageRequest,
 } from '../types/character';
 
 export async function fetchCharacterCards(
   searchTerm: string
 ): Promise<CharacterCardModel[]> {
-  const url = createCharacterRequestUrl(searchTerm);
+  const characterPage = await fetchCharacterPage({
+    searchTerm,
+    page: FIRST_PAGE_NUMBER,
+  });
+
+  return characterPage.characters;
+}
+
+export async function fetchCharacterPage({
+  searchTerm,
+  page,
+}: CharacterPageRequest): Promise<CharacterPageModel> {
+  const currentPage = normalizePageNumber(page);
+  const url = createCharacterRequestUrl({ searchTerm, page: currentPage });
   const response = await fetch(url);
 
   if (!response.ok) {
@@ -22,15 +37,23 @@ export async function fetchCharacterCards(
 
   const data = (await response.json()) as CharacterApiResponse;
 
-  return data.results.map(mapCharacterDtoToCardModel);
+  return {
+    characters: data.results.map(mapCharacterDtoToCardModel),
+    currentPage,
+    totalPages: data.info.pages,
+    totalCount: data.info.count,
+  };
 }
 
-function createCharacterRequestUrl(searchTerm: string): string {
+function createCharacterRequestUrl({
+  searchTerm,
+  page,
+}: CharacterPageRequest): string {
   const url = new URL(
     `${RICK_AND_MORTY_API_BASE_URL}${CHARACTER_ENDPOINT_PATH}`
   );
 
-  url.searchParams.set('page', String(FIRST_PAGE_NUMBER));
+  url.searchParams.set('page', String(normalizePageNumber(page)));
 
   const trimmedSearchTerm = searchTerm.trim();
 
@@ -39,6 +62,14 @@ function createCharacterRequestUrl(searchTerm: string): string {
   }
 
   return url.toString();
+}
+
+function normalizePageNumber(page: number): number {
+  if (!Number.isFinite(page)) {
+    return FIRST_PAGE_NUMBER;
+  }
+
+  return Math.max(FIRST_PAGE_NUMBER, Math.trunc(page));
 }
 
 function createCharacterApiErrorMessage(statusCode: number): string {

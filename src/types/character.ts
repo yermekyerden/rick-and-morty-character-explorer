@@ -35,3 +35,15 @@ export interface CharacterCardModel {
   imageUrl: string;
   status: CharacterStatus;
 }
+
+export interface CharacterPageRequest {
+  searchTerm: string;
+  page: number;
+}
+
+export interface CharacterPageModel {
+  characters: CharacterCardModel[];
+  currentPage: number;
+  totalPages: number;
+  totalCount: number;
+}
