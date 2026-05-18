@@ -109,13 +109,17 @@ function ExplorerPage() {
 
   const handlePageChange = useCallback(
     (nextPage: number) => {
+      if (isLoading) {
+        return;
+      }
+
       updateSearchParams({
         detailsId: null,
         page: nextPage,
         searchTerm: activeSearchTerm,
       });
     },
-    [activeSearchTerm, updateSearchParams]
+    [activeSearchTerm, isLoading, updateSearchParams]
   );
 
   const handleTriggerError = useCallback(() => {

@@ -3,26 +3,37 @@ import styles from './PaginationControls.module.css';
 
 interface PaginationControlsProps {
   currentPage: number;
+  isDisabled?: boolean;
   onPageChange: (page: number) => void;
   totalPages: number;
 }
 
 function PaginationControls({
   currentPage,
+  isDisabled = false,
   onPageChange,
   totalPages,
 }: PaginationControlsProps) {
   const normalizedCurrentPage = Math.max(1, currentPage);
   const normalizedTotalPages = Math.max(1, totalPages);
 
-  const isPreviousDisabled = normalizedCurrentPage <= 1;
-  const isNextDisabled = normalizedCurrentPage >= normalizedTotalPages;
+  const isPreviousDisabled = isDisabled || normalizedCurrentPage <= 1;
+  const isNextDisabled =
+    isDisabled || normalizedCurrentPage >= normalizedTotalPages;
 
   function handlePreviousClick() {
+    if (isPreviousDisabled) {
+      return;
+    }
+
     onPageChange(normalizedCurrentPage - 1);
   }
 
   function handleNextClick() {
+    if (isNextDisabled) {
+      return;
+    }
+
     onPageChange(normalizedCurrentPage + 1);
   }
 

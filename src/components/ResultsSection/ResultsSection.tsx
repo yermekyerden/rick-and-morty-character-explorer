@@ -74,8 +74,7 @@ function ResultsSection({
 }: ResultsSectionProps) {
   const isPortalUnstable = errorMessage !== null;
   const statusText = getStatusText({ errorMessage, isLoading, searchTerm });
-  const shouldShowPagination =
-    !isLoading && errorMessage === null && characters.length > 0;
+  const shouldShowPagination = errorMessage === null && characters.length > 0;
 
   return (
     <div className={styles.panel}>
@@ -104,6 +103,7 @@ function ResultsSection({
             {shouldShowPagination ? (
               <PaginationControls
                 currentPage={currentPage}
+                isDisabled={isLoading}
                 totalPages={totalPages}
                 onPageChange={onPageChange}
               />
