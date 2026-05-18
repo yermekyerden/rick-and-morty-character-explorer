@@ -52,6 +52,8 @@ export const APP_MESSAGES = {
     notFound:
       'No characters found for this search. Maybe the portal opened into an empty dimension.',
     generic: 'Could not load characters from the API. Please try again later.',
+    networkOrRateLimit:
+      'The portal refused the request. You may be switching dimensions too fast. Wait a moment and try again.',
     unknown: 'Something went wrong while loading characters.',
   },
 

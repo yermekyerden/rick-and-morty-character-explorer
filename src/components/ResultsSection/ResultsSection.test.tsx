@@ -120,7 +120,7 @@ describe('ResultsSection', () => {
     ).toBeVisible();
   });
 
-  it('does not render pagination controls while loading', () => {
+  it('keeps pagination visible but disables controls while loading', () => {
     renderResultsSection({
       characters: [testCharacterCard],
       isLoading: true,
@@ -128,8 +128,20 @@ describe('ResultsSection', () => {
     });
 
     expect(
-      screen.queryByText(APP_MESSAGES.pagination.pageSummary(1, 5))
-    ).not.toBeInTheDocument();
+      screen.getByText(APP_MESSAGES.pagination.pageSummary(1, 5))
+    ).toBeVisible();
+
+    expect(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.pagination.previous,
+      })
+    ).toBeDisabled();
+
+    expect(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.pagination.next,
+      })
+    ).toBeDisabled();
   });
 
   it('calls onPageChange when pagination changes page', async () => {

@@ -112,4 +112,26 @@ describe('fetchCharacterPage', () => {
     expect(fetchMock).toHaveBeenCalledWith(allCharactersRequestUrl);
     expect(characterPage.currentPage).toBe(1);
   });
+
+  it('throws rate limit message for 429 response', async () => {
+    fetchMock.mockResolvedValue(createEmptyResponse(429));
+
+    await expect(
+      fetchCharacterPage({
+        searchTerm: '',
+        page: 5,
+      })
+    ).rejects.toThrow(APP_MESSAGES.apiErrors.networkOrRateLimit);
+  });
+
+  it('throws network or rate limit message when fetch fails', async () => {
+    fetchMock.mockRejectedValue(new TypeError('Failed to fetch'));
+
+    await expect(
+      fetchCharacterPage({
+        searchTerm: '',
+        page: 5,
+      })
+    ).rejects.toThrow(APP_MESSAGES.apiErrors.networkOrRateLimit);
+  });
 });

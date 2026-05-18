@@ -29,7 +29,13 @@ export async function fetchCharacterPage({
 }: CharacterPageRequest): Promise<CharacterPageModel> {
   const currentPage = normalizePageNumber(page);
   const url = createCharacterRequestUrl({ searchTerm, page: currentPage });
-  const response = await fetch(url);
+  let response: Response;
+
+  try {
+    response = await fetch(url);
+  } catch {
+    throw new Error(APP_MESSAGES.apiErrors.networkOrRateLimit);
+  }
 
   if (!response.ok) {
     throw new Error(createCharacterApiErrorMessage(response.status));
@@ -75,6 +81,10 @@ function normalizePageNumber(page: number): number {
 function createCharacterApiErrorMessage(statusCode: number): string {
   if (statusCode === 404) {
     return APP_MESSAGES.apiErrors.notFound;
+  }
+
+  if (statusCode === 429) {
+    return APP_MESSAGES.apiErrors.networkOrRateLimit;
   }
 
   return APP_MESSAGES.apiErrors.generic;
