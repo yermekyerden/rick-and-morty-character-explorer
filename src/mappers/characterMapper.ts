@@ -1,5 +1,6 @@
 import type {
   CharacterCardModel,
+  CharacterDetailsModel,
   CharacterDto,
   CharacterStatus,
 } from '../types/character';
@@ -16,6 +17,24 @@ export function mapCharacterDtoToCardModel(
     locationName: character.location.name,
     species: character.species,
     status: normalizeCharacterStatus(character.status),
+  };
+}
+
+export function mapCharacterDtoToDetailsModel(
+  character: CharacterDto
+): CharacterDetailsModel {
+  return {
+    id: character.id,
+    name: character.name,
+    status: normalizeCharacterStatus(character.status),
+    species: character.species,
+    type: character.type.length > 0 ? character.type : 'None',
+    gender: character.gender,
+    originName: character.origin.name,
+    locationName: character.location.name,
+    imageUrl: character.image,
+    episodeCount: character.episode.length,
+    createdAt: character.created,
   };
 }
 

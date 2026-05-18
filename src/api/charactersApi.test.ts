@@ -3,8 +3,13 @@ import { APP_MESSAGES } from '../constants/messages';
 import {
   testCharacterApiResponse,
   testCharacterCard,
+  testCharacterDetails,
 } from '../test/testCharacters';
-import { fetchCharacterCards, fetchCharacterPage } from './charactersApi';
+import {
+  fetchCharacterCards,
+  fetchCharacterDetails,
+  fetchCharacterPage,
+} from './charactersApi';
 
 const allCharactersRequestUrl =
   'https://rickandmortyapi.com/api/character?page=1';
@@ -14,6 +19,8 @@ const rickSearchRequestUrl =
 
 const mortySecondPageRequestUrl =
   'https://rickandmortyapi.com/api/character?page=2&name=Morty';
+
+const rickDetailsRequestUrl = 'https://rickandmortyapi.com/api/character/1';
 
 function createJsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -133,5 +140,44 @@ describe('fetchCharacterPage', () => {
         page: 5,
       })
     ).rejects.toThrow(APP_MESSAGES.apiErrors.networkOrRateLimit);
+  });
+});
+
+describe('fetchCharacterDetails', () => {
+  const fetchMock = vi.fn<typeof fetch>();
+
+  beforeEach(() => {
+    fetchMock.mockReset();
+    vi.stubGlobal('fetch', fetchMock);
+  });
+
+  it('fetches character details by id', async () => {
+    fetchMock.mockResolvedValue(
+      createJsonResponse(testCharacterApiResponse.results[0])
+    );
+
+    const details = await fetchCharacterDetails(1);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(rickDetailsRequestUrl);
+    expect(details).toEqual(testCharacterDetails);
+  });
+
+  it('normalizes invalid character id to first character', async () => {
+    fetchMock.mockResolvedValue(
+      createJsonResponse(testCharacterApiResponse.results[0])
+    );
+
+    await fetchCharacterDetails(-100);
+
+    expect(fetchMock).toHaveBeenCalledWith(rickDetailsRequestUrl);
+  });
+
+  it('throws friendly message when details request fails', async () => {
+    fetchMock.mockResolvedValue(createEmptyResponse(500));
+
+    await expect(fetchCharacterDetails(1)).rejects.toThrow(
+      APP_MESSAGES.apiErrors.generic
+    );
   });
 });

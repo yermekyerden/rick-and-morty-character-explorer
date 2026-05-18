@@ -2,9 +2,13 @@ import { describe, expect, it } from 'vitest';
 import {
   testAliveCharacterDto,
   testCharacterCard,
+  testCharacterDetails,
   testUnknownCharacterDto,
 } from '../test/testCharacters';
-import { mapCharacterDtoToCardModel } from './characterMapper';
+import {
+  mapCharacterDtoToCardModel,
+  mapCharacterDtoToDetailsModel,
+} from './characterMapper';
 
 describe('mapCharacterDtoToCardModel', () => {
   it('maps character DTO to character card model', () => {
@@ -28,5 +32,15 @@ describe('mapCharacterDtoToCardModel', () => {
     const mappedCharacter = mapCharacterDtoToCardModel(testUnknownCharacterDto);
 
     expect(mappedCharacter.status).toBe(expectedStatus);
+  });
+});
+
+describe('mapCharacterDtoToDetailsModel', () => {
+  it('maps character DTO to character details model', () => {
+    const mappedCharacter = mapCharacterDtoToDetailsModel(
+      testAliveCharacterDto
+    );
+
+    expect(mappedCharacter).toEqual(testCharacterDetails);
   });
 });
