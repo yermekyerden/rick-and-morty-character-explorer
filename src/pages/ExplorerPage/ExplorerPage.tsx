@@ -87,7 +87,6 @@ function ExplorerPage() {
       setIsInitialSearchTermReady(true);
 
       updateSearchParams({
-        detailsId: null,
         page,
         replace: true,
         searchTerm,
@@ -183,7 +182,11 @@ function ExplorerPage() {
           />
         </div>
 
-        <Outlet />
+        {isDetailsOpen ? (
+          <div className={styles.detailsPanelSlot}>
+            <Outlet />
+          </div>
+        ) : null}
       </section>
     </main>
   );

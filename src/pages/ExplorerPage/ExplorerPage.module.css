@@ -72,9 +72,17 @@
   font-size: 18px;
 }
 
+.detailsPanelSlot {
+  min-width: 0;
+}
+
 @media (max-width: 1180px) {
   .resultsSectionWithDetails {
     grid-template-columns: 1fr;
+  }
+
+  .detailsPanelSlot {
+    order: -1;
   }
 }
 
