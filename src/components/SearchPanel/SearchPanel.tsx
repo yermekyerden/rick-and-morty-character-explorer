@@ -6,11 +6,13 @@ import { useLocalStorageValue } from '../../hooks/useLocalStorageValue';
 import styles from './SearchPanel.module.css';
 
 interface SearchPanelProps {
+  initialSearchTerm?: string;
   onInitialSearchTermLoaded: (searchTerm: string) => void;
   onSearch: (searchTerm: string) => void;
 }
 
 function SearchPanel({
+  initialSearchTerm,
   onInitialSearchTermLoaded,
   onSearch,
 }: SearchPanelProps) {
@@ -18,11 +20,13 @@ function SearchPanel({
     LAST_SEARCH_TERM_STORAGE_KEY
   );
 
-  const initialSearchTerm = useMemo(() => initialValue.trim(), [initialValue]);
+  const resolvedInitialSearchTerm = useMemo(() => {
+    return (initialSearchTerm ?? initialValue).trim();
+  }, [initialSearchTerm, initialValue]);
 
-  const [inputValue, setInputValue] = useState(initialSearchTerm);
+  const [inputValue, setInputValue] = useState(resolvedInitialSearchTerm);
 
-  const lastSubmittedSearchTerm = useRef(initialSearchTerm);
+  const lastSubmittedSearchTerm = useRef(resolvedInitialSearchTerm);
   const hasLoadedInitialSearchTerm = useRef(false);
 
   useEffect(() => {
@@ -31,8 +35,8 @@ function SearchPanel({
     }
 
     hasLoadedInitialSearchTerm.current = true;
-    onInitialSearchTermLoaded(initialSearchTerm);
-  }, [initialSearchTerm, onInitialSearchTermLoaded]);
+    onInitialSearchTermLoaded(resolvedInitialSearchTerm);
+  }, [onInitialSearchTermLoaded, resolvedInitialSearchTerm]);
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
     setInputValue(event.target.value);

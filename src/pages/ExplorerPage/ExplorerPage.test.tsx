@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fetchCharacterCards } from '../../api/charactersApi';
-import ExplorerPage from './ExplorerPage';
+import { fetchCharacterPage } from '../../api/charactersApi';
 import ErrorBoundary from '../../components/ErrorBoundary/ErrorBoundary';
 import { APP_MESSAGES } from '../../constants/messages';
 import { LAST_SEARCH_TERM_STORAGE_KEY } from '../../constants/storageKeys';
@@ -11,26 +11,54 @@ import {
   testMortyCharacterCard,
 } from '../../test/testCharacters';
 import { delay } from '../../utils/delay';
+import ExplorerPage from './ExplorerPage';
 
 vi.mock('../../api/charactersApi', () => ({
-  fetchCharacterCards: vi.fn(),
+  fetchCharacterPage: vi.fn(),
 }));
 
 vi.mock('../../utils/delay', () => ({
   delay: vi.fn(),
 }));
 
-const fetchCharacterCardsMock = vi.mocked(fetchCharacterCards);
+const fetchCharacterPageMock = vi.mocked(fetchCharacterPage);
 const delayMock = vi.mocked(delay);
+
+function createCharacterPage(characters = [testCharacterCard]) {
+  return {
+    characters,
+    currentPage: 1,
+    totalCount: characters.length,
+    totalPages: 1,
+  };
+}
+
+function renderExplorerPage(initialRoute = '/') {
+  render(
+    <MemoryRouter initialEntries={[initialRoute]}>
+      <ExplorerPage />
+    </MemoryRouter>
+  );
+}
+
+function renderExplorerPageWithBoundary(initialRoute = '/') {
+  render(
+    <MemoryRouter initialEntries={[initialRoute]}>
+      <ErrorBoundary>
+        <ExplorerPage />
+      </ErrorBoundary>
+    </MemoryRouter>
+  );
+}
 
 describe('ExplorerPage', () => {
   beforeEach(() => {
     localStorage.clear();
 
-    fetchCharacterCardsMock.mockReset();
+    fetchCharacterPageMock.mockReset();
     delayMock.mockReset();
 
-    fetchCharacterCardsMock.mockResolvedValue([testCharacterCard]);
+    fetchCharacterPageMock.mockResolvedValue(createCharacterPage());
     delayMock.mockResolvedValue(undefined);
   });
 
@@ -39,7 +67,7 @@ describe('ExplorerPage', () => {
     const expectedDescription = APP_MESSAGES.app.description;
     const expectedSearchLabel = APP_MESSAGES.search.label;
 
-    render(<ExplorerPage />);
+    renderExplorerPage();
 
     expect(screen.getByRole('heading', { name: expectedTitle })).toBeVisible();
     expect(screen.getByText(expectedDescription)).toBeVisible();
@@ -50,12 +78,15 @@ describe('ExplorerPage', () => {
     const expectedSearchTerm = '';
     const expectedCharacterName = testCharacterCard.name;
 
-    render(<ExplorerPage />);
+    renderExplorerPage();
 
     expect(
       await screen.findByRole('heading', { name: expectedCharacterName })
     ).toBeVisible();
-    expect(fetchCharacterCardsMock).toHaveBeenCalledWith(expectedSearchTerm);
+    expect(fetchCharacterPageMock).toHaveBeenCalledWith({
+      searchTerm: expectedSearchTerm,
+      page: 1,
+    });
   });
 
   it('uses saved localStorage search term for initial load', async () => {
@@ -64,7 +95,7 @@ describe('ExplorerPage', () => {
 
     localStorage.setItem(LAST_SEARCH_TERM_STORAGE_KEY, savedSearchTerm);
 
-    render(<ExplorerPage />);
+    renderExplorerPage();
 
     expect(screen.getByLabelText(APP_MESSAGES.search.label)).toHaveValue(
       savedSearchTerm
@@ -72,13 +103,37 @@ describe('ExplorerPage', () => {
     expect(
       await screen.findByRole('heading', { name: expectedCharacterName })
     ).toBeVisible();
-    expect(fetchCharacterCardsMock).toHaveBeenCalledWith(savedSearchTerm);
+    expect(fetchCharacterPageMock).toHaveBeenCalledWith({
+      searchTerm: savedSearchTerm,
+      page: 1,
+    });
+  });
+
+  it('uses URL search term before localStorage search term', async () => {
+    const urlSearchTerm = 'Morty';
+
+    localStorage.setItem(LAST_SEARCH_TERM_STORAGE_KEY, 'Rick');
+
+    renderExplorerPage('/?page=2&search=Morty');
+
+    expect(screen.getByLabelText(APP_MESSAGES.search.label)).toHaveValue(
+      urlSearchTerm
+    );
+
+    await screen.findByRole('heading', {
+      name: testCharacterCard.name,
+    });
+
+    expect(fetchCharacterPageMock).toHaveBeenCalledWith({
+      searchTerm: urlSearchTerm,
+      page: 2,
+    });
   });
 
   it('shows loading state while characters are loading', () => {
-    fetchCharacterCardsMock.mockReturnValue(new Promise(() => {}));
+    fetchCharacterPageMock.mockReturnValue(new Promise(() => {}));
 
-    render(<ExplorerPage />);
+    renderExplorerPage();
 
     expect(screen.getByText(APP_MESSAGES.loader.message)).toBeVisible();
   });
@@ -88,13 +143,15 @@ describe('ExplorerPage', () => {
     const searchTerm = 'Morty';
     const expectedCharacterName = testMortyCharacterCard.name;
 
-    render(<ExplorerPage />);
+    renderExplorerPage();
 
     await screen.findByRole('heading', {
       name: testCharacterCard.name,
     });
 
-    fetchCharacterCardsMock.mockResolvedValueOnce([testMortyCharacterCard]);
+    fetchCharacterPageMock.mockResolvedValueOnce(
+      createCharacterPage([testMortyCharacterCard])
+    );
 
     await user.type(
       screen.getByLabelText(APP_MESSAGES.search.label),
@@ -109,15 +166,18 @@ describe('ExplorerPage', () => {
     expect(
       await screen.findByRole('heading', { name: expectedCharacterName })
     ).toBeVisible();
-    expect(fetchCharacterCardsMock).toHaveBeenLastCalledWith(searchTerm);
+    expect(fetchCharacterPageMock).toHaveBeenLastCalledWith({
+      searchTerm,
+      page: 1,
+    });
   });
 
   it('shows API error message when character loading fails', async () => {
     const expectedErrorMessage = APP_MESSAGES.apiErrors.notFound;
 
-    fetchCharacterCardsMock.mockRejectedValue(new Error(expectedErrorMessage));
+    fetchCharacterPageMock.mockRejectedValue(new Error(expectedErrorMessage));
 
-    render(<ExplorerPage />);
+    renderExplorerPage();
 
     expect(await screen.findByText(expectedErrorMessage)).toBeVisible();
     expect(
@@ -130,9 +190,9 @@ describe('ExplorerPage', () => {
   it('shows unknown API error message when rejected value is not an Error', async () => {
     const expectedErrorMessage = APP_MESSAGES.apiErrors.unknown;
 
-    fetchCharacterCardsMock.mockRejectedValue('Unexpected API failure');
+    fetchCharacterPageMock.mockRejectedValue('Unexpected API failure');
 
-    render(<ExplorerPage />);
+    renderExplorerPage();
 
     expect(await screen.findByText(expectedErrorMessage)).toBeVisible();
     expect(
@@ -146,13 +206,13 @@ describe('ExplorerPage', () => {
     const user = userEvent.setup();
     const searchTerm = 'Summer';
 
-    render(<ExplorerPage />);
+    renderExplorerPage();
 
     await screen.findByRole('heading', {
       name: testCharacterCard.name,
     });
 
-    fetchCharacterCardsMock.mockResolvedValueOnce([testCharacterCard]);
+    fetchCharacterPageMock.mockResolvedValueOnce(createCharacterPage());
 
     await user.type(
       screen.getByLabelText(APP_MESSAGES.search.label),
@@ -179,11 +239,7 @@ describe('ExplorerPage', () => {
       .spyOn(console, 'error')
       .mockImplementation(() => {});
 
-    render(
-      <ErrorBoundary>
-        <ExplorerPage />
-      </ErrorBoundary>
-    );
+    renderExplorerPageWithBoundary();
 
     await screen.findByRole('heading', {
       name: testCharacterCard.name,

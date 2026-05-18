@@ -122,4 +122,26 @@ describe('SearchPanel', () => {
       savedSearchTerm
     );
   });
+
+  it('uses provided initial search term before localStorage value', () => {
+    const providedSearchTerm = 'Morty';
+
+    localStorage.setItem(LAST_SEARCH_TERM_STORAGE_KEY, 'Rick');
+
+    const onInitialSearchTermLoaded = vi.fn();
+    const onSearch = vi.fn();
+
+    render(
+      <SearchPanel
+        initialSearchTerm={providedSearchTerm}
+        onInitialSearchTermLoaded={onInitialSearchTermLoaded}
+        onSearch={onSearch}
+      />
+    );
+
+    expect(screen.getByLabelText(APP_MESSAGES.search.label)).toHaveValue(
+      providedSearchTerm
+    );
+    expect(onInitialSearchTermLoaded).toHaveBeenCalledWith(providedSearchTerm);
+  });
 });
