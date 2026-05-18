@@ -1,16 +1,18 @@
 import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { testCharacterCards } from '../../test/testCharacters';
-import CharacterList from './CharacterList';
+import CharacterGrid from './CharacterGrid';
 
-describe('CharacterList', () => {
+describe('CharacterGrid', () => {
   it('renders all provided characters', () => {
     const expectedCharacterCount = testCharacterCards.length;
 
-    render(<CharacterList characters={testCharacterCards} />);
+    render(<CharacterGrid characters={testCharacterCards} />);
 
-    const characterList = screen.getByRole('list');
-    const renderedCharacters = within(characterList).getAllByRole('listitem');
+    const characterGrid = screen.getByRole('list', {
+      name: /character results/i,
+    });
+    const renderedCharacters = within(characterGrid).getAllByRole('listitem');
 
     expect(renderedCharacters).toHaveLength(expectedCharacterCount);
     expect(screen.getByRole('heading', { name: 'Rick Sanchez' })).toBeVisible();

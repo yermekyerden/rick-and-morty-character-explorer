@@ -1,16 +1,16 @@
 import type { CharacterCardModel } from '../../types/character';
 import CharacterCard from '../CharacterCard/CharacterCard';
-import styles from './CharacterList.module.css';
+import styles from './CharacterGrid.module.css';
 
-interface CharacterListProps {
+interface CharacterGridProps {
   characters: CharacterCardModel[];
 }
 
-function CharacterList({ characters }: CharacterListProps) {
+function CharacterGrid({ characters }: CharacterGridProps) {
   return (
-    <ul className={styles.list}>
+    <ul className={styles.grid} aria-label="Character results">
       {characters.map((character) => (
-        <li key={character.id}>
+        <li className={styles.item} key={character.id}>
           <CharacterCard character={character} />
         </li>
       ))}
@@ -18,4 +18,4 @@ function CharacterList({ characters }: CharacterListProps) {
   );
 }
 
-export default CharacterList;
+export default CharacterGrid;

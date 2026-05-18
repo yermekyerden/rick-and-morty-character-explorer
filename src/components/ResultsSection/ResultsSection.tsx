@@ -1,6 +1,6 @@
 import { APP_MESSAGES } from '../../constants/messages';
 import type { CharacterCardModel } from '../../types/character';
-import CharacterList from '../CharacterList/CharacterList';
+import CharacterGrid from '../CharacterGrid/CharacterGrid';
 import ErrorTestButton from '../ErrorTestButton/ErrorTestButton';
 import Loader from '../Loader/Loader';
 import NoResultsCard from '../NoResultsCard/NoResultsCard';
@@ -59,7 +59,7 @@ function renderResultsContent({
     );
   }
 
-  return <CharacterList characters={characters} />;
+  return <CharacterGrid characters={characters} />;
 }
 
 function ResultsSection({
