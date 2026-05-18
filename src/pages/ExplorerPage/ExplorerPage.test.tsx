@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter, useLocation } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fetchCharacterPage } from '../../api/charactersApi';
 import ErrorBoundary from '../../components/ErrorBoundary/ErrorBoundary';
@@ -37,10 +37,22 @@ function createCharacterPage(
   };
 }
 
+function LocationProbe() {
+  const location = useLocation();
+
+  return (
+    <output aria-label="current route">
+      {location.pathname}
+      {location.search}
+    </output>
+  );
+}
+
 function renderExplorerPage(initialRoute = '/') {
   render(
     <MemoryRouter initialEntries={[initialRoute]}>
       <ExplorerPage />
+      <LocationProbe />
     </MemoryRouter>
   );
 }
@@ -303,5 +315,29 @@ describe('ExplorerPage', () => {
     ).toBeVisible();
 
     consoleError.mockRestore();
+  });
+
+  it('adds selected character id to URL when user opens character dossier', async () => {
+    const user = userEvent.setup();
+
+    renderExplorerPage();
+
+    await screen.findByRole('heading', {
+      name: testCharacterCard.name,
+    });
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.characterCard.openDetailsLabel(
+          testCharacterCard.name
+        ),
+      })
+    );
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('current route')).toHaveTextContent(
+        '/?page=1&details=1'
+      );
+    });
   });
 });

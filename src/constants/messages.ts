@@ -42,6 +42,12 @@ export const APP_MESSAGES = {
     empty: 'No characters loaded yet. The portal is suspiciously quiet.',
   },
 
+  characterCard: {
+    openDetails: 'Open dossier',
+    openDetailsLabel: (characterName: string) =>
+      `Open dossier for ${characterName}`,
+  },
+
   loader: {
     message: 'Loading characters from another dimension...',
     ariaLabel: 'Loading characters',

@@ -12,6 +12,7 @@ interface ResultsSectionProps {
   currentPage: number;
   errorMessage: string | null;
   isLoading: boolean;
+  onCharacterSelect: (characterId: number) => void;
   onPageChange: (page: number) => void;
   onTriggerError: () => void;
   searchTerm: string;
@@ -51,7 +52,11 @@ function renderResultsContent({
   characters,
   errorMessage,
   isLoading,
-}: Pick<ResultsSectionProps, 'characters' | 'errorMessage' | 'isLoading'>) {
+  onCharacterSelect,
+}: Pick<
+  ResultsSectionProps,
+  'characters' | 'errorMessage' | 'isLoading' | 'onCharacterSelect'
+>) {
   if (isLoading) {
     return <Loader />;
   }
@@ -68,7 +73,12 @@ function renderResultsContent({
     );
   }
 
-  return <CharacterGrid characters={characters} />;
+  return (
+    <CharacterGrid
+      characters={characters}
+      onCharacterSelect={onCharacterSelect}
+    />
+  );
 }
 
 function ResultsSection({
@@ -76,6 +86,7 @@ function ResultsSection({
   currentPage,
   errorMessage,
   isLoading,
+  onCharacterSelect,
   onPageChange,
   onTriggerError,
   searchTerm,
@@ -101,7 +112,12 @@ function ResultsSection({
       />
 
       <div className={styles.content}>
-        {renderResultsContent({ characters, errorMessage, isLoading })}
+        {renderResultsContent({
+          characters,
+          errorMessage,
+          isLoading,
+          onCharacterSelect,
+        })}
       </div>
 
       <footer className={styles.footer}>

@@ -1,8 +1,10 @@
+import { APP_MESSAGES } from '../../constants/messages';
 import type { CharacterCardModel } from '../../types/character';
 import styles from './CharacterCard.module.css';
 
 interface CharacterCardProps {
   character: CharacterCardModel;
+  onSelect?: (characterId: number) => void;
 }
 
 function getStatusClassName(status: CharacterCardModel['status']): string {
@@ -17,7 +19,11 @@ function getStatusClassName(status: CharacterCardModel['status']): string {
   return styles.unknown;
 }
 
-function CharacterCard({ character }: CharacterCardProps) {
+function CharacterCard({ character, onSelect }: CharacterCardProps) {
+  function handleDetailsClick() {
+    onSelect?.(character.id);
+  }
+
   return (
     <article
       className={`${styles.card} ${getStatusClassName(character.status)}`}
@@ -52,6 +58,19 @@ function CharacterCard({ character }: CharacterCardProps) {
             <dd className={styles.locationValue}>{character.locationName}</dd>
           </div>
         </dl>
+
+        {onSelect !== undefined ? (
+          <button
+            className={styles.detailsButton}
+            type="button"
+            aria-label={APP_MESSAGES.characterCard.openDetailsLabel(
+              character.name
+            )}
+            onClick={handleDetailsClick}
+          >
+            {APP_MESSAGES.characterCard.openDetails}
+          </button>
+        ) : null}
       </div>
     </article>
   );

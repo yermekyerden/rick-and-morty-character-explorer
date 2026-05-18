@@ -1,5 +1,7 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
+import { APP_MESSAGES } from '../../constants/messages';
 import { testCharacterCard } from '../../test/testCharacters';
 import CharacterCard from './CharacterCard';
 
@@ -27,5 +29,22 @@ describe('CharacterCard', () => {
     expect(screen.getByText('Location')).toBeVisible();
     expect(screen.getByText(testCharacterCard.locationName)).toBeVisible();
     expect(characterImage).toHaveAttribute('src', testCharacterCard.imageUrl);
+  });
+
+  it('calls onSelect with character id when user opens dossier', async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+
+    render(<CharacterCard character={testCharacterCard} onSelect={onSelect} />);
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.characterCard.openDetailsLabel(
+          testCharacterCard.name
+        ),
+      })
+    );
+
+    expect(onSelect).toHaveBeenCalledWith(testCharacterCard.id);
   });
 });

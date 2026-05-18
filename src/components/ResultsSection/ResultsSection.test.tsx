@@ -13,6 +13,7 @@ interface RenderResultsSectionOptions {
   isLoading?: boolean;
   onPageChange?: (page: number) => void;
   onTriggerError?: () => void;
+  onCharacterSelect?: (characterId: number) => void;
   searchTerm?: string;
   totalPages?: number;
 }
@@ -24,6 +25,7 @@ function renderResultsSection({
   isLoading = false,
   onPageChange = () => {},
   onTriggerError = () => {},
+  onCharacterSelect = () => {},
   searchTerm = '',
   totalPages = 1,
 }: RenderResultsSectionOptions = {}) {
@@ -35,6 +37,7 @@ function renderResultsSection({
       isLoading={isLoading}
       onPageChange={onPageChange}
       onTriggerError={onTriggerError}
+      onCharacterSelect={onCharacterSelect}
       searchTerm={searchTerm}
       totalPages={totalPages}
     />
@@ -165,5 +168,26 @@ describe('ResultsSection', () => {
     );
 
     expect(onPageChange).toHaveBeenCalledWith(2);
+  });
+
+  it('calls onCharacterSelect when user opens character dossier', async () => {
+    const user = userEvent.setup();
+    const onCharacterSelect = vi.fn();
+
+    renderResultsSection({
+      characters: [testCharacterCard],
+      onCharacterSelect,
+      searchTerm: 'Rick',
+    });
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.characterCard.openDetailsLabel(
+          testCharacterCard.name
+        ),
+      })
+    );
+
+    expect(onCharacterSelect).toHaveBeenCalledWith(testCharacterCard.id);
   });
 });

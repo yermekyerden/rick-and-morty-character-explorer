@@ -126,6 +126,17 @@ function ExplorerPage() {
     setShouldSimulateError(true);
   }, []);
 
+  const handleCharacterSelect = useCallback(
+    (characterId: number) => {
+      updateSearchParams({
+        detailsId: characterId,
+        page,
+        searchTerm: activeSearchTerm,
+      });
+    },
+    [activeSearchTerm, page, updateSearchParams]
+  );
+
   if (shouldSimulateError) {
     throw new Error(APP_MESSAGES.errorBoundary.simulatedError);
   }
@@ -156,6 +167,7 @@ function ExplorerPage() {
           isLoading={isLoading}
           onPageChange={handlePageChange}
           onTriggerError={handleTriggerError}
+          onCharacterSelect={handleCharacterSelect}
           searchTerm={activeSearchTerm}
           totalPages={totalPages}
         />
