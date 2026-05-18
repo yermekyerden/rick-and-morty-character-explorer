@@ -1,7 +1,8 @@
-import { Component } from 'react';
-import type { ChangeEvent, SubmitEvent as ReactSubmitEvent } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { ChangeEvent, SyntheticEvent } from 'react';
 import { APP_MESSAGES } from '../../constants/messages';
 import { LAST_SEARCH_TERM_STORAGE_KEY } from '../../constants/storageKeys';
+import { useLocalStorageValue } from '../../hooks/useLocalStorageValue';
 import styles from './SearchPanel.module.css';
 
 interface SearchPanelProps {
@@ -9,81 +10,72 @@ interface SearchPanelProps {
   onSearch: (searchTerm: string) => void;
 }
 
-interface SearchPanelState {
-  inputValue: string;
-}
+function SearchPanel({
+  onInitialSearchTermLoaded,
+  onSearch,
+}: SearchPanelProps) {
+  const { initialValue, setValue } = useLocalStorageValue(
+    LAST_SEARCH_TERM_STORAGE_KEY
+  );
 
-class SearchPanel extends Component<SearchPanelProps, SearchPanelState> {
-  state: SearchPanelState = {
-    inputValue: '',
-  };
+  const initialSearchTerm = useMemo(() => initialValue.trim(), [initialValue]);
 
-  private lastSubmittedSearchTerm = '';
+  const [inputValue, setInputValue] = useState(initialSearchTerm);
 
-  componentDidMount() {
-    const savedSearchTerm =
-      localStorage.getItem(LAST_SEARCH_TERM_STORAGE_KEY) ?? '';
+  const lastSubmittedSearchTerm = useRef(initialSearchTerm);
+  const hasLoadedInitialSearchTerm = useRef(false);
 
-    const trimmedSearchTerm = savedSearchTerm.trim();
-
-    this.lastSubmittedSearchTerm = trimmedSearchTerm;
-
-    this.setState({
-      inputValue: trimmedSearchTerm,
-    });
-
-    this.props.onInitialSearchTermLoaded(trimmedSearchTerm);
-  }
-
-  handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      inputValue: event.target.value,
-    });
-  };
-
-  handleSubmit = (event: ReactSubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const trimmedSearchTerm = this.state.inputValue.trim();
-
-    if (trimmedSearchTerm === this.lastSubmittedSearchTerm) {
+  useEffect(() => {
+    if (hasLoadedInitialSearchTerm.current) {
       return;
     }
 
-    localStorage.setItem(LAST_SEARCH_TERM_STORAGE_KEY, trimmedSearchTerm);
+    hasLoadedInitialSearchTerm.current = true;
+    onInitialSearchTermLoaded(initialSearchTerm);
+  }, [initialSearchTerm, onInitialSearchTermLoaded]);
 
-    this.lastSubmittedSearchTerm = trimmedSearchTerm;
-
-    this.setState({
-      inputValue: trimmedSearchTerm,
-    });
-
-    this.props.onSearch(trimmedSearchTerm);
-  };
-
-  render() {
-    return (
-      <form className={styles.panel} onSubmit={this.handleSubmit}>
-        <label className={styles.label} htmlFor="character-search">
-          {APP_MESSAGES.search.label}
-        </label>
-
-        <div className={styles.field}>
-          <input
-            id="character-search"
-            type="text"
-            value={this.state.inputValue}
-            placeholder={APP_MESSAGES.search.placeholder}
-            onChange={this.handleInputChange}
-          />
-
-          <button type="submit">{APP_MESSAGES.search.button}</button>
-        </div>
-
-        <p className={styles.hint}>{APP_MESSAGES.search.hint}</p>
-      </form>
-    );
+  function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
+    setInputValue(event.target.value);
   }
+
+  function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const trimmedSearchTerm = inputValue.trim();
+
+    if (trimmedSearchTerm === lastSubmittedSearchTerm.current) {
+      return;
+    }
+
+    setValue(trimmedSearchTerm);
+
+    lastSubmittedSearchTerm.current = trimmedSearchTerm;
+
+    setInputValue(trimmedSearchTerm);
+    onSearch(trimmedSearchTerm);
+  }
+
+  return (
+    <form className={styles.panel} onSubmit={handleSubmit}>
+      <label className={styles.label} htmlFor="character-search">
+        {APP_MESSAGES.search.label}
+      </label>
+
+      <div className={styles.field}>
+        <input
+          id="character-search"
+          type="text"
+          value={inputValue}
+          placeholder={APP_MESSAGES.search.placeholder}
+          onChange={handleInputChange}
+        />
+
+        <button type="submit">{APP_MESSAGES.search.button}</button>
+      </div>
+
+      <p className={styles.hint}>{APP_MESSAGES.search.hint}</p>
+    </form>
+  );
 }
 
 export default SearchPanel;
