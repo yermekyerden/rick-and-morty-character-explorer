@@ -36,7 +36,10 @@ export const testCharacterCard: CharacterCardModel = {
   id: 1,
   name: 'Rick Sanchez',
   description: 'Human, Male. Last known location: Citadel of Ricks.',
+  gender: 'Male',
   imageUrl: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg',
+  locationName: 'Citadel of Ricks',
+  species: 'Human',
   status: 'Alive',
 };
 
@@ -44,7 +47,10 @@ export const testMortyCharacterCard: CharacterCardModel = {
   id: 2,
   name: 'Morty Smith',
   description: 'Human, Male. Last known location: Earth.',
+  gender: 'Male',
   imageUrl: 'https://rickandmortyapi.com/api/character/avatar/2.jpeg',
+  locationName: 'Earth',
+  species: 'Human',
   status: 'Alive',
 };
 

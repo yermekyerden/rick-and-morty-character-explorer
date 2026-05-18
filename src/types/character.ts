@@ -32,7 +32,10 @@ export interface CharacterCardModel {
   id: number;
   name: string;
   description: string;
+  gender: string;
   imageUrl: string;
+  locationName: string;
+  species: string;
   status: CharacterStatus;
 }
 

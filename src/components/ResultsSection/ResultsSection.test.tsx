@@ -97,7 +97,7 @@ describe('ResultsSection', () => {
 
   it('renders character list when characters are available', () => {
     const expectedName = testCharacterCard.name;
-    const expectedDescription = testCharacterCard.description;
+    const expectedLocation = testCharacterCard.description;
 
     renderResultsSection({
       characters: [testCharacterCard],
@@ -105,7 +105,7 @@ describe('ResultsSection', () => {
     });
 
     expect(screen.getByRole('heading', { name: expectedName })).toBeVisible();
-    expect(screen.getByText(expectedDescription)).toBeVisible();
+    expect(screen.getByText(expectedLocation)).toBeVisible();
   });
 
   it('renders pagination controls after characters are loaded', () => {

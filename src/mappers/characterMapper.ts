@@ -11,7 +11,10 @@ export function mapCharacterDtoToCardModel(
     id: character.id,
     name: character.name,
     description: createCharacterDescription(character),
+    gender: character.gender,
     imageUrl: character.image,
+    locationName: character.location.name,
+    species: character.species,
     status: normalizeCharacterStatus(character.status),
   };
 }

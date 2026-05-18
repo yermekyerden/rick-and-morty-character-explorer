@@ -19,25 +19,39 @@ function getStatusClassName(status: CharacterCardModel['status']): string {
 
 function CharacterCard({ character }: CharacterCardProps) {
   return (
-    <article className={styles.card}>
-      <img
-        className={styles.image}
-        src={character.imageUrl}
-        alt={character.name}
-      />
+    <article
+      className={`${styles.card} ${getStatusClassName(character.status)}`}
+      aria-label={`${character.name} character dossier`}
+    >
+      <div className={styles.imageFrame}>
+        <img
+          className={styles.image}
+          src={character.imageUrl}
+          alt={character.name}
+        />
 
-      <div>
-        <div className={styles.header}>
-          <h3 className={styles.name}>{character.name}</h3>
+        <span className={styles.statusBadge}>{character.status}</span>
+      </div>
 
-          <span
-            className={`${styles.badge} ${getStatusClassName(character.status)}`}
-          >
-            {character.status}
-          </span>
-        </div>
+      <div className={styles.content}>
+        <h3 className={styles.name}>{character.name}</h3>
 
-        <p className={styles.description}>{character.description}</p>
+        <dl className={styles.metaList}>
+          <div className={styles.metaRow}>
+            <dt>Species</dt>
+            <dd>{character.species}</dd>
+          </div>
+
+          <div className={styles.metaRow}>
+            <dt>Gender</dt>
+            <dd>{character.gender}</dd>
+          </div>
+
+          <div className={styles.metaRow}>
+            <dt>Location</dt>
+            <dd className={styles.locationValue}>{character.locationName}</dd>
+          </div>
+        </dl>
       </div>
     </article>
   );
