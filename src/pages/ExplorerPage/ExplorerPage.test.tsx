@@ -87,6 +87,7 @@ describe('ExplorerPage', () => {
     expect(
       await screen.findByRole('heading', { name: expectedCharacterName })
     ).toBeVisible();
+
     expect(fetchCharacterPageMock).toHaveBeenCalledWith({
       searchTerm: expectedSearchTerm,
       page: 1,
@@ -104,9 +105,11 @@ describe('ExplorerPage', () => {
     expect(screen.getByLabelText(APP_MESSAGES.search.label)).toHaveValue(
       savedSearchTerm
     );
+
     expect(
       await screen.findByRole('heading', { name: expectedCharacterName })
     ).toBeVisible();
+
     expect(fetchCharacterPageMock).toHaveBeenCalledWith({
       searchTerm: savedSearchTerm,
       page: 1,
@@ -170,10 +173,46 @@ describe('ExplorerPage', () => {
     expect(
       await screen.findByRole('heading', { name: expectedCharacterName })
     ).toBeVisible();
+
     expect(fetchCharacterPageMock).toHaveBeenLastCalledWith({
       searchTerm,
       page: 1,
     });
+  });
+
+  it('loads next page when user clicks pagination next button', async () => {
+    const user = userEvent.setup();
+
+    renderExplorerPage();
+
+    await screen.findByRole('heading', {
+      name: testCharacterCard.name,
+    });
+
+    fetchCharacterPageMock.mockResolvedValueOnce(
+      createCharacterPage([testMortyCharacterCard], 2, 5)
+    );
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.pagination.next,
+      })
+    );
+
+    expect(
+      await screen.findByRole('heading', {
+        name: testMortyCharacterCard.name,
+      })
+    ).toBeVisible();
+
+    expect(fetchCharacterPageMock).toHaveBeenLastCalledWith({
+      searchTerm: '',
+      page: 2,
+    });
+
+    expect(
+      screen.getByText(APP_MESSAGES.pagination.pageSummary(2, 5))
+    ).toBeVisible();
   });
 
   it('shows API error message when character loading fails', async () => {
@@ -184,6 +223,7 @@ describe('ExplorerPage', () => {
     renderExplorerPage();
 
     expect(await screen.findByText(expectedErrorMessage)).toBeVisible();
+
     expect(
       screen.getByRole('heading', {
         name: APP_MESSAGES.noResults.title,
@@ -199,6 +239,7 @@ describe('ExplorerPage', () => {
     renderExplorerPage();
 
     expect(await screen.findByText(expectedErrorMessage)).toBeVisible();
+
     expect(
       screen.getByRole('heading', {
         name: APP_MESSAGES.noResults.title,
@@ -262,40 +303,5 @@ describe('ExplorerPage', () => {
     ).toBeVisible();
 
     consoleError.mockRestore();
-  });
-
-  it('loads next page when user clicks pagination next button', async () => {
-    const user = userEvent.setup();
-
-    renderExplorerPage();
-
-    await screen.findByRole('heading', {
-      name: testCharacterCard.name,
-    });
-
-    fetchCharacterPageMock.mockResolvedValueOnce(
-      createCharacterPage([testMortyCharacterCard], 2, 5)
-    );
-
-    await user.click(
-      screen.getByRole('button', {
-        name: APP_MESSAGES.pagination.next,
-      })
-    );
-
-    expect(
-      await screen.findByRole('heading', {
-        name: testMortyCharacterCard.name,
-      })
-    ).toBeVisible();
-
-    expect(fetchCharacterPageMock).toHaveBeenLastCalledWith({
-      searchTerm: '',
-      page: 2,
-    });
-
-    expect(
-      screen.getByText(APP_MESSAGES.pagination.pageSummary(2, 5))
-    ).toBeVisible();
   });
 });

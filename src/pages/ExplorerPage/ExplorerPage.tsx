@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { fetchCharacterPage } from '../../api/charactersApi';
 import ResultsSection from '../../components/ResultsSection/ResultsSection';
 import SearchPanel from '../../components/SearchPanel/SearchPanel';
@@ -21,29 +21,45 @@ function ExplorerPage() {
   const [activeSearchTerm, setActiveSearchTerm] = useState('');
   const [characters, setCharacters] = useState<CharacterCardModel[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isInitialSearchTermReady, setIsInitialSearchTermReady] =
+    useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [shouldSimulateError, setShouldSimulateError] = useState(false);
   const [totalPages, setTotalPages] = useState(FIRST_PAGE_NUMBER);
 
-  const loadCharacters = useCallback(
-    async (searchTerm: string, pageNumber: number) => {
+  useEffect(() => {
+    if (!isInitialSearchTermReady) {
+      return;
+    }
+
+    let isRequestActive = true;
+
+    async function loadCharacters() {
       setIsLoading(true);
       setErrorMessage(null);
 
       try {
         const [characterPage] = await Promise.all([
           fetchCharacterPage({
-            searchTerm,
-            page: pageNumber,
+            searchTerm: activeSearchTerm,
+            page,
           }),
           delay(MIN_LOADING_TIME_IN_MS),
         ]);
+
+        if (!isRequestActive) {
+          return;
+        }
 
         setCharacters(characterPage.characters);
         setTotalPages(characterPage.totalPages);
         setIsLoading(false);
       } catch (error) {
         await delay(MIN_LOADING_TIME_IN_MS);
+
+        if (!isRequestActive) {
+          return;
+        }
 
         setCharacters([]);
         setTotalPages(FIRST_PAGE_NUMBER);
@@ -54,13 +70,19 @@ function ExplorerPage() {
             : APP_MESSAGES.apiErrors.unknown
         );
       }
-    },
-    []
-  );
+    }
+
+    void loadCharacters();
+
+    return () => {
+      isRequestActive = false;
+    };
+  }, [activeSearchTerm, isInitialSearchTermReady, page]);
 
   const handleInitialSearchTermLoaded = useCallback(
     (searchTerm: string) => {
       setActiveSearchTerm(searchTerm);
+      setIsInitialSearchTermReady(true);
 
       updateSearchParams({
         detailsId: null,
@@ -68,10 +90,8 @@ function ExplorerPage() {
         replace: true,
         searchTerm,
       });
-
-      void loadCharacters(searchTerm, page);
     },
-    [loadCharacters, page, updateSearchParams]
+    [page, updateSearchParams]
   );
 
   const handleSearch = useCallback(
@@ -83,10 +103,8 @@ function ExplorerPage() {
         page: FIRST_PAGE_NUMBER,
         searchTerm,
       });
-
-      void loadCharacters(searchTerm, FIRST_PAGE_NUMBER);
     },
-    [loadCharacters, updateSearchParams]
+    [updateSearchParams]
   );
 
   const handlePageChange = useCallback(
@@ -96,10 +114,8 @@ function ExplorerPage() {
         page: nextPage,
         searchTerm: activeSearchTerm,
       });
-
-      void loadCharacters(activeSearchTerm, nextPage);
     },
-    [activeSearchTerm, loadCharacters, updateSearchParams]
+    [activeSearchTerm, updateSearchParams]
   );
 
   const handleTriggerError = useCallback(() => {
