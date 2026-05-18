@@ -97,7 +97,7 @@ describe('ResultsSection', () => {
 
   it('renders character list when characters are available', () => {
     const expectedName = testCharacterCard.name;
-    const expectedLocation = testCharacterCard.description;
+    const expectedLocation = testCharacterCard.locationName;
 
     renderResultsSection({
       characters: [testCharacterCard],
