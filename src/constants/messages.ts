@@ -30,9 +30,14 @@ export const APP_MESSAGES = {
     status: {
       loading: 'Opening portal',
       unstable: 'Portal unstable',
-      firstPage: 'Showing first page',
-      coordinatesLocked: (searchTerm: string) =>
-        `Coordinates locked: "${searchTerm}"`,
+      browsingPage: (currentPage: number, totalPages: number) =>
+        `Browsing dimensions • Page ${currentPage} of ${totalPages}`,
+      coordinatesLocked: (
+        searchTerm: string,
+        currentPage: number,
+        totalPages: number
+      ) =>
+        `Coordinates locked: "${searchTerm}" • Page ${currentPage} of ${totalPages}`,
     },
     empty: 'No characters loaded yet. The portal is suspiciously quiet.',
   },

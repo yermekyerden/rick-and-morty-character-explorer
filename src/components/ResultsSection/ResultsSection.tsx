@@ -1,10 +1,10 @@
 import { APP_MESSAGES } from '../../constants/messages';
 import type { CharacterCardModel } from '../../types/character';
 import CharacterGrid from '../CharacterGrid/CharacterGrid';
-import ErrorTestButton from '../ErrorTestButton/ErrorTestButton';
 import Loader from '../Loader/Loader';
 import NoResultsCard from '../NoResultsCard/NoResultsCard';
 import PaginationControls from '../PaginationControls/PaginationControls';
+import ResultsToolbar from '../ResultsToolbar/ResultsToolbar';
 import styles from './ResultsSection.module.css';
 
 interface ResultsSectionProps {
@@ -19,10 +19,15 @@ interface ResultsSectionProps {
 }
 
 function getStatusText({
+  currentPage,
   errorMessage,
   isLoading,
   searchTerm,
-}: Pick<ResultsSectionProps, 'errorMessage' | 'isLoading' | 'searchTerm'>) {
+  totalPages,
+}: Pick<
+  ResultsSectionProps,
+  'currentPage' | 'errorMessage' | 'isLoading' | 'searchTerm' | 'totalPages'
+>) {
   if (isLoading) {
     return APP_MESSAGES.results.status.loading;
   }
@@ -32,10 +37,14 @@ function getStatusText({
   }
 
   if (searchTerm.length === 0) {
-    return APP_MESSAGES.results.status.firstPage;
+    return APP_MESSAGES.results.status.browsingPage(currentPage, totalPages);
   }
 
-  return APP_MESSAGES.results.status.coordinatesLocked(searchTerm);
+  return APP_MESSAGES.results.status.coordinatesLocked(
+    searchTerm,
+    currentPage,
+    totalPages
+  );
 }
 
 function renderResultsContent({
@@ -73,48 +82,38 @@ function ResultsSection({
   totalPages,
 }: ResultsSectionProps) {
   const isPortalUnstable = errorMessage !== null;
-  const statusText = getStatusText({ errorMessage, isLoading, searchTerm });
+  const statusText = getStatusText({
+    currentPage,
+    errorMessage,
+    isLoading,
+    searchTerm,
+    totalPages,
+  });
   const shouldShowPagination = errorMessage === null && characters.length > 0;
 
   return (
     <div className={styles.panel}>
-      <div className={styles.portalRail}>
-        <div
-          className={`${styles.portal} ${
-            isPortalUnstable ? styles.portalDanger : ''
-          }`}
-          aria-hidden="true"
-        />
+      <ResultsToolbar
+        isLoading={isLoading}
+        isUnstable={isPortalUnstable}
+        onTriggerError={onTriggerError}
+        statusText={statusText}
+      />
+
+      <div className={styles.content}>
+        {renderResultsContent({ characters, errorMessage, isLoading })}
       </div>
 
-      <div className={styles.body}>
-        <header className={styles.header}>
-          <p className={styles.status}>{statusText}</p>
-
-          <h2 className={styles.title}>{APP_MESSAGES.results.title}</h2>
-        </header>
-
-        <div className={styles.content}>
-          {renderResultsContent({ characters, errorMessage, isLoading })}
-        </div>
-
-        <div className={styles.footer}>
-          <div className={styles.paginationSlot}>
-            {shouldShowPagination ? (
-              <PaginationControls
-                currentPage={currentPage}
-                isDisabled={isLoading}
-                totalPages={totalPages}
-                onPageChange={onPageChange}
-              />
-            ) : null}
-          </div>
-
-          <div className={styles.footerActions}>
-            <ErrorTestButton onTriggerError={onTriggerError} />
-          </div>
-        </div>
-      </div>
+      <footer className={styles.footer}>
+        {shouldShowPagination ? (
+          <PaginationControls
+            currentPage={currentPage}
+            isDisabled={isLoading}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
+        ) : null}
+      </footer>
     </div>
   );
 }

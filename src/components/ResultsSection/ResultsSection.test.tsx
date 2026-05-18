@@ -43,7 +43,7 @@ function renderResultsSection({
 
 describe('ResultsSection', () => {
   it('renders first page status when search term is empty', () => {
-    const expectedStatus = APP_MESSAGES.results.status.firstPage;
+    const expectedStatus = APP_MESSAGES.results.status.browsingPage(1, 1);
     const expectedTitle = APP_MESSAGES.results.title;
 
     renderResultsSection();
@@ -54,8 +54,11 @@ describe('ResultsSection', () => {
 
   it('renders coordinates status when search term is provided', () => {
     const searchTerm = 'Rick';
-    const expectedStatus =
-      APP_MESSAGES.results.status.coordinatesLocked(searchTerm);
+    const expectedStatus = APP_MESSAGES.results.status.coordinatesLocked(
+      searchTerm,
+      1,
+      1
+    );
 
     renderResultsSection({ searchTerm });
 
