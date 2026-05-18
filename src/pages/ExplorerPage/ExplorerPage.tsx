@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Outlet } from 'react-router';
 import { fetchCharacterPage } from '../../api/charactersApi';
 import ResultsSection from '../../components/ResultsSection/ResultsSection';
 import SearchPanel from '../../components/SearchPanel/SearchPanel';
@@ -15,6 +16,7 @@ function ExplorerPage() {
     hasSearchTerm,
     page,
     searchTerm: urlSearchTerm,
+    selectedCharacterId,
     updateSearchParams,
   } = useCharacterSearchParams();
 
@@ -141,6 +143,8 @@ function ExplorerPage() {
     throw new Error(APP_MESSAGES.errorBoundary.simulatedError);
   }
 
+  const isDetailsOpen = selectedCharacterId !== null;
+
   return (
     <main className={styles.shell}>
       <section className={styles.searchSection} aria-label="Character search">
@@ -159,18 +163,27 @@ function ExplorerPage() {
         />
       </section>
 
-      <section className={styles.resultsSection} aria-label="Search results">
-        <ResultsSection
-          characters={characters}
-          currentPage={page}
-          errorMessage={errorMessage}
-          isLoading={isLoading}
-          onPageChange={handlePageChange}
-          onTriggerError={handleTriggerError}
-          onCharacterSelect={handleCharacterSelect}
-          searchTerm={activeSearchTerm}
-          totalPages={totalPages}
-        />
+      <section
+        className={`${styles.resultsSection} ${
+          isDetailsOpen ? styles.resultsSectionWithDetails : ''
+        }`}
+        aria-label="Search results"
+      >
+        <div className={styles.resultsPanel}>
+          <ResultsSection
+            characters={characters}
+            currentPage={page}
+            errorMessage={errorMessage}
+            isLoading={isLoading}
+            onCharacterSelect={handleCharacterSelect}
+            onPageChange={handlePageChange}
+            onTriggerError={handleTriggerError}
+            searchTerm={activeSearchTerm}
+            totalPages={totalPages}
+          />
+        </div>
+
+        <Outlet />
       </section>
     </main>
   );

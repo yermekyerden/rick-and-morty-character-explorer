@@ -121,6 +121,7 @@
   position: relative;
   z-index: 2;
   min-height: 0;
+  flex: 1;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 0.8rem;
@@ -193,6 +194,7 @@
   font-size: 0.78rem;
   font-weight: 900;
   letter-spacing: 0.08em;
+  align-self: end;
   text-transform: uppercase;
   cursor: pointer;
   transition:

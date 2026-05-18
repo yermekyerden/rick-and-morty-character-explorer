@@ -48,6 +48,24 @@ export const APP_MESSAGES = {
       `Open dossier for ${characterName}`,
   },
 
+  characterDetails: {
+    title: 'Character dossier',
+    loading: 'Loading dossier from another dimension...',
+    close: 'Close',
+    closeLabel: 'Close character dossier',
+    errorTitle: 'Dossier signal lost',
+    fields: {
+      status: 'Status',
+      species: 'Species',
+      type: 'Type',
+      gender: 'Gender',
+      origin: 'Origin',
+      location: 'Location',
+      episodes: 'Episodes',
+      created: 'Created',
+    },
+  },
+
   loader: {
     message: 'Loading characters from another dimension...',
     ariaLabel: 'Loading characters',
