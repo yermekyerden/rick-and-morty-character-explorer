@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import type { CharacterCardModel } from '../../types/character';
 import styles from './CharacterCard.module.css';
 
@@ -18,36 +17,30 @@ function getStatusClassName(status: CharacterCardModel['status']): string {
   return styles.unknown;
 }
 
-class CharacterCard extends Component<CharacterCardProps> {
-  render() {
-    return (
-      <article className={styles.card}>
-        <img
-          className={styles.image}
-          src={this.props.character.imageUrl}
-          alt={this.props.character.name}
-        />
+function CharacterCard({ character }: CharacterCardProps) {
+  return (
+    <article className={styles.card}>
+      <img
+        className={styles.image}
+        src={character.imageUrl}
+        alt={character.name}
+      />
 
-        <div>
-          <div className={styles.header}>
-            <h3 className={styles.name}>{this.props.character.name}</h3>
+      <div>
+        <div className={styles.header}>
+          <h3 className={styles.name}>{character.name}</h3>
 
-            <span
-              className={`${styles.badge} ${getStatusClassName(
-                this.props.character.status
-              )}`}
-            >
-              {this.props.character.status}
-            </span>
-          </div>
-
-          <p className={styles.description}>
-            {this.props.character.description}
-          </p>
+          <span
+            className={`${styles.badge} ${getStatusClassName(character.status)}`}
+          >
+            {character.status}
+          </span>
         </div>
-      </article>
-    );
-  }
+
+        <p className={styles.description}>{character.description}</p>
+      </div>
+    </article>
+  );
 }
 
 export default CharacterCard;
