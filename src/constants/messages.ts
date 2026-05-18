@@ -18,6 +18,13 @@ export const APP_MESSAGES = {
     button: 'Search',
   },
 
+  pagination: {
+    previous: 'Previous',
+    next: 'Next',
+    pageSummary: (currentPage: number, totalPages: number) =>
+      `Page ${currentPage} of ${totalPages}`,
+  },
+
   results: {
     title: 'Character results',
     status: {

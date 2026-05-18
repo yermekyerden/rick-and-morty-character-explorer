@@ -4,14 +4,18 @@ import CharacterList from '../CharacterList/CharacterList';
 import ErrorTestButton from '../ErrorTestButton/ErrorTestButton';
 import Loader from '../Loader/Loader';
 import NoResultsCard from '../NoResultsCard/NoResultsCard';
+import PaginationControls from '../PaginationControls/PaginationControls';
 import styles from './ResultsSection.module.css';
 
 interface ResultsSectionProps {
   characters: CharacterCardModel[];
+  currentPage: number;
   errorMessage: string | null;
   isLoading: boolean;
+  onPageChange: (page: number) => void;
   onTriggerError: () => void;
   searchTerm: string;
+  totalPages: number;
 }
 
 function getStatusText({
@@ -60,19 +64,26 @@ function renderResultsContent({
 
 function ResultsSection({
   characters,
+  currentPage,
   errorMessage,
   isLoading,
+  onPageChange,
   onTriggerError,
   searchTerm,
+  totalPages,
 }: ResultsSectionProps) {
   const isPortalUnstable = errorMessage !== null;
   const statusText = getStatusText({ errorMessage, isLoading, searchTerm });
+  const shouldShowPagination =
+    !isLoading && errorMessage === null && characters.length > 0;
 
   return (
     <div className={styles.panel}>
       <div className={styles.portalRail}>
         <div
-          className={`${styles.portal} ${isPortalUnstable ? styles.portalDanger : ''}`}
+          className={`${styles.portal} ${
+            isPortalUnstable ? styles.portalDanger : ''
+          }`}
           aria-hidden="true"
         />
       </div>
@@ -89,7 +100,19 @@ function ResultsSection({
         </div>
 
         <div className={styles.footer}>
-          <ErrorTestButton onTriggerError={onTriggerError} />
+          <div className={styles.paginationSlot}>
+            {shouldShowPagination ? (
+              <PaginationControls
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={onPageChange}
+              />
+            ) : null}
+          </div>
+
+          <div className={styles.footerActions}>
+            <ErrorTestButton onTriggerError={onTriggerError} />
+          </div>
         </div>
       </div>
     </div>

@@ -1,25 +1,52 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 import { APP_MESSAGES } from '../../constants/messages';
 import { testCharacterCard } from '../../test/testCharacters';
+import type { CharacterCardModel } from '../../types/character';
 import ResultsSection from './ResultsSection';
 
-function handleTriggerError() {}
+interface RenderResultsSectionOptions {
+  characters?: CharacterCardModel[];
+  currentPage?: number;
+  errorMessage?: string | null;
+  isLoading?: boolean;
+  onPageChange?: (page: number) => void;
+  onTriggerError?: () => void;
+  searchTerm?: string;
+  totalPages?: number;
+}
+
+function renderResultsSection({
+  characters = [],
+  currentPage = 1,
+  errorMessage = null,
+  isLoading = false,
+  onPageChange = () => {},
+  onTriggerError = () => {},
+  searchTerm = '',
+  totalPages = 1,
+}: RenderResultsSectionOptions = {}) {
+  render(
+    <ResultsSection
+      characters={characters}
+      currentPage={currentPage}
+      errorMessage={errorMessage}
+      isLoading={isLoading}
+      onPageChange={onPageChange}
+      onTriggerError={onTriggerError}
+      searchTerm={searchTerm}
+      totalPages={totalPages}
+    />
+  );
+}
 
 describe('ResultsSection', () => {
   it('renders first page status when search term is empty', () => {
     const expectedStatus = APP_MESSAGES.results.status.firstPage;
     const expectedTitle = APP_MESSAGES.results.title;
 
-    render(
-      <ResultsSection
-        characters={[]}
-        errorMessage={null}
-        isLoading={false}
-        onTriggerError={handleTriggerError}
-        searchTerm=""
-      />
-    );
+    renderResultsSection();
 
     expect(screen.getByText(expectedStatus)).toBeVisible();
     expect(screen.getByRole('heading', { name: expectedTitle })).toBeVisible();
@@ -30,15 +57,7 @@ describe('ResultsSection', () => {
     const expectedStatus =
       APP_MESSAGES.results.status.coordinatesLocked(searchTerm);
 
-    render(
-      <ResultsSection
-        characters={[]}
-        errorMessage={null}
-        isLoading={false}
-        onTriggerError={handleTriggerError}
-        searchTerm={searchTerm}
-      />
-    );
+    renderResultsSection({ searchTerm });
 
     expect(screen.getByText(expectedStatus)).toBeVisible();
   });
@@ -47,15 +66,7 @@ describe('ResultsSection', () => {
     const expectedStatus = APP_MESSAGES.results.status.loading;
     const expectedLoadingMessage = APP_MESSAGES.loader.message;
 
-    render(
-      <ResultsSection
-        characters={[]}
-        errorMessage={null}
-        isLoading={true}
-        onTriggerError={handleTriggerError}
-        searchTerm=""
-      />
-    );
+    renderResultsSection({ isLoading: true });
 
     expect(screen.getByText(expectedStatus)).toBeVisible();
     expect(screen.getByText(expectedLoadingMessage)).toBeVisible();
@@ -66,15 +77,10 @@ describe('ResultsSection', () => {
     const expectedTitle = APP_MESSAGES.noResults.title;
     const expectedErrorMessage = APP_MESSAGES.apiErrors.notFound;
 
-    render(
-      <ResultsSection
-        characters={[]}
-        errorMessage={expectedErrorMessage}
-        isLoading={false}
-        onTriggerError={handleTriggerError}
-        searchTerm="Nobody"
-      />
-    );
+    renderResultsSection({
+      errorMessage: expectedErrorMessage,
+      searchTerm: 'Nobody',
+    });
 
     expect(screen.getByText(expectedStatus)).toBeVisible();
     expect(screen.getByRole('heading', { name: expectedTitle })).toBeVisible();
@@ -84,15 +90,7 @@ describe('ResultsSection', () => {
   it('renders empty state when no characters are available', () => {
     const expectedEmptyMessage = APP_MESSAGES.results.empty;
 
-    render(
-      <ResultsSection
-        characters={[]}
-        errorMessage={null}
-        isLoading={false}
-        onTriggerError={handleTriggerError}
-        searchTerm=""
-      />
-    );
+    renderResultsSection();
 
     expect(screen.getByText(expectedEmptyMessage)).toBeVisible();
   });
@@ -101,17 +99,56 @@ describe('ResultsSection', () => {
     const expectedName = testCharacterCard.name;
     const expectedDescription = testCharacterCard.description;
 
-    render(
-      <ResultsSection
-        characters={[testCharacterCard]}
-        errorMessage={null}
-        isLoading={false}
-        onTriggerError={handleTriggerError}
-        searchTerm="Rick"
-      />
-    );
+    renderResultsSection({
+      characters: [testCharacterCard],
+      searchTerm: 'Rick',
+    });
 
     expect(screen.getByRole('heading', { name: expectedName })).toBeVisible();
     expect(screen.getByText(expectedDescription)).toBeVisible();
+  });
+
+  it('renders pagination controls after characters are loaded', () => {
+    renderResultsSection({
+      characters: [testCharacterCard],
+      currentPage: 2,
+      totalPages: 5,
+    });
+
+    expect(
+      screen.getByText(APP_MESSAGES.pagination.pageSummary(2, 5))
+    ).toBeVisible();
+  });
+
+  it('does not render pagination controls while loading', () => {
+    renderResultsSection({
+      characters: [testCharacterCard],
+      isLoading: true,
+      totalPages: 5,
+    });
+
+    expect(
+      screen.queryByText(APP_MESSAGES.pagination.pageSummary(1, 5))
+    ).not.toBeInTheDocument();
+  });
+
+  it('calls onPageChange when pagination changes page', async () => {
+    const user = userEvent.setup();
+    const onPageChange = vi.fn();
+
+    renderResultsSection({
+      characters: [testCharacterCard],
+      currentPage: 1,
+      onPageChange,
+      totalPages: 5,
+    });
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.pagination.next,
+      })
+    );
+
+    expect(onPageChange).toHaveBeenCalledWith(2);
   });
 });

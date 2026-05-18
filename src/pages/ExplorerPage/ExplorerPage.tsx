@@ -23,6 +23,7 @@ function ExplorerPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [shouldSimulateError, setShouldSimulateError] = useState(false);
+  const [totalPages, setTotalPages] = useState(FIRST_PAGE_NUMBER);
 
   const loadCharacters = useCallback(
     async (searchTerm: string, pageNumber: number) => {
@@ -39,11 +40,13 @@ function ExplorerPage() {
         ]);
 
         setCharacters(characterPage.characters);
+        setTotalPages(characterPage.totalPages);
         setIsLoading(false);
       } catch (error) {
         await delay(MIN_LOADING_TIME_IN_MS);
 
         setCharacters([]);
+        setTotalPages(FIRST_PAGE_NUMBER);
         setIsLoading(false);
         setErrorMessage(
           error instanceof Error
@@ -86,6 +89,19 @@ function ExplorerPage() {
     [loadCharacters, updateSearchParams]
   );
 
+  const handlePageChange = useCallback(
+    (nextPage: number) => {
+      updateSearchParams({
+        detailsId: null,
+        page: nextPage,
+        searchTerm: activeSearchTerm,
+      });
+
+      void loadCharacters(activeSearchTerm, nextPage);
+    },
+    [activeSearchTerm, loadCharacters, updateSearchParams]
+  );
+
   const handleTriggerError = useCallback(() => {
     setShouldSimulateError(true);
   }, []);
@@ -115,10 +131,13 @@ function ExplorerPage() {
       <section className={styles.resultsSection} aria-label="Search results">
         <ResultsSection
           characters={characters}
+          currentPage={page}
           errorMessage={errorMessage}
           isLoading={isLoading}
+          onPageChange={handlePageChange}
           onTriggerError={handleTriggerError}
           searchTerm={activeSearchTerm}
+          totalPages={totalPages}
         />
       </section>
     </main>

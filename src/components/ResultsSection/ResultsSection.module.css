@@ -103,8 +103,20 @@
 
 .footer {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   margin-top: 24px;
+}
+
+.paginationSlot {
+  min-width: 0;
+}
+
+.footerActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-left: auto;
 }
 
 @keyframes portalPulse {
@@ -166,6 +178,12 @@
   }
 
   .footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .footerActions {
     justify-content: center;
+    margin-left: 0;
   }
 }

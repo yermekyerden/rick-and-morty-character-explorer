@@ -24,12 +24,16 @@ vi.mock('../../utils/delay', () => ({
 const fetchCharacterPageMock = vi.mocked(fetchCharacterPage);
 const delayMock = vi.mocked(delay);
 
-function createCharacterPage(characters = [testCharacterCard]) {
+function createCharacterPage(
+  characters = [testCharacterCard],
+  currentPage = 1,
+  totalPages = 5
+) {
   return {
     characters,
-    currentPage: 1,
+    currentPage,
     totalCount: characters.length,
-    totalPages: 1,
+    totalPages,
   };
 }
 
@@ -258,5 +262,40 @@ describe('ExplorerPage', () => {
     ).toBeVisible();
 
     consoleError.mockRestore();
+  });
+
+  it('loads next page when user clicks pagination next button', async () => {
+    const user = userEvent.setup();
+
+    renderExplorerPage();
+
+    await screen.findByRole('heading', {
+      name: testCharacterCard.name,
+    });
+
+    fetchCharacterPageMock.mockResolvedValueOnce(
+      createCharacterPage([testMortyCharacterCard], 2, 5)
+    );
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.pagination.next,
+      })
+    );
+
+    expect(
+      await screen.findByRole('heading', {
+        name: testMortyCharacterCard.name,
+      })
+    ).toBeVisible();
+
+    expect(fetchCharacterPageMock).toHaveBeenLastCalledWith({
+      searchTerm: '',
+      page: 2,
+    });
+
+    expect(
+      screen.getByText(APP_MESSAGES.pagination.pageSummary(2, 5))
+    ).toBeVisible();
   });
 });
