@@ -1,0 +1,54 @@
+.shell {
+  display: grid;
+  min-height: calc(100vh - 5rem);
+  place-items: center;
+  padding: clamp(2rem, 6vw, 5rem);
+}
+
+.card {
+  max-width: 680px;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid rgb(248 113 113 / 0.28);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top, rgb(248 113 113 / 0.18), transparent 28rem),
+    rgb(15 23 42 / 0.82);
+  text-align: center;
+  box-shadow: 0 24px 80px rgb(0 0 0 / 0.4);
+}
+
+.code {
+  margin: 0;
+  color: #f87171;
+  font-size: clamp(4rem, 18vw, 9rem);
+  font-weight: 900;
+  line-height: 0.9;
+}
+
+.title {
+  margin: 1rem 0;
+  color: #f8fafc;
+  font-size: clamp(2rem, 6vw, 4rem);
+  line-height: 1;
+}
+
+.text {
+  color: #cbd5e1;
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.link {
+  display: inline-flex;
+  margin-top: 1.5rem;
+  padding: 0.85rem 1.2rem;
+  border: 1px solid rgb(103 232 249 / 0.4);
+  border-radius: 999px;
+  color: #ecfeff;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.link:hover {
+  background: rgb(103 232 249 / 0.12);
+}
