@@ -6,7 +6,7 @@ import { APP_MESSAGES } from '../../constants/messages';
 import { MIN_LOADING_TIME_IN_MS } from '../../constants/timing';
 import type { CharacterCardModel } from '../../types/character';
 import { delay } from '../../utils/delay';
-import styles from '../../App.module.css';
+import styles from './ExplorerPage.module.css';
 
 interface ExplorerPageState {
   activeSearchTerm: string;
