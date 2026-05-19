@@ -22,6 +22,10 @@ Rick and Morty character explorer built with React, TypeScript, React Router, an
 - React Testing Library
 - CSS Modules
 
+## Runtime
+
+Recommended runtime: Node.js 22.
+
 ## Scripts
 
 ```bash
