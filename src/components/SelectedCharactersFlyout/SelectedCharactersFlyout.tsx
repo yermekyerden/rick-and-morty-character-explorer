@@ -1,8 +1,13 @@
 import { APP_MESSAGES } from '../../constants/messages';
 import {
-  getSelectedCharacterCount,
+  getSelectedCharacters,
   useSelectedCharactersStore,
 } from '../../store/selectedCharactersStore';
+import {
+  createSelectedCharactersCsv,
+  createSelectedCharactersCsvFileName,
+} from '../../utils/createSelectedCharactersCsv';
+import { downloadCsvFile } from '../../utils/downloadCsvFile';
 import styles from './SelectedCharactersFlyout.module.css';
 
 function SelectedCharactersFlyout() {
@@ -13,9 +18,28 @@ function SelectedCharactersFlyout() {
     (state) => state.clearSelectedCharacters
   );
 
-  const selectedCharacterCount = getSelectedCharacterCount(
-    selectedCharactersById
-  );
+  const selectedCharacters = getSelectedCharacters(selectedCharactersById);
+
+  function downloadSelectedCharacters() {
+    const csvContent = createSelectedCharactersCsv(
+      selectedCharacters,
+      window.location.href
+    );
+    const fileName = createSelectedCharactersCsvFileName(
+      selectedCharacters.length
+    );
+
+    downloadCsvFile({
+      content: csvContent,
+      fileName,
+    });
+  }
+
+  function handleDownloadClick() {
+    downloadSelectedCharacters();
+  }
+
+  const selectedCharacterCount = selectedCharacters.length;
 
   if (selectedCharacterCount === 0) {
     return null;
@@ -53,8 +77,7 @@ function SelectedCharactersFlyout() {
           <button
             className={styles.primaryButton}
             type="button"
-            disabled
-            title={APP_MESSAGES.selectedCharacters.downloadUnavailable}
+            onClick={handleDownloadClick}
           >
             {APP_MESSAGES.selectedCharacters.download}
           </button>

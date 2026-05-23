@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router';
 import { FIRST_PAGE_NUMBER } from '../constants/api';
-
-const PAGE_SEARCH_PARAM = 'page';
-const SEARCH_TERM_SEARCH_PARAM = 'search';
-const DETAILS_SEARCH_PARAM = 'details';
+import {
+  DETAILS_SEARCH_PARAM,
+  PAGE_SEARCH_PARAM,
+  SEARCH_TERM_SEARCH_PARAM,
+} from '../constants/searchParams';
 
 interface UpdateCharacterSearchParamsOptions {
   detailsId?: number | null;
