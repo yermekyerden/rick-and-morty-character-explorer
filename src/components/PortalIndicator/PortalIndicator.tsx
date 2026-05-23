@@ -5,12 +5,26 @@ interface PortalIndicatorProps {
   isUnstable: boolean;
 }
 
+function getPortalStateClassName({
+  isLoading,
+  isUnstable,
+}: PortalIndicatorProps): string {
+  if (isUnstable) {
+    return styles.unstable;
+  }
+
+  if (isLoading) {
+    return styles.loading;
+  }
+
+  return styles.stable;
+}
+
 function PortalIndicator({ isLoading, isUnstable }: PortalIndicatorProps) {
-  const stateClassName = isUnstable
-    ? styles.unstable
-    : isLoading
-      ? styles.loading
-      : styles.stable;
+  const stateClassName = getPortalStateClassName({
+    isLoading,
+    isUnstable,
+  });
 
   return (
     <div
