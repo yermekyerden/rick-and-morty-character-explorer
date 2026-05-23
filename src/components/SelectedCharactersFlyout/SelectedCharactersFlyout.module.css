@@ -1,0 +1,135 @@
+.flyout {
+  position: fixed;
+  right: clamp(16px, 3vw, 40px);
+  bottom: clamp(16px, 3vw, 32px);
+  left: clamp(16px, 3vw, 40px);
+  z-index: 30;
+  max-width: 980px;
+  margin-inline: auto;
+  border: 1px solid rgb(134 239 172 / 0.34);
+  border-radius: 24px;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgb(134 239 172 / 0.16),
+      transparent 24rem
+    ),
+    linear-gradient(135deg, rgb(15 23 42 / 0.94), rgb(2 6 23 / 0.96));
+  box-shadow:
+    0 24px 80px rgb(0 0 0 / 0.42),
+    0 0 42px rgb(34 197 94 / 0.16),
+    inset 0 0 0 1px rgb(255 255 255 / 0.05);
+  backdrop-filter: blur(18px);
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px;
+}
+
+.kicker {
+  margin: 0 0 4px;
+  color: var(--color-accent);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.summary {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.description {
+  max-width: 540px;
+  margin: 6px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 10px;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: 42px;
+  padding: 0 1rem;
+  border-radius: var(--radius-control);
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    transform var(--transition-fast),
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.primaryButton {
+  border: 1px solid rgb(134 239 172 / 0.36);
+  color: var(--color-text-inverse);
+  background: linear-gradient(
+    135deg,
+    var(--color-accent),
+    var(--color-accent-strong)
+  );
+}
+
+.secondaryButton {
+  border: 1px solid rgb(148 163 184 / 0.32);
+  color: var(--color-text-soft);
+  background: rgb(2 6 23 / 0.36);
+}
+
+.primaryButton:hover:not(:disabled),
+.secondaryButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.primaryButton:hover:not(:disabled) {
+  box-shadow: var(--shadow-accent-button);
+}
+
+.secondaryButton:hover:not(:disabled) {
+  border-color: rgb(134 239 172 / 0.46);
+  background: rgb(34 197 94 / 0.1);
+}
+
+.primaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .content {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+}

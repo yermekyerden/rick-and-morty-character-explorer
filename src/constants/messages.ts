@@ -66,6 +66,17 @@ export const APP_MESSAGES = {
     },
   },
 
+  selectedCharacters: {
+    summary: (count: number) =>
+      count === 1 ? '1 character selected' : `${count} characters selected`,
+    title: 'Selected dossiers',
+    description:
+      'Selected characters stay in the current app state while you navigate between pages.',
+    unselectAll: 'Unselect all',
+    download: 'Download CSV',
+    downloadUnavailable: 'CSV export will be available in the next step.',
+  },
+
   loader: {
     message: 'Loading characters from another dimension...',
     ariaLabel: 'Loading characters',

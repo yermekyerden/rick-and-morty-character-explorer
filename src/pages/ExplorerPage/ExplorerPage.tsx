@@ -3,6 +3,7 @@ import { Outlet } from 'react-router';
 import { fetchCharacterPage } from '../../api/charactersApi';
 import ResultsSection from '../../components/ResultsSection/ResultsSection';
 import SearchPanel from '../../components/SearchPanel/SearchPanel';
+import SelectedCharactersFlyout from '../../components/SelectedCharactersFlyout/SelectedCharactersFlyout';
 import { FIRST_PAGE_NUMBER } from '../../constants/api';
 import { APP_MESSAGES } from '../../constants/messages';
 import { MIN_LOADING_TIME_IN_MS } from '../../constants/timing';
@@ -10,6 +11,16 @@ import { useCharacterSearchParams } from '../../hooks/useCharacterSearchParams';
 import type { CharacterCardModel } from '../../types/character';
 import { delay } from '../../utils/delay';
 import styles from './ExplorerPage.module.css';
+
+function createResultsSectionClassName(isDetailsOpen: boolean): string {
+  const classNames = [styles.resultsSection];
+
+  if (isDetailsOpen) {
+    classNames.push(styles.resultsSectionWithDetails);
+  }
+
+  return classNames.join(' ');
+}
 
 function ExplorerPage() {
   const {
@@ -143,6 +154,8 @@ function ExplorerPage() {
   }
 
   const isDetailsOpen = selectedCharacterId !== null;
+  const initialSearchTerm = hasSearchTerm ? urlSearchTerm : undefined;
+  const resultsSectionClassName = createResultsSectionClassName(isDetailsOpen);
 
   return (
     <main className={styles.shell}>
@@ -156,18 +169,13 @@ function ExplorerPage() {
         </header>
 
         <SearchPanel
-          initialSearchTerm={hasSearchTerm ? urlSearchTerm : undefined}
+          initialSearchTerm={initialSearchTerm}
           onInitialSearchTermLoaded={handleInitialSearchTermLoaded}
           onSearch={handleSearch}
         />
       </section>
 
-      <section
-        className={`${styles.resultsSection} ${
-          isDetailsOpen ? styles.resultsSectionWithDetails : ''
-        }`}
-        aria-label="Search results"
-      >
+      <section className={resultsSectionClassName} aria-label="Search results">
         <div className={styles.resultsPanel}>
           <ResultsSection
             characters={characters}
@@ -188,6 +196,8 @@ function ExplorerPage() {
           </div>
         ) : null}
       </section>
+
+      <SelectedCharactersFlyout />
     </main>
   );
 }
