@@ -47,4 +47,58 @@ describe('CharacterCard', () => {
 
     expect(onSelect).toHaveBeenCalledWith(testCharacterCard.id);
   });
+
+  it('calls onSelectionToggle without opening dossier when checkbox is clicked', async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    const onSelectionToggle = vi.fn();
+
+    render(
+      <CharacterCard
+        character={testCharacterCard}
+        onSelect={onSelect}
+        onSelectionToggle={onSelectionToggle}
+      />
+    );
+
+    await user.click(
+      screen.getByRole('checkbox', {
+        name: `Select ${testCharacterCard.name}`,
+      })
+    );
+
+    expect(onSelectionToggle).toHaveBeenCalledWith(testCharacterCard);
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it('opens dossier when user clicks the card outside checkbox', async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+
+    render(<CharacterCard character={testCharacterCard} onSelect={onSelect} />);
+
+    await user.click(
+      screen.getByRole('article', {
+        name: `${testCharacterCard.name} character dossier`,
+      })
+    );
+
+    expect(onSelect).toHaveBeenCalledWith(testCharacterCard.id);
+  });
+
+  it('marks checkbox as checked when character is selected', () => {
+    render(
+      <CharacterCard
+        character={testCharacterCard}
+        isSelected
+        onSelectionToggle={() => {}}
+      />
+    );
+
+    expect(
+      screen.getByRole('checkbox', {
+        name: `Select ${testCharacterCard.name}`,
+      })
+    ).toBeChecked();
+  });
 });
