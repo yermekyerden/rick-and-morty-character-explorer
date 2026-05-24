@@ -8,6 +8,7 @@ import { APP_MESSAGES } from './constants/messages';
 import { testCharacterCard, testCharacterDetails } from './test/testCharacters';
 import type { CharacterCardModel } from './types/character';
 import { delay } from './utils/delay';
+import ThemeProvider from './theme/ThemeProvider';
 
 vi.mock('./api/charactersApi', () => ({
   fetchCharacterDetails: vi.fn(),
@@ -48,10 +49,12 @@ function LocationProbe() {
 
 function renderApp(initialRoute = '/') {
   render(
-    <MemoryRouter initialEntries={[initialRoute]}>
-      <App />
-      <LocationProbe />
-    </MemoryRouter>
+    <ThemeProvider>
+      <MemoryRouter initialEntries={[initialRoute]}>
+        <App />
+        <LocationProbe />
+      </MemoryRouter>
+    </ThemeProvider>
   );
 }
 

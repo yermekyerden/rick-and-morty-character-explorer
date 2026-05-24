@@ -1,10 +1,10 @@
 .button {
   min-width: 148px;
   min-height: 44px;
-  border: 1px solid rgba(248, 113, 113, 0.35);
+  border: 1px solid var(--border-danger);
   border-radius: var(--radius-control);
   color: var(--color-danger-text);
-  background: rgba(127, 29, 29, 0.22);
+  background: var(--color-danger-surface);
   font-weight: 700;
   cursor: pointer;
   transition:
@@ -16,8 +16,8 @@
 
 .button:hover {
   transform: translateY(-1px);
-  border-color: rgba(248, 113, 113, 0.55);
-  background: rgba(127, 29, 29, 0.3);
+  border-color: var(--color-danger);
+  background: var(--color-danger-surface);
   box-shadow: var(--shadow-danger-button);
 }
 

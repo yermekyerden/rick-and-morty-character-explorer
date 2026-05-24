@@ -8,18 +8,19 @@
 .card {
   max-width: 680px;
   padding: clamp(1.5rem, 4vw, 3rem);
-  border: 1px solid rgb(248 113 113 / 0.28);
+  border: 1px solid var(--border-danger);
   border-radius: 28px;
   background:
-    radial-gradient(circle at top, rgb(248 113 113 / 0.18), transparent 28rem),
-    rgb(15 23 42 / 0.82);
+    radial-gradient(circle at top, var(--glow-danger-soft), transparent 28rem),
+    var(--color-surface);
   text-align: center;
-  box-shadow: 0 24px 80px rgb(0 0 0 / 0.4);
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(18px);
 }
 
 .code {
   margin: 0;
-  color: #f87171;
+  color: var(--color-danger);
   font-size: clamp(4rem, 18vw, 9rem);
   font-weight: 900;
   line-height: 0.9;
@@ -27,13 +28,13 @@
 
 .title {
   margin: 1rem 0;
-  color: #f8fafc;
+  color: var(--color-text-primary);
   font-size: clamp(2rem, 6vw, 4rem);
   line-height: 1;
 }
 
 .text {
-  color: #cbd5e1;
+  color: var(--color-text-secondary);
   font-size: 1.05rem;
   line-height: 1.8;
 }
@@ -42,13 +43,24 @@
   display: inline-flex;
   margin-top: 1.5rem;
   padding: 0.85rem 1.2rem;
-  border: 1px solid rgb(103 232 249 / 0.4);
-  border-radius: 999px;
-  color: #ecfeff;
+  border: 1px solid var(--border-portal);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-soft);
   font-weight: 800;
   text-decoration: none;
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .link:hover {
-  background: rgb(103 232 249 / 0.12);
+  border-color: var(--color-portal-cyan);
+  background: var(--color-portal-cyan-soft);
+  box-shadow: 0 14px 32px var(--color-portal-cyan-soft);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }

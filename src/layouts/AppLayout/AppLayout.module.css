@@ -1,23 +1,26 @@
 .shell {
   min-height: 100vh;
+  color: var(--color-text-soft);
+  background: var(--color-background);
 }
 
 .topBar {
   position: sticky;
   top: 0;
   z-index: 10;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
   padding: 1rem clamp(1rem, 4vw, 3rem);
-  border-bottom: 1px solid rgb(132 204 22 / 0.18);
-  background: rgb(8 13 16 / 0.88);
+  border-bottom: 1px solid var(--border-accent);
+  background: var(--color-surface);
   backdrop-filter: blur(16px);
 }
 
 .brand {
-  color: #d9f99d;
+  justify-self: start;
+  color: var(--color-accent);
   font-weight: 800;
   letter-spacing: 0.08em;
   text-decoration: none;
@@ -25,34 +28,52 @@
 }
 
 .navigation {
+  justify-self: center;
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
 .link {
-  color: #d1fae5;
+  color: var(--color-text-soft);
   font-weight: 700;
   text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
 .link:hover {
-  color: #67e8f9;
+  color: var(--color-accent);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
 }
 
 .themeSlot {
-  color: rgb(209 250 229 / 0.45);
-  font-size: 0.85rem;
-  font-weight: 700;
+  justify-self: end;
+  display: flex;
+  align-items: center;
 }
 
 @media (max-width: 640px) {
   .topBar {
-    align-items: flex-start;
-    flex-direction: column;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'brand theme'
+      'navigation navigation';
+  }
+
+  .brand {
+    grid-area: brand;
+  }
+
+  .navigation {
+    grid-area: navigation;
+    justify-self: start;
   }
 
   .themeSlot {
-    display: none;
+    grid-area: theme;
   }
 }

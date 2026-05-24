@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router';
+import ThemeSwitcher from '../../components/ThemeSwitcher/ThemeSwitcher';
 import { APP_ROUTES } from '../../router/routes';
 import styles from './AppLayout.module.css';
 
@@ -20,8 +21,8 @@ function AppLayout() {
           </NavLink>
         </nav>
 
-        <div className={styles.themeSlot} aria-hidden="true">
-          Theme slot
+        <div className={styles.themeSlot}>
+          <ThemeSwitcher />
         </div>
       </header>
 

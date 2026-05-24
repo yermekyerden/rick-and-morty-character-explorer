@@ -25,17 +25,17 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border: 1px solid rgb(103 232 249 / 0.22);
+  border: 1px solid var(--border-portal);
   border-radius: 24px;
   background:
     radial-gradient(
       circle at top left,
-      rgb(103 232 249 / 0.12),
+      var(--color-portal-cyan-soft),
       transparent 16rem
     ),
-    linear-gradient(180deg, rgb(15 23 42 / 0.82), rgb(2 6 23 / 0.9));
+    linear-gradient(180deg, var(--color-surface), var(--color-surface-strong));
   box-shadow:
-    0 18px 52px rgb(0 0 0 / 0.18),
+    var(--shadow-card),
     inset 0 0 0 1px rgb(255 255 255 / 0.035);
 }
 
@@ -45,8 +45,9 @@
   inset: 9px;
   z-index: 1;
   pointer-events: none;
-  border: 1px solid rgb(103 232 249 / 0.12);
+  border: 1px solid var(--border-portal);
   border-radius: 18px;
+  opacity: 0.5;
 }
 
 .imageFrame {
@@ -55,9 +56,9 @@
   overflow: hidden;
   aspect-ratio: 1 / 1;
   margin: 10px 10px 0;
-  border: 1px solid rgb(103 232 249 / 0.18);
+  border: 1px solid var(--border-portal);
   border-radius: 18px;
-  background: rgb(2 6 23 / 0.56);
+  background: var(--color-surface-card);
   flex-shrink: 0;
 }
 
@@ -68,7 +69,7 @@
 .metaValueLong {
   position: relative;
   overflow: hidden;
-  background: rgb(148 163 184 / 0.16);
+  background: var(--color-surface-card);
 }
 
 .image {

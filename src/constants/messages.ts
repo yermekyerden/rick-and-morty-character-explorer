@@ -77,6 +77,14 @@ export const APP_MESSAGES = {
     downloadUnavailable: 'CSV export will be available in the next step.',
   },
 
+  theme: {
+    label: 'Theme',
+    switchToLightDimension: 'Switch to light dimension',
+    switchToDarkDimension: 'Switch to dark dimension',
+    contextMissing:
+      'Theme context is not available. Wrap the application with ThemeProvider.',
+  },
+
   loader: {
     message: 'Loading characters from another dimension...',
     ariaLabel: 'Loading characters',
