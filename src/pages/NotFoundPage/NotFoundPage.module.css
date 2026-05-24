@@ -1,66 +1,300 @@
 .shell {
+  min-height: calc(100vh - 72px);
   display: grid;
-  min-height: calc(100vh - 5rem);
   place-items: center;
-  padding: clamp(2rem, 6vw, 5rem);
+  padding: clamp(3rem, 6vw, 5rem) clamp(1rem, 3vw, 3rem);
+  background: var(--color-background);
 }
 
-.card {
-  max-width: 680px;
-  padding: clamp(1.5rem, 4vw, 3rem);
+.panel {
+  width: min(100%, 1120px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+  padding: clamp(1.5rem, 4vw, 3.25rem);
   border: 1px solid var(--border-danger);
-  border-radius: 28px;
+  border-radius: var(--radius-panel);
   background:
-    radial-gradient(circle at top, var(--glow-danger-soft), transparent 28rem),
+    radial-gradient(
+      circle at 16% 12%,
+      var(--glow-danger-soft),
+      transparent 28rem
+    ),
     var(--color-surface);
-  text-align: center;
   box-shadow: var(--shadow-panel);
   backdrop-filter: blur(18px);
+}
+
+.copy {
+  min-width: 0;
+}
+
+.kicker {
+  margin: 0 0 0.75rem;
+  color: var(--color-danger);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .code {
   margin: 0;
   color: var(--color-danger);
-  font-size: clamp(4rem, 18vw, 9rem);
-  font-weight: 900;
-  line-height: 0.9;
+  font-size: clamp(5.5rem, 16vw, 11rem);
+  font-weight: 950;
+  line-height: 0.78;
+  letter-spacing: -0.08em;
 }
 
 .title {
-  margin: 1rem 0;
+  max-width: 660px;
+  margin: 1.1rem 0;
   color: var(--color-text-primary);
-  font-size: clamp(2rem, 6vw, 4rem);
-  line-height: 1;
+  font-size: clamp(2.3rem, 5vw, 4.8rem);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
 }
 
 .text {
+  max-width: 620px;
+  margin: 0;
   color: var(--color-text-secondary);
-  font-size: 1.05rem;
-  line-height: 1.8;
+  font-size: clamp(1rem, 1vw, 1.12rem);
+  font-weight: 650;
+  line-height: 1.75;
 }
 
 .link {
+  width: fit-content;
+  min-height: 46px;
   display: inline-flex;
-  margin-top: 1.5rem;
-  padding: 0.85rem 1.2rem;
-  border: 1px solid var(--border-portal);
+  align-items: center;
+  justify-content: center;
+  margin-top: 1.6rem;
+  padding: 0 1.1rem;
+  border: 1px solid var(--border-danger);
   border-radius: var(--radius-pill);
-  color: var(--color-text-soft);
-  font-weight: 800;
+  color: var(--color-danger-text);
+  background: var(--color-danger-surface);
+  font-weight: 900;
   text-decoration: none;
   transition:
+    transform var(--transition-fast),
     border-color var(--transition-fast),
     background-color var(--transition-fast),
     box-shadow var(--transition-fast);
 }
 
 .link:hover {
-  border-color: var(--color-portal-cyan);
-  background: var(--color-portal-cyan-soft);
-  box-shadow: 0 14px 32px var(--color-portal-cyan-soft);
+  transform: translateY(-1px);
+  border-color: var(--color-danger);
+  background: var(--color-danger-surface);
+  box-shadow: var(--shadow-danger-button);
 }
 
 .link:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  outline: 2px solid var(--color-danger);
+  outline-offset: 3px;
+}
+
+.visual {
+  min-height: 320px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 1rem;
+  border: 1px solid var(--border-danger);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at center, var(--glow-danger-soft), transparent 66%),
+    var(--color-surface-card);
+  box-shadow: var(--shadow-card);
+}
+
+.portalFrame {
+  position: relative;
+  width: 190px;
+  height: 190px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--border-danger);
+  border-radius: 42px;
+  background:
+    radial-gradient(circle, var(--glow-danger-soft), transparent 68%),
+    var(--color-surface-strong);
+  box-shadow:
+    0 0 28px var(--glow-danger-soft),
+    inset 0 0 0 1px rgb(255 255 255 / 0.04);
+}
+
+.portalOrb {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  animation: portalBreak 820ms steps(2, end) infinite;
+}
+
+.portalOrb::before,
+.portalOrb::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.portalOrb::before {
+  inset: 0;
+  border: 2px solid transparent;
+  background: conic-gradient(
+      from 18deg,
+      transparent 0deg,
+      rgb(248 113 113 / 0.56) 34deg,
+      transparent 58deg,
+      rgb(248 113 113 / 0.2) 106deg,
+      transparent 148deg,
+      rgb(248 113 113 / 0.68) 204deg,
+      transparent 236deg,
+      rgb(248 113 113 / 0.38) 306deg,
+      transparent 360deg
+    )
+    border-box;
+  mask:
+    linear-gradient(#000 0 0) padding-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: portalSpin 1.1s linear infinite;
+}
+
+.portalOrb::after {
+  inset: 20px;
+  border: 1px solid var(--border-danger);
+  box-shadow:
+    0 0 18px var(--glow-danger-soft),
+    inset 0 0 18px var(--glow-danger-soft);
+  animation: portalSpin 760ms linear infinite reverse;
+}
+
+.portalCore {
+  width: 42px;
+  height: 42px;
+  border-radius: 42% 58% 48% 52%;
+  background:
+    radial-gradient(
+      circle at 32% 28%,
+      rgb(255 255 255 / 0.82) 0 8%,
+      transparent 9%
+    ),
+    radial-gradient(
+      circle,
+      var(--color-danger-soft) 0 16%,
+      var(--color-danger-strong) 42%,
+      var(--color-danger-dark) 86%
+    );
+  box-shadow:
+    0 0 22px var(--glow-danger-soft),
+    0 0 58px var(--glow-danger-soft);
+  filter: saturate(1.2) contrast(1.08);
+}
+
+.signalLine,
+.signalLineShort,
+.signalLineBroken {
+  position: absolute;
+  left: 22px;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--color-danger);
+  opacity: 0.44;
+}
+
+.signalLine {
+  right: 22px;
+  bottom: 42px;
+}
+
+.signalLineShort {
+  right: 64px;
+  bottom: 30px;
+  opacity: 0.3;
+}
+
+.signalLineBroken {
+  right: 104px;
+  top: 38px;
+  opacity: 0.22;
+}
+
+.visualLabel {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@keyframes portalSpin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes portalBreak {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  25% {
+    transform: translate(1px, 0) scale(1.02);
+  }
+
+  50% {
+    transform: translate(0, -1px) scale(0.98);
+  }
+
+  75% {
+    transform: translate(-1px, 0) scale(1.01);
+  }
+}
+
+@media (max-width: 900px) {
+  .panel {
+    grid-template-columns: 1fr;
+  }
+
+  .visual {
+    min-height: 260px;
+  }
+}
+
+@media (max-width: 640px) {
+  .shell {
+    padding: 1rem;
+  }
+
+  .panel {
+    padding: 1.25rem;
+  }
+
+  .link {
+    width: 100%;
+  }
+
+  .portalFrame {
+    width: 160px;
+    height: 160px;
+    border-radius: 36px;
+  }
+
+  .portalOrb {
+    width: 88px;
+    height: 88px;
+  }
 }
