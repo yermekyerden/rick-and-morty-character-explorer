@@ -17,55 +17,66 @@ function isAppTheme(value: string | null): value is AppTheme {
   return value === APP_THEME.dark || value === APP_THEME.light;
 }
 
-function getInitialTheme(): AppTheme {
-  const storedTheme = localStorage.getItem(APP_THEME_STORAGE_KEY);
+function getStoredTheme(): AppTheme | null {
+  try {
+    const storedTheme = localStorage.getItem(APP_THEME_STORAGE_KEY);
 
-  if (isAppTheme(storedTheme)) {
-    return storedTheme;
+    return isAppTheme(storedTheme) ? storedTheme : null;
+  } catch {
+    return null;
   }
-
-  return DEFAULT_THEME;
 }
 
-function applyTheme(theme: AppTheme): void {
-  document.documentElement.dataset.theme = theme;
+function getInitialTheme(): AppTheme {
+  return getStoredTheme() ?? DEFAULT_THEME;
 }
 
-function lockThemeTransitionsTemporarily(): void {
-  document.documentElement.classList.add(THEME_TRANSITION_LOCK_CLASS_NAME);
+function getNextTheme(theme: AppTheme): AppTheme {
+  return theme === APP_THEME.dark ? APP_THEME.light : APP_THEME.dark;
+}
 
-  window.setTimeout(() => {
-    document.documentElement.classList.remove(THEME_TRANSITION_LOCK_CLASS_NAME);
-  }, THEME_TRANSITION_UNLOCK_DELAY_IN_MS);
+function storeTheme(theme: AppTheme): void {
+  try {
+    localStorage.setItem(APP_THEME_STORAGE_KEY, theme);
+  } catch {
+    return;
+  }
 }
 
 function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<AppTheme>(getInitialTheme);
 
-  const setTheme = useCallback(
-    (nextTheme: AppTheme) => {
-      if (nextTheme === theme) {
-        return;
+  useEffect(() => {
+    const rootElement = document.documentElement;
+
+    rootElement.classList.add(THEME_TRANSITION_LOCK_CLASS_NAME);
+    rootElement.dataset.theme = theme;
+
+    storeTheme(theme);
+
+    const unlockThemeTransitionTimeoutId = window.setTimeout(() => {
+      rootElement.classList.remove(THEME_TRANSITION_LOCK_CLASS_NAME);
+    }, THEME_TRANSITION_UNLOCK_DELAY_IN_MS);
+
+    return () => {
+      window.clearTimeout(unlockThemeTransitionTimeoutId);
+      rootElement.classList.remove(THEME_TRANSITION_LOCK_CLASS_NAME);
+    };
+  }, [theme]);
+
+  const setTheme = useCallback((nextTheme: AppTheme) => {
+    setThemeState((currentTheme) => {
+      if (currentTheme === nextTheme) {
+        return currentTheme;
       }
 
-      lockThemeTransitionsTemporarily();
-      applyTheme(nextTheme);
-      setThemeState(nextTheme);
-    },
-    [theme]
-  );
+      return nextTheme;
+    });
+  }, []);
 
   const toggleTheme = useCallback(() => {
-    const nextTheme =
-      theme === APP_THEME.dark ? APP_THEME.light : APP_THEME.dark;
-
-    setTheme(nextTheme);
-  }, [setTheme, theme]);
-
-  useEffect(() => {
-    applyTheme(theme);
-    localStorage.setItem(APP_THEME_STORAGE_KEY, theme);
-  }, [theme]);
+    setThemeState((currentTheme) => getNextTheme(currentTheme));
+  }, []);
 
   const themeContextValue = useMemo(
     () => ({
@@ -73,7 +84,7 @@ function ThemeProvider({ children }: ThemeProviderProps) {
       setTheme,
       toggleTheme,
     }),
-    [setTheme, theme, toggleTheme]
+    [theme, setTheme, toggleTheme]
   );
 
   return (
