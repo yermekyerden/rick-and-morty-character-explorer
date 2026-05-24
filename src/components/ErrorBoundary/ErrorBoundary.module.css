@@ -35,13 +35,13 @@
 }
 
 .title {
-  max-width: none;
+  max-width: 760px;
   margin: 0;
   color: var(--color-text-primary);
-  font-size: clamp(2.6rem, 4.7vw, 4.35rem);
+  font-size: clamp(2.75rem, 5vw, 4.35rem);
   line-height: 0.95;
   letter-spacing: -0.06em;
-  white-space: nowrap;
+  text-wrap: balance;
 }
 
 .text {
@@ -182,10 +182,6 @@
 
   .panel {
     padding: 1.25rem;
-  }
-
-  .title {
-    white-space: normal;
   }
 
   .button {
