@@ -10,6 +10,12 @@ interface CharacterCardProps {
   onSelectionToggle?: (character: CharacterCardModel) => void;
 }
 
+interface CreateCardClassNameOptions {
+  canOpenDossier: boolean;
+  isSelected: boolean;
+  status: CharacterCardModel['status'];
+}
+
 function getStatusClassName(status: CharacterCardModel['status']): string {
   if (status === 'Alive') {
     return styles.alive;
@@ -26,11 +32,7 @@ function createCardClassName({
   canOpenDossier,
   isSelected,
   status,
-}: {
-  canOpenDossier: boolean;
-  isSelected: boolean;
-  status: CharacterCardModel['status'];
-}): string {
+}: CreateCardClassNameOptions): string {
   const classNames = [styles.card, getStatusClassName(status)];
 
   if (isSelected) {
