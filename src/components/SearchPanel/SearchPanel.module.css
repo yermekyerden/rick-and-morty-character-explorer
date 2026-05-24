@@ -11,12 +11,13 @@
   display: block;
   margin-bottom: 10px;
   color: var(--color-text-primary);
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 800;
 }
 
 .field {
   display: flex;
-  gap: 12px;
+  gap: 14px;
 }
 
 .field input {
@@ -71,7 +72,8 @@
 .hint {
   margin: 12px 0 0;
   color: var(--color-text-muted);
-  font-size: 14px;
+  font-size: 0.88rem;
+  font-weight: 650;
 }
 
 @media (max-width: 720px) {
