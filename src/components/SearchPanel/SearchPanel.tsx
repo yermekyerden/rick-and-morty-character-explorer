@@ -38,13 +38,7 @@ function SearchPanel({
     onInitialSearchTermLoaded(resolvedInitialSearchTerm);
   }, [onInitialSearchTermLoaded, resolvedInitialSearchTerm]);
 
-  function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
-    setInputValue(event.target.value);
-  }
-
-  function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
-    event.preventDefault();
-
+  function submitSearch() {
     const trimmedSearchTerm = inputValue.trim();
 
     if (trimmedSearchTerm === lastSubmittedSearchTerm.current) {
@@ -57,6 +51,15 @@ function SearchPanel({
 
     setInputValue(trimmedSearchTerm);
     onSearch(trimmedSearchTerm);
+  }
+
+  function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
+    setInputValue(event.target.value);
+  }
+
+  function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
+    event.preventDefault();
+    submitSearch();
   }
 
   return (

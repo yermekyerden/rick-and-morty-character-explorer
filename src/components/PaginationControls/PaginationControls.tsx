@@ -1,3 +1,4 @@
+import { FIRST_PAGE_NUMBER } from '../../constants/api';
 import { APP_MESSAGES } from '../../constants/messages';
 import styles from './PaginationControls.module.css';
 
@@ -8,16 +9,25 @@ interface PaginationControlsProps {
   totalPages: number;
 }
 
+function normalizePageNumber(page: number): number {
+  if (!Number.isFinite(page)) {
+    return FIRST_PAGE_NUMBER;
+  }
+
+  return Math.max(FIRST_PAGE_NUMBER, Math.trunc(page));
+}
+
 function PaginationControls({
   currentPage,
   isDisabled = false,
   onPageChange,
   totalPages,
 }: PaginationControlsProps) {
-  const normalizedCurrentPage = Math.max(1, currentPage);
-  const normalizedTotalPages = Math.max(1, totalPages);
+  const normalizedCurrentPage = normalizePageNumber(currentPage);
+  const normalizedTotalPages = normalizePageNumber(totalPages);
 
-  const isPreviousDisabled = isDisabled || normalizedCurrentPage <= 1;
+  const isPreviousDisabled =
+    isDisabled || normalizedCurrentPage <= FIRST_PAGE_NUMBER;
   const isNextDisabled =
     isDisabled || normalizedCurrentPage >= normalizedTotalPages;
 

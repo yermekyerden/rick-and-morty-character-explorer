@@ -20,7 +20,11 @@ function SelectedCharactersFlyout() {
 
   const selectedCharacters = getSelectedCharacters(selectedCharactersById);
 
-  function downloadSelectedCharacters() {
+  function handleUnselectAllClick() {
+    clearSelectedCharacters();
+  }
+
+  function handleDownloadClick() {
     const csvContent = createSelectedCharactersCsv(
       selectedCharacters,
       window.location.href
@@ -33,10 +37,6 @@ function SelectedCharactersFlyout() {
       content: csvContent,
       fileName,
     });
-  }
-
-  function handleDownloadClick() {
-    downloadSelectedCharacters();
   }
 
   const selectedCharacterCount = selectedCharacters.length;
@@ -69,7 +69,7 @@ function SelectedCharactersFlyout() {
           <button
             className={styles.secondaryButton}
             type="button"
-            onClick={clearSelectedCharacters}
+            onClick={handleUnselectAllClick}
           >
             {APP_MESSAGES.selectedCharacters.unselectAll}
           </button>

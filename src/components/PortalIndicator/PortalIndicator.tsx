@@ -5,10 +5,15 @@ interface PortalIndicatorProps {
   isUnstable: boolean;
 }
 
+interface PortalStateOptions {
+  isLoading: boolean;
+  isUnstable: boolean;
+}
+
 function getPortalStateClassName({
   isLoading,
   isUnstable,
-}: PortalIndicatorProps): string {
+}: PortalStateOptions): string {
   if (isUnstable) {
     return styles.unstable;
   }
@@ -20,17 +25,26 @@ function getPortalStateClassName({
   return styles.stable;
 }
 
-function PortalIndicator({ isLoading, isUnstable }: PortalIndicatorProps) {
+function createPortalClassName({
+  isLoading,
+  isUnstable,
+}: PortalStateOptions): string {
   const stateClassName = getPortalStateClassName({
     isLoading,
     isUnstable,
   });
 
+  return `${styles.portalShell} ${stateClassName}`;
+}
+
+function PortalIndicator({ isLoading, isUnstable }: PortalIndicatorProps) {
+  const portalClassName = createPortalClassName({
+    isLoading,
+    isUnstable,
+  });
+
   return (
-    <div
-      className={`${styles.portalShell} ${stateClassName}`}
-      aria-hidden="true"
-    >
+    <div className={portalClassName} aria-hidden="true">
       <div className={styles.portalCore} />
     </div>
   );

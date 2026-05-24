@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { APP_MESSAGES } from '../../constants/messages';
 import styles from './NoResultsCard.module.css';
 
@@ -6,13 +7,17 @@ interface NoResultsCardProps {
 }
 
 function NoResultsCard({ message }: NoResultsCardProps) {
+  const titleId = useId();
+
   return (
-    <article className={styles.card}>
+    <article className={styles.card} aria-labelledby={titleId}>
       <div className={styles.icon} aria-hidden="true" />
 
       <div>
         <div className={styles.header}>
-          <h3 className={styles.title}>{APP_MESSAGES.noResults.title}</h3>
+          <h3 className={styles.title} id={titleId}>
+            {APP_MESSAGES.noResults.title}
+          </h3>
 
           <span className={styles.badge}>{APP_MESSAGES.noResults.badge}</span>
         </div>

@@ -1,4 +1,11 @@
-export type CharacterStatus = 'Alive' | 'Dead' | 'unknown';
+export const CHARACTER_STATUS = {
+  alive: 'Alive',
+  dead: 'Dead',
+  unknown: 'unknown',
+} as const;
+
+export type CharacterStatus =
+  (typeof CHARACTER_STATUS)[keyof typeof CHARACTER_STATUS];
 
 export interface CharacterLocationDto {
   name: string;

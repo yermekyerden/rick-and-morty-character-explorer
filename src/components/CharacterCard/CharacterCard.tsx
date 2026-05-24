@@ -1,6 +1,9 @@
 import type { ChangeEvent, MouseEvent } from 'react';
 import { APP_MESSAGES } from '../../constants/messages';
-import type { CharacterCardModel } from '../../types/character';
+import {
+  CHARACTER_STATUS,
+  type CharacterCardModel,
+} from '../../types/character';
 import styles from './CharacterCard.module.css';
 
 interface CharacterCardProps {
@@ -17,11 +20,11 @@ interface CreateCardClassNameOptions {
 }
 
 function getStatusClassName(status: CharacterCardModel['status']): string {
-  if (status === 'Alive') {
+  if (status === CHARACTER_STATUS.alive) {
     return styles.alive;
   }
 
-  if (status === 'Dead') {
+  if (status === CHARACTER_STATUS.dead) {
     return styles.dead;
   }
 
@@ -52,9 +55,6 @@ function CharacterCard({
   onSelect,
   onSelectionToggle,
 }: CharacterCardProps) {
-  const canOpenDossier = Boolean(onSelect);
-  const canToggleSelection = Boolean(onSelectionToggle);
-
   function openCharacterDossier() {
     if (onSelect) {
       onSelect(character.id);
@@ -89,6 +89,8 @@ function CharacterCard({
     event.stopPropagation();
   }
 
+  const canOpenDossier = Boolean(onSelect);
+  const canToggleSelection = Boolean(onSelectionToggle);
   const cardClassName = createCardClassName({
     canOpenDossier,
     isSelected,

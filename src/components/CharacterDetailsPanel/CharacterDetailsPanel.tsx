@@ -3,9 +3,14 @@ import { fetchCharacterDetails } from '../../api/charactersApi';
 import { APP_MESSAGES } from '../../constants/messages';
 import { MIN_LOADING_TIME_IN_MS } from '../../constants/timing';
 import { useCharacterSearchParams } from '../../hooks/useCharacterSearchParams';
-import type { CharacterDetailsModel } from '../../types/character';
+import {
+  CHARACTER_STATUS,
+  type CharacterDetailsModel,
+} from '../../types/character';
 import { delay } from '../../utils/delay';
 import styles from './CharacterDetailsPanel.module.css';
+
+const ISO_DATE_LENGTH = 10;
 
 type CharacterDetailsState =
   | {
@@ -28,11 +33,11 @@ interface CharacterDetailRow {
 }
 
 function getStatusClassName(status: CharacterDetailsModel['status']): string {
-  if (status === 'Alive') {
+  if (status === CHARACTER_STATUS.alive) {
     return styles.alive;
   }
 
-  if (status === 'Dead') {
+  if (status === CHARACTER_STATUS.dead) {
     return styles.dead;
   }
 
@@ -40,7 +45,15 @@ function getStatusClassName(status: CharacterDetailsModel['status']): string {
 }
 
 function formatCreatedDate(createdAt: string): string {
-  return createdAt.slice(0, 10);
+  return createdAt.slice(0, ISO_DATE_LENGTH);
+}
+
+function getCharacterDetailsErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return APP_MESSAGES.apiErrors.unknown;
 }
 
 function createCharacterDetailRows(
@@ -120,10 +133,7 @@ function CharacterDetailsPanel() {
         setDetailsState({
           status: 'failed',
           characterId,
-          errorMessage:
-            error instanceof Error
-              ? error.message
-              : APP_MESSAGES.apiErrors.unknown,
+          errorMessage: getCharacterDetailsErrorMessage(error),
         });
       }
     }

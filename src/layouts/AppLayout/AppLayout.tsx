@@ -26,23 +26,26 @@ function AppLayout() {
       <header className={styles.topBar}>
         <div className={styles.topBarInner}>
           <NavLink className={styles.brand} to={APP_ROUTES.explorer}>
-            Portal Lab
+            {APP_MESSAGES.layout.brand}
           </NavLink>
 
-          <nav className={styles.navigation} aria-label="Main navigation">
+          <nav
+            className={styles.navigation}
+            aria-label={APP_MESSAGES.layout.mainNavigationLabel}
+          >
             <NavLink
               end
               className={createNavigationLinkClassName}
               to={APP_ROUTES.explorer}
             >
-              Explorer
+              {APP_MESSAGES.layout.explorerLink}
             </NavLink>
 
             <NavLink
               className={createNavigationLinkClassName}
               to={APP_ROUTES.about}
             >
-              About
+              {APP_MESSAGES.layout.aboutLink}
             </NavLink>
           </nav>
 
@@ -50,6 +53,7 @@ function AppLayout() {
             <span className={styles.themeLabel}>
               {APP_MESSAGES.theme.label}
             </span>
+
             <ThemeSwitcher />
           </div>
         </div>

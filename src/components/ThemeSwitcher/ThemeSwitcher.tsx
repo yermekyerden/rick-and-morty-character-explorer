@@ -4,7 +4,7 @@ import type { AppTheme } from '../../theme/themeTypes';
 import { useTheme } from '../../theme/useTheme';
 import styles from './ThemeSwitcher.module.css';
 
-function getToggleAriaLabel(theme: AppTheme): string {
+function getThemeToggleLabel(theme: AppTheme): string {
   if (theme === APP_THEME.dark) {
     return APP_MESSAGES.theme.switchToLightDimension;
   }
@@ -12,7 +12,7 @@ function getToggleAriaLabel(theme: AppTheme): string {
   return APP_MESSAGES.theme.switchToDarkDimension;
 }
 
-function getSwitcherClassName(theme: AppTheme): string {
+function createSwitcherClassName(theme: AppTheme): string {
   if (theme === APP_THEME.dark) {
     return `${styles.switcher} ${styles.dark}`;
   }
@@ -23,15 +23,15 @@ function getSwitcherClassName(theme: AppTheme): string {
 function ThemeSwitcher() {
   const { theme, toggleTheme } = useTheme();
 
-  const toggleAriaLabel = getToggleAriaLabel(theme);
-  const switcherClassName = getSwitcherClassName(theme);
+  const themeToggleLabel = getThemeToggleLabel(theme);
+  const switcherClassName = createSwitcherClassName(theme);
 
   return (
     <button
       className={switcherClassName}
       type="button"
-      aria-label={toggleAriaLabel}
-      title={toggleAriaLabel}
+      aria-label={themeToggleLabel}
+      title={themeToggleLabel}
       onClick={toggleTheme}
     >
       <span className={styles.controlPanel} aria-hidden="true">

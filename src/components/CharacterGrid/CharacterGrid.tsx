@@ -1,5 +1,5 @@
-import type { CharacterCardModel } from '../../types/character';
 import { useSelectedCharactersStore } from '../../store/selectedCharactersStore';
+import type { CharacterCardModel } from '../../types/character';
 import CharacterCard from '../CharacterCard/CharacterCard';
 import styles from './CharacterGrid.module.css';
 
@@ -16,13 +16,17 @@ function CharacterGrid({ characters, onCharacterSelect }: CharacterGridProps) {
     (state) => state.toggleCharacterSelection
   );
 
+  function isCharacterSelected(characterId: number): boolean {
+    return selectedCharactersById[characterId] !== undefined;
+  }
+
   return (
     <ul className={styles.grid} aria-label="Character results">
       {characters.map((character) => (
         <li className={styles.item} key={character.id}>
           <CharacterCard
             character={character}
-            isSelected={selectedCharactersById[character.id] !== undefined}
+            isSelected={isCharacterSelected(character.id)}
             onSelect={onCharacterSelect}
             onSelectionToggle={toggleCharacterSelection}
           />

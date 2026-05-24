@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { CHARACTER_STATUS } from '../types/character';
 import {
   testAliveCharacterDto,
   testCharacterCard,
@@ -27,7 +28,7 @@ describe('mapCharacterDtoToCardModel', () => {
   });
 
   it('normalizes unsupported status to unknown', () => {
-    const expectedStatus = 'unknown';
+    const expectedStatus = CHARACTER_STATUS.unknown;
 
     const mappedCharacter = mapCharacterDtoToCardModel(testUnknownCharacterDto);
 

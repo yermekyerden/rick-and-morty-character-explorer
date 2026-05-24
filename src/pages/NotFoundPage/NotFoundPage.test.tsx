@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { describe, expect, it } from 'vitest';
+import { APP_MESSAGES } from '../../constants/messages';
 import { APP_ROUTES } from '../../router/routes';
 import NotFoundPage from './NotFoundPage';
 
@@ -12,21 +13,21 @@ describe('NotFoundPage', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('404')).toBeVisible();
+    expect(screen.getByText(APP_MESSAGES.notFoundPage.code)).toBeVisible();
 
     expect(
       screen.getByRole('heading', {
-        name: /dimension not found/i,
+        name: APP_MESSAGES.notFoundPage.title,
       })
     ).toBeVisible();
 
     expect(
-      screen.getByText(/the portal opened in the wrong timeline/i)
+      screen.getByText(APP_MESSAGES.notFoundPage.description)
     ).toBeVisible();
 
     expect(
       screen.getByRole('link', {
-        name: /back to explorer/i,
+        name: APP_MESSAGES.notFoundPage.backLink,
       })
     ).toHaveAttribute('href', APP_ROUTES.explorer);
   });

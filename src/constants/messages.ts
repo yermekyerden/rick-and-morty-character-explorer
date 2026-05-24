@@ -6,6 +6,40 @@ export const APP_MESSAGES = {
       'Type a name, open a tiny portal, and hope the API sends back someone less dangerous than Rick.',
   },
 
+  layout: {
+    brand: 'Portal Lab',
+    mainNavigationLabel: 'Main navigation',
+    explorerLink: 'Explorer',
+    aboutLink: 'About',
+  },
+
+  about: {
+    kicker: 'Portal Lab Archive',
+    title: 'About Character Explorer',
+    description:
+      'Character Explorer opens a small portal into the Rick and Morty API. It helps you search characters, inspect results, and keep your last search coordinates in this browser.',
+    portalLabel: 'Archive signal stable',
+    authorKicker: 'Author dossier',
+    authorName: 'Yermek Yerdenov',
+    authorDescription:
+      'A software engineer from Kazakhstan who likes to code, solve puzzles, play chess, and build things for fun.',
+    courseKicker: 'Training signal',
+    courseTitle: 'Rolling Scopes School',
+    courseDescription:
+      'This project is part of the RS School React course, built as a small character archive with a portal-themed interface.',
+    courseLink: 'Open RS School React course',
+  },
+
+  notFoundPage: {
+    kicker: 'Portal route failure',
+    code: '404',
+    title: 'Dimension not found',
+    description:
+      'The portal opened in the wrong timeline. Return to the explorer and scan a stable dimension.',
+    backLink: 'Back to Explorer',
+    visualLabel: 'Timeline signal lost',
+  },
+
   bootstrap: {
     rootElementMissing:
       'Portal root element was not found. Check that index.html contains <div id="root"></div>.',
@@ -110,6 +144,7 @@ export const APP_MESSAGES = {
     consolePrefix: 'Application error caught by ErrorBoundary:',
     kicker: 'Emergency shutdown',
     title: 'The portal collapsed',
+    diagnosticsLabel: 'Boundary signal lost',
     text: 'A rendering error was caught by the application boundary. Reload the page to reopen the portal and continue exploring characters.',
     reloadButton: 'Reload app',
   },

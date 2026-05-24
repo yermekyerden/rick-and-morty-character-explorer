@@ -43,24 +43,35 @@ function storeTheme(theme: AppTheme): void {
   }
 }
 
+function lockThemeTransitions(rootElement: HTMLElement): void {
+  rootElement.classList.add(THEME_TRANSITION_LOCK_CLASS_NAME);
+}
+
+function unlockThemeTransitions(rootElement: HTMLElement): void {
+  rootElement.classList.remove(THEME_TRANSITION_LOCK_CLASS_NAME);
+}
+
+function applyThemeToRoot(rootElement: HTMLElement, theme: AppTheme): void {
+  rootElement.dataset.theme = theme;
+}
+
 function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<AppTheme>(getInitialTheme);
 
   useEffect(() => {
     const rootElement = document.documentElement;
 
-    rootElement.classList.add(THEME_TRANSITION_LOCK_CLASS_NAME);
-    rootElement.dataset.theme = theme;
-
+    lockThemeTransitions(rootElement);
+    applyThemeToRoot(rootElement, theme);
     storeTheme(theme);
 
     const unlockThemeTransitionTimeoutId = window.setTimeout(() => {
-      rootElement.classList.remove(THEME_TRANSITION_LOCK_CLASS_NAME);
+      unlockThemeTransitions(rootElement);
     }, THEME_TRANSITION_UNLOCK_DELAY_IN_MS);
 
     return () => {
       window.clearTimeout(unlockThemeTransitionTimeoutId);
-      rootElement.classList.remove(THEME_TRANSITION_LOCK_CLASS_NAME);
+      unlockThemeTransitions(rootElement);
     };
   }, [theme]);
 

@@ -36,6 +36,14 @@ function createResultsSectionClassName(isDetailsOpen: boolean): string {
   return classNames.join(' ');
 }
 
+function getCharacterLoadErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return APP_MESSAGES.apiErrors.unknown;
+}
+
 function ExplorerPage() {
   const {
     hasSearchTerm,
@@ -95,11 +103,7 @@ function ExplorerPage() {
         setCharacters([]);
         setTotalPages(FIRST_PAGE_NUMBER);
         setIsLoading(false);
-        setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : APP_MESSAGES.apiErrors.unknown
-        );
+        setErrorMessage(getCharacterLoadErrorMessage(error));
       }
     }
 
@@ -152,7 +156,7 @@ function ExplorerPage() {
     [activeSearchTerm, isLoading, updateSearchParams]
   );
 
-  const handleTriggerError = useCallback(() => {
+  const triggerApplicationError = useCallback(() => {
     setShouldSimulateError(true);
   }, []);
 
@@ -207,7 +211,7 @@ function ExplorerPage() {
             isLoading={isLoading}
             onCharacterSelect={handleCharacterSelect}
             onPageChange={handlePageChange}
-            onTriggerError={handleTriggerError}
+            onTriggerError={triggerApplicationError}
             searchTerm={activeSearchTerm}
             totalPages={totalPages}
           />

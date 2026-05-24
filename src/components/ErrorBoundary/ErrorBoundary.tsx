@@ -48,7 +48,9 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
                 <span className={styles.signalLineBroken} />
               </div>
 
-              <p className={styles.diagnosticsLabel}>Boundary signal lost</p>
+              <p className={styles.diagnosticsLabel}>
+                {APP_MESSAGES.errorBoundary.diagnosticsLabel}
+              </p>
             </div>
 
             <p className={styles.text}>{APP_MESSAGES.errorBoundary.text}</p>
