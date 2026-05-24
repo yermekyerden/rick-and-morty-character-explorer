@@ -10,45 +10,61 @@ interface ThemeProviderProps {
 }
 
 const DEFAULT_THEME: AppTheme = APP_THEME.dark;
+const THEME_TRANSITION_LOCK_CLASS_NAME = 'theme-transition-lock';
+const THEME_TRANSITION_UNLOCK_DELAY_IN_MS = 0;
 
 function isAppTheme(value: string | null): value is AppTheme {
   return value === APP_THEME.dark || value === APP_THEME.light;
 }
 
 function getInitialTheme(): AppTheme {
-  try {
-    const storedTheme = localStorage.getItem(APP_THEME_STORAGE_KEY);
+  const storedTheme = localStorage.getItem(APP_THEME_STORAGE_KEY);
 
-    if (isAppTheme(storedTheme)) {
-      return storedTheme;
-    }
-  } catch {
-    return DEFAULT_THEME;
+  if (isAppTheme(storedTheme)) {
+    return storedTheme;
   }
 
   return DEFAULT_THEME;
 }
 
-function saveTheme(theme: AppTheme): void {
-  try {
-    localStorage.setItem(APP_THEME_STORAGE_KEY, theme);
-  } catch {
-    return;
-  }
+function applyTheme(theme: AppTheme): void {
+  document.documentElement.dataset.theme = theme;
+}
+
+function lockThemeTransitionsTemporarily(): void {
+  document.documentElement.classList.add(THEME_TRANSITION_LOCK_CLASS_NAME);
+
+  window.setTimeout(() => {
+    document.documentElement.classList.remove(THEME_TRANSITION_LOCK_CLASS_NAME);
+  }, THEME_TRANSITION_UNLOCK_DELAY_IN_MS);
 }
 
 function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<AppTheme>(getInitialTheme);
+  const [theme, setThemeState] = useState<AppTheme>(getInitialTheme);
+
+  const setTheme = useCallback(
+    (nextTheme: AppTheme) => {
+      if (nextTheme === theme) {
+        return;
+      }
+
+      lockThemeTransitionsTemporarily();
+      applyTheme(nextTheme);
+      setThemeState(nextTheme);
+    },
+    [theme]
+  );
 
   const toggleTheme = useCallback(() => {
-    setTheme((currentTheme) =>
-      currentTheme === APP_THEME.dark ? APP_THEME.light : APP_THEME.dark
-    );
-  }, []);
+    const nextTheme =
+      theme === APP_THEME.dark ? APP_THEME.light : APP_THEME.dark;
+
+    setTheme(nextTheme);
+  }, [setTheme, theme]);
 
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    saveTheme(theme);
+    applyTheme(theme);
+    localStorage.setItem(APP_THEME_STORAGE_KEY, theme);
   }, [theme]);
 
   const themeContextValue = useMemo(
@@ -57,7 +73,7 @@ function ThemeProvider({ children }: ThemeProviderProps) {
       setTheme,
       toggleTheme,
     }),
-    [theme, toggleTheme]
+    [setTheme, theme, toggleTheme]
   );
 
   return (

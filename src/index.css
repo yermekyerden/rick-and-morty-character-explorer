@@ -126,6 +126,12 @@
   box-sizing: border-box;
 }
 
+:root.theme-transition-lock *,
+:root.theme-transition-lock *::before,
+:root.theme-transition-lock *::after {
+  transition: none !important;
+}
+
 html {
   min-width: 320px;
   background-color: var(--color-background);
