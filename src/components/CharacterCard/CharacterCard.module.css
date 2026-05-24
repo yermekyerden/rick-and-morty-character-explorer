@@ -108,13 +108,9 @@
 .selectionInput:checked + .selectionBox::after {
   content: '';
   position: absolute;
-  top: 2px;
-  left: 5px;
-  width: 5px;
-  height: 9px;
-  border-right: 2px solid var(--color-text-inverse);
-  border-bottom: 2px solid var(--color-text-inverse);
-  transform: rotate(45deg);
+  inset: 4px;
+  border-radius: 3px;
+  background: var(--color-text-inverse);
 }
 
 .selectionControl:hover .selectionBox {
