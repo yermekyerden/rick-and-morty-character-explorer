@@ -1,6 +1,10 @@
 .shell {
+  --page-block-padding: clamp(2rem, 4vw, 4rem);
+  --page-inline-padding: clamp(1rem, 3vw, 3rem);
+  --selected-flyout-safe-area: clamp(180px, 22vh, 260px);
+
   min-height: 100vh;
-  padding: clamp(2rem, 4vw, 4rem) clamp(1rem, 3vw, 3rem);
+  padding: var(--page-block-padding) var(--page-inline-padding);
   background:
     radial-gradient(
       circle at 12% 8%,
@@ -18,6 +22,10 @@
       var(--color-background-mid) 52%,
       var(--color-background-end) 100%
     );
+}
+
+.shellWithSelectedFlyout {
+  padding-bottom: var(--selected-flyout-safe-area);
 }
 
 .searchSection {
@@ -88,6 +96,8 @@
 
 @media (max-width: 720px) {
   .shell {
-    padding: 32px 16px;
+    --page-block-padding: 32px;
+    --page-inline-padding: 16px;
+    --selected-flyout-safe-area: 340px;
   }
 }

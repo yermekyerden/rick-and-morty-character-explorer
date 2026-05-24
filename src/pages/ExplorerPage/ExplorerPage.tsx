@@ -8,9 +8,23 @@ import { FIRST_PAGE_NUMBER } from '../../constants/api';
 import { APP_MESSAGES } from '../../constants/messages';
 import { MIN_LOADING_TIME_IN_MS } from '../../constants/timing';
 import { useCharacterSearchParams } from '../../hooks/useCharacterSearchParams';
+import {
+  getSelectedCharacterCount,
+  useSelectedCharactersStore,
+} from '../../store/selectedCharactersStore';
 import type { CharacterCardModel } from '../../types/character';
 import { delay } from '../../utils/delay';
 import styles from './ExplorerPage.module.css';
+
+function createShellClassName(hasSelectedCharacters: boolean): string {
+  const classNames = [styles.shell];
+
+  if (hasSelectedCharacters) {
+    classNames.push(styles.shellWithSelectedFlyout);
+  }
+
+  return classNames.join(' ');
+}
 
 function createResultsSectionClassName(isDetailsOpen: boolean): string {
   const classNames = [styles.resultsSection];
@@ -30,6 +44,10 @@ function ExplorerPage() {
     selectedCharacterId,
     updateSearchParams,
   } = useCharacterSearchParams();
+
+  const selectedCharactersById = useSelectedCharactersStore(
+    (state) => state.selectedCharactersById
+  );
 
   const [activeSearchTerm, setActiveSearchTerm] = useState('');
   const [characters, setCharacters] = useState<CharacterCardModel[]>([]);
@@ -153,12 +171,17 @@ function ExplorerPage() {
     throw new Error(APP_MESSAGES.errorBoundary.simulatedError);
   }
 
+  const selectedCharacterCount = getSelectedCharacterCount(
+    selectedCharactersById
+  );
+  const hasSelectedCharacters = selectedCharacterCount > 0;
   const isDetailsOpen = selectedCharacterId !== null;
   const initialSearchTerm = hasSearchTerm ? urlSearchTerm : undefined;
+  const shellClassName = createShellClassName(hasSelectedCharacters);
   const resultsSectionClassName = createResultsSectionClassName(isDetailsOpen);
 
   return (
-    <main className={styles.shell}>
+    <main className={shellClassName}>
       <section className={styles.searchSection} aria-label="Character search">
         <header className={styles.intro}>
           <p className={styles.kicker}>{APP_MESSAGES.app.kicker}</p>
