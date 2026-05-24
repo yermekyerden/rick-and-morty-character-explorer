@@ -86,7 +86,7 @@
 .imageFrame {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 1 / 0.78;
+  aspect-ratio: 1 / 1;
   margin: 12px;
   border: 1px solid rgb(var(--status-rgb) / 0.22);
   border-radius: 20px;
@@ -337,9 +337,5 @@
 @media (max-width: 1180px) {
   .panel {
     position: static;
-  }
-
-  .imageFrame {
-    aspect-ratio: 16 / 9;
   }
 }
