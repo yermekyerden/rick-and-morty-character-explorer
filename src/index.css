@@ -7,9 +7,9 @@
   --color-background-mid: #0f172a;
   --color-background-end: #111827;
 
-  --color-surface: rgba(15, 23, 42, 0.78);
-  --color-surface-strong: rgba(2, 6, 23, 0.78);
-  --color-surface-card: rgba(2, 6, 23, 0.42);
+  --color-surface: rgba(15, 23, 42, 0.84);
+  --color-surface-strong: rgba(2, 6, 23, 0.86);
+  --color-surface-card: rgba(2, 6, 23, 0.5);
 
   --color-text-primary: #f8fafc;
   --color-text-secondary: #cbd5e1;
@@ -42,10 +42,10 @@
   --border-danger: rgba(248, 113, 113, 0.28);
   --border-portal: rgba(103, 232, 249, 0.26);
 
-  --glow-page-primary: rgba(110, 231, 183, 0.18);
-  --glow-page-secondary: rgba(56, 189, 248, 0.14);
-  --glow-accent-soft: rgba(34, 197, 94, 0.16);
-  --glow-danger-soft: rgba(244, 63, 94, 0.2);
+  --glow-page-primary: rgba(110, 231, 183, 0.09);
+  --glow-page-secondary: rgba(56, 189, 248, 0.08);
+  --glow-accent-soft: rgba(34, 197, 94, 0.1);
+  --glow-danger-soft: rgba(244, 63, 94, 0.12);
 
   --radius-panel: 24px;
   --radius-card: 18px;
@@ -53,10 +53,10 @@
   --radius-image: 14px;
   --radius-pill: 999px;
 
-  --shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.32);
-  --shadow-card: 0 18px 48px rgba(0, 0, 0, 0.16);
-  --shadow-accent-button: 0 14px 32px rgba(34, 197, 94, 0.24);
-  --shadow-danger-button: 0 12px 28px rgba(127, 29, 29, 0.22);
+  --shadow-panel: 0 20px 46px rgba(0, 0, 0, 0.24);
+  --shadow-card: 0 14px 30px rgba(0, 0, 0, 0.12);
+  --shadow-accent-button: 0 10px 22px rgba(34, 197, 94, 0.16);
+  --shadow-danger-button: 0 10px 22px rgba(127, 29, 29, 0.16);
 
   --transition-fast: 160ms ease;
 
@@ -76,9 +76,9 @@
   --color-background-mid: #e2f8ef;
   --color-background-end: #dff7ff;
 
-  --color-surface: rgb(255 255 255 / 0.82);
-  --color-surface-strong: rgb(255 255 255 / 0.92);
-  --color-surface-card: rgb(240 253 244 / 0.68);
+  --color-surface: rgb(255 255 255 / 0.88);
+  --color-surface-strong: rgb(255 255 255 / 0.96);
+  --color-surface-card: rgb(240 253 244 / 0.74);
 
   --color-text-primary: #0f172a;
   --color-text-secondary: #334155;
@@ -111,15 +111,15 @@
   --border-danger: rgb(220 38 38 / 0.26);
   --border-portal: rgb(8 145 178 / 0.22);
 
-  --glow-page-primary: rgb(34 197 94 / 0.16);
-  --glow-page-secondary: rgb(8 145 178 / 0.12);
-  --glow-accent-soft: rgb(22 163 74 / 0.14);
-  --glow-danger-soft: rgb(220 38 38 / 0.14);
+  --glow-page-primary: rgb(34 197 94 / 0.1);
+  --glow-page-secondary: rgb(8 145 178 / 0.08);
+  --glow-accent-soft: rgb(22 163 74 / 0.1);
+  --glow-danger-soft: rgb(220 38 38 / 0.1);
 
-  --shadow-panel: 0 24px 80px rgb(15 23 42 / 0.14);
-  --shadow-card: 0 18px 48px rgb(15 23 42 / 0.12);
-  --shadow-accent-button: 0 14px 32px rgb(22 163 74 / 0.2);
-  --shadow-danger-button: 0 12px 28px rgb(127 29 29 / 0.14);
+  --shadow-panel: 0 18px 42px rgb(15 23 42 / 0.1);
+  --shadow-card: 0 12px 28px rgb(15 23 42 / 0.08);
+  --shadow-accent-button: 0 10px 22px rgb(22 163 74 / 0.14);
+  --shadow-danger-button: 0 10px 22px rgb(127 29 29 / 0.1);
 }
 
 * {
