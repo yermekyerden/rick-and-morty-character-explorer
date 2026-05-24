@@ -1,5 +1,5 @@
 .card {
-  --status-rgb: 134 239 172;
+  --status-rgb: var(--status-alive-rgb);
 
   position: relative;
   height: 100%;
@@ -123,15 +123,15 @@
 }
 
 .alive {
-  --status-rgb: 134 239 172;
+  --status-rgb: var(--status-alive-rgb);
 }
 
 .dead {
-  --status-rgb: 248 113 113;
+  --status-rgb: var(--status-dead-rgb);
 }
 
 .unknown {
-  --status-rgb: 148 163 184;
+  --status-rgb: var(--status-unknown-rgb);
 }
 
 .imageFrame {
