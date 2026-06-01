@@ -1,7 +1,8 @@
-const DEFAULT_QUERY_CACHE_TTL_IN_MS = 300_000;
+export const DEFAULT_QUERY_CACHE_TTL_IN_MS = 300_000;
+
 const MIN_QUERY_CACHE_TTL_IN_MS = 0;
 
-function parseQueryCacheTtl(cacheTtl: string | undefined): number {
+export function parseQueryCacheTtlInMs(cacheTtl: string | undefined): number {
   const parsedCacheTtl = Number(cacheTtl);
 
   if (!Number.isFinite(parsedCacheTtl)) {
@@ -15,6 +16,6 @@ function parseQueryCacheTtl(cacheTtl: string | undefined): number {
   return Math.trunc(parsedCacheTtl);
 }
 
-export const QUERY_CACHE_TTL_IN_MS = parseQueryCacheTtl(
+export const QUERY_CACHE_TTL_IN_MS = parseQueryCacheTtlInMs(
   import.meta.env.VITE_QUERY_CACHE_TTL_MS
 );
