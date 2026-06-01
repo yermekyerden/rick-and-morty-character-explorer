@@ -12,6 +12,8 @@ import {
 } from '../../test/testCharacters';
 import { delay } from '../../utils/delay';
 import ExplorerPage from './ExplorerPage';
+import QueryProvider from '../../query/QueryProvider';
+import { createAppQueryClient } from '../../query/queryClient';
 
 vi.mock('../../api/charactersApi', () => ({
   fetchCharacterPage: vi.fn(),
@@ -49,21 +51,29 @@ function LocationProbe() {
 }
 
 function renderExplorerPage(initialRoute = '/') {
+  const queryClient = createAppQueryClient();
+
   render(
-    <MemoryRouter initialEntries={[initialRoute]}>
-      <ExplorerPage />
-      <LocationProbe />
-    </MemoryRouter>
+    <QueryProvider queryClient={queryClient}>
+      <MemoryRouter initialEntries={[initialRoute]}>
+        <ExplorerPage />
+        <LocationProbe />
+      </MemoryRouter>
+    </QueryProvider>
   );
 }
 
 function renderExplorerPageWithBoundary(initialRoute = '/') {
+  const queryClient = createAppQueryClient();
+
   render(
-    <MemoryRouter initialEntries={[initialRoute]}>
-      <ErrorBoundary>
-        <ExplorerPage />
-      </ErrorBoundary>
-    </MemoryRouter>
+    <QueryProvider queryClient={queryClient}>
+      <MemoryRouter initialEntries={[initialRoute]}>
+        <ErrorBoundary>
+          <ExplorerPage />
+        </ErrorBoundary>
+      </MemoryRouter>
+    </QueryProvider>
   );
 }
 
