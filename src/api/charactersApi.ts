@@ -10,7 +10,6 @@ import {
 } from '../mappers/characterMapper';
 import type {
   CharacterApiResponse,
-  CharacterCardModel,
   CharacterDetailsModel,
   CharacterDto,
   CharacterPageModel,
@@ -19,17 +18,6 @@ import type {
 
 const HTTP_STATUS_NOT_FOUND = 404;
 const HTTP_STATUS_TOO_MANY_REQUESTS = 429;
-
-export async function fetchCharacterCards(
-  searchTerm: string
-): Promise<CharacterCardModel[]> {
-  const characterPage = await fetchCharacterPage({
-    searchTerm,
-    page: FIRST_PAGE_NUMBER,
-  });
-
-  return characterPage.characters;
-}
 
 export async function fetchCharacterPage({
   searchTerm,
