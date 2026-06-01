@@ -66,10 +66,10 @@ npm run build
 ## Coverage
 
 ```text
-Statements: 94.19%
-Branches:   87.75%
+Statements: 93.95%
+Branches:   87.24%
 Functions:  98.8%
-Lines:      94.16%
+Lines:      93.93%
 ```
 
 ## Author
