@@ -1,31 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
-import { fetchCharacterDetails } from '../../api/charactersApi';
+import { useCallback } from 'react';
 import { APP_MESSAGES } from '../../constants/messages';
-import { MIN_LOADING_TIME_IN_MS } from '../../constants/timing';
 import { useCharacterSearchParams } from '../../hooks/useCharacterSearchParams';
+import { useCharacterDetailsQuery } from '../../query/useCharacterDetailsQuery';
 import {
   CHARACTER_STATUS,
   type CharacterDetailsModel,
 } from '../../types/character';
-import { delay } from '../../utils/delay';
 import styles from './CharacterDetailsPanel.module.css';
 
 const ISO_DATE_LENGTH = 10;
-
-type CharacterDetailsState =
-  | {
-      status: 'idle';
-    }
-  | {
-      status: 'loaded';
-      characterId: number;
-      characterDetails: CharacterDetailsModel;
-    }
-  | {
-      status: 'failed';
-      characterId: number;
-      errorMessage: string;
-    };
 
 interface CharacterDetailRow {
   label: string;
@@ -54,6 +37,17 @@ function getCharacterDetailsErrorMessage(error: unknown): string {
   }
 
   return APP_MESSAGES.apiErrors.unknown;
+}
+
+function getLoadedCharacterDetails(
+  characterDetails: CharacterDetailsModel | undefined,
+  errorMessage: string | null
+): CharacterDetailsModel | null {
+  if (errorMessage !== null || characterDetails === undefined) {
+    return null;
+  }
+
+  return characterDetails;
 }
 
 function createCharacterDetailRows(
@@ -96,54 +90,9 @@ function CharacterDetailsPanel() {
   const { selectedCharacterId, updateSearchParams } =
     useCharacterSearchParams();
 
-  const [detailsState, setDetailsState] = useState<CharacterDetailsState>({
-    status: 'idle',
+  const characterDetailsQuery = useCharacterDetailsQuery({
+    characterId: selectedCharacterId,
   });
-
-  useEffect(() => {
-    if (selectedCharacterId === null) {
-      return;
-    }
-
-    let isRequestActive = true;
-
-    async function loadCharacterDetails(characterId: number) {
-      try {
-        const [loadedCharacterDetails] = await Promise.all([
-          fetchCharacterDetails(characterId),
-          delay(MIN_LOADING_TIME_IN_MS),
-        ]);
-
-        if (!isRequestActive) {
-          return;
-        }
-
-        setDetailsState({
-          status: 'loaded',
-          characterId,
-          characterDetails: loadedCharacterDetails,
-        });
-      } catch (error) {
-        await delay(MIN_LOADING_TIME_IN_MS);
-
-        if (!isRequestActive) {
-          return;
-        }
-
-        setDetailsState({
-          status: 'failed',
-          characterId,
-          errorMessage: getCharacterDetailsErrorMessage(error),
-        });
-      }
-    }
-
-    void loadCharacterDetails(selectedCharacterId);
-
-    return () => {
-      isRequestActive = false;
-    };
-  }, [selectedCharacterId]);
 
   const handleCloseClick = useCallback(() => {
     updateSearchParams({
@@ -155,19 +104,16 @@ function CharacterDetailsPanel() {
     return null;
   }
 
-  const characterDetails =
-    detailsState.status === 'loaded' &&
-    detailsState.characterId === selectedCharacterId
-      ? detailsState.characterDetails
-      : null;
+  const errorMessage = characterDetailsQuery.isError
+    ? getCharacterDetailsErrorMessage(characterDetailsQuery.error)
+    : null;
 
-  const errorMessage =
-    detailsState.status === 'failed' &&
-    detailsState.characterId === selectedCharacterId
-      ? detailsState.errorMessage
-      : null;
+  const characterDetails = getLoadedCharacterDetails(
+    characterDetailsQuery.data,
+    errorMessage
+  );
 
-  const isLoading = characterDetails === null && errorMessage === null;
+  const isLoading = characterDetailsQuery.isPending;
 
   return (
     <aside className={styles.panel} aria-label="Character details">
