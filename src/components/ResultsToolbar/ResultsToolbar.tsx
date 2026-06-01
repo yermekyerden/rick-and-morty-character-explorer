@@ -5,14 +5,18 @@ import styles from './ResultsToolbar.module.css';
 
 interface ResultsToolbarProps {
   isLoading: boolean;
+  isRefreshDisabled: boolean;
   isUnstable: boolean;
+  onRefreshData: () => void;
   onTriggerError: () => void;
   statusText: string;
 }
 
 function ResultsToolbar({
   isLoading,
+  isRefreshDisabled,
   isUnstable,
+  onRefreshData,
   onTriggerError,
   statusText,
 }: ResultsToolbarProps) {
@@ -29,6 +33,15 @@ function ResultsToolbar({
       </div>
 
       <div className={styles.actions}>
+        <button
+          className={styles.refreshButton}
+          type="button"
+          disabled={isRefreshDisabled}
+          onClick={onRefreshData}
+        >
+          {APP_MESSAGES.results.refreshData}
+        </button>
+
         <ErrorTestButton onTriggerError={onTriggerError} />
       </div>
     </header>

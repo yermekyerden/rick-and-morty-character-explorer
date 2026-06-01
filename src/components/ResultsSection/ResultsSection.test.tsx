@@ -12,6 +12,7 @@ interface RenderResultsSectionOptions {
   errorMessage?: string | null;
   isLoading?: boolean;
   onPageChange?: (page: number) => void;
+  onRefreshData?: () => void;
   onTriggerError?: () => void;
   onCharacterSelect?: (characterId: number) => void;
   searchTerm?: string;
@@ -24,6 +25,7 @@ function renderResultsSection({
   errorMessage = null,
   isLoading = false,
   onPageChange = () => {},
+  onRefreshData = () => {},
   onTriggerError = () => {},
   onCharacterSelect = () => {},
   searchTerm = '',
@@ -36,6 +38,7 @@ function renderResultsSection({
       errorMessage={errorMessage}
       isLoading={isLoading}
       onPageChange={onPageChange}
+      onRefreshData={onRefreshData}
       onTriggerError={onTriggerError}
       onCharacterSelect={onCharacterSelect}
       searchTerm={searchTerm}
@@ -168,6 +171,24 @@ describe('ResultsSection', () => {
     );
 
     expect(onPageChange).toHaveBeenCalledWith(2);
+  });
+
+  it('calls onRefreshData when user clicks refresh data button', async () => {
+    const user = userEvent.setup();
+    const onRefreshData = vi.fn();
+
+    renderResultsSection({
+      characters: [testCharacterCard],
+      onRefreshData,
+    });
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.results.refreshData,
+      })
+    );
+
+    expect(onRefreshData).toHaveBeenCalledTimes(1);
   });
 
   it('calls onCharacterSelect when user opens character dossier', async () => {

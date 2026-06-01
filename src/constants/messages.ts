@@ -61,6 +61,7 @@ export const APP_MESSAGES = {
 
   results: {
     title: 'Character results',
+    refreshData: 'Refresh data',
     status: {
       loading: 'Opening portal',
       unstable: 'Portal unstable',

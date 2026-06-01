@@ -8,6 +8,7 @@ import { FIRST_PAGE_NUMBER } from '../../constants/api';
 import { APP_MESSAGES } from '../../constants/messages';
 import { useCharacterSearchParams } from '../../hooks/useCharacterSearchParams';
 import { useCharacterPageQuery } from '../../query/useCharacterPageQuery';
+import { useRefreshCharacterQueries } from '../../query/useRefreshCharacterQueries';
 import {
   getSelectedCharacterCount,
   useSelectedCharactersStore,
@@ -94,6 +95,12 @@ function ExplorerPage() {
     searchTerm: activeSearchTerm,
   });
 
+  const refreshCharacterQueries = useRefreshCharacterQueries({
+    page,
+    searchTerm: activeSearchTerm,
+    selectedCharacterId,
+  });
+
   const handleInitialSearchTermLoaded = useCallback(
     (searchTerm: string) => {
       setActiveSearchTerm(searchTerm);
@@ -140,6 +147,10 @@ function ExplorerPage() {
     },
     [activeSearchTerm, isLoading, updateSearchParams]
   );
+
+  function handleRefreshDataClick() {
+    void refreshCharacterQueries();
+  }
 
   const triggerApplicationError = useCallback(() => {
     setShouldSimulateError(true);
@@ -210,6 +221,7 @@ function ExplorerPage() {
             isLoading={isLoading}
             onCharacterSelect={handleCharacterSelect}
             onPageChange={handlePageChange}
+            onRefreshData={handleRefreshDataClick}
             onTriggerError={triggerApplicationError}
             searchTerm={activeSearchTerm}
             totalPages={totalPages}

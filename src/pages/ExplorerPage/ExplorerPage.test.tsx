@@ -298,6 +298,37 @@ describe('ExplorerPage', () => {
     });
   });
 
+  it('refreshes current character page when user clicks refresh data', async () => {
+    const user = userEvent.setup();
+
+    renderExplorerPage();
+
+    await screen.findByRole('heading', {
+      name: testCharacterCard.name,
+    });
+
+    fetchCharacterPageMock.mockResolvedValueOnce(
+      createCharacterPage([testMortyCharacterCard], 1, 5)
+    );
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.results.refreshData,
+      })
+    );
+
+    expect(
+      await screen.findByRole('heading', {
+        name: testMortyCharacterCard.name,
+      })
+    ).toBeVisible();
+
+    expect(fetchCharacterPageMock).toHaveBeenLastCalledWith({
+      searchTerm: '',
+      page: 1,
+    });
+  });
+
   it('shows error boundary fallback when simulated error is triggered', async () => {
     const user = userEvent.setup();
     const expectedFallbackTitle = APP_MESSAGES.errorBoundary.title;
