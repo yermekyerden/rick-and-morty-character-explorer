@@ -189,4 +189,101 @@ describe('App master-detail routing', () => {
       screen.queryByLabelText('Character details')
     ).not.toBeInTheDocument();
   });
+
+  it('reuses cached character details when the same dossier is reopened', async () => {
+    const user = userEvent.setup();
+
+    renderApp('/?page=1');
+
+    await screen.findByRole('heading', {
+      name: testCharacterCard.name,
+    });
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.characterCard.openDetailsLabel(
+          testCharacterCard.name
+        ),
+      })
+    );
+
+    const firstDetailsPanel = await screen.findByLabelText('Character details');
+
+    expect(
+      await within(firstDetailsPanel).findByRole('heading', {
+        name: testCharacterDetails.name,
+      })
+    ).toBeVisible();
+
+    expect(fetchCharacterDetailsMock).toHaveBeenCalledTimes(1);
+
+    await user.click(
+      within(firstDetailsPanel).getByRole('button', {
+        name: APP_MESSAGES.characterDetails.closeLabel,
+      })
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.queryByLabelText('Character details')
+      ).not.toBeInTheDocument();
+    });
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.characterCard.openDetailsLabel(
+          testCharacterCard.name
+        ),
+      })
+    );
+
+    const secondDetailsPanel =
+      await screen.findByLabelText('Character details');
+
+    expect(
+      await within(secondDetailsPanel).findByRole('heading', {
+        name: testCharacterDetails.name,
+      })
+    ).toBeVisible();
+
+    expect(fetchCharacterDetailsMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('refreshes selected character details when refresh data is clicked', async () => {
+    const user = userEvent.setup();
+    const refreshedCharacterDetails = {
+      ...testCharacterDetails,
+      name: 'Refreshed Rick Sanchez',
+      locationName: 'Refreshed Dimension',
+    };
+
+    renderApp('/?page=1&details=1');
+
+    const detailsPanel = await screen.findByLabelText('Character details');
+
+    expect(
+      await within(detailsPanel).findByRole('heading', {
+        name: testCharacterDetails.name,
+      })
+    ).toBeVisible();
+
+    expect(fetchCharacterDetailsMock).toHaveBeenCalledTimes(1);
+
+    fetchCharacterPageMock.mockResolvedValueOnce(createCharacterPage());
+    fetchCharacterDetailsMock.mockResolvedValueOnce(refreshedCharacterDetails);
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.results.refreshData,
+      })
+    );
+
+    expect(
+      await within(detailsPanel).findByRole('heading', {
+        name: refreshedCharacterDetails.name,
+      })
+    ).toBeVisible();
+
+    expect(fetchCharacterDetailsMock).toHaveBeenCalledTimes(2);
+  });
 });
