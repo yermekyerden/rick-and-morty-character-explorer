@@ -38,6 +38,19 @@ function createCharacterPage(
   };
 }
 
+function createDeferredPromise<T>() {
+  let resolvePromise!: (value: T) => void;
+
+  const promise = new Promise<T>((resolve) => {
+    resolvePromise = resolve;
+  });
+
+  return {
+    promise,
+    resolve: resolvePromise,
+  };
+}
+
 function LocationProbe() {
   const location = useLocation();
 
@@ -285,5 +298,45 @@ describe('App master-detail routing', () => {
     ).toBeVisible();
 
     expect(fetchCharacterDetailsMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('shows loading state in character details while selected dossier is refreshing', async () => {
+    const user = userEvent.setup();
+
+    renderApp('/?page=1&details=1');
+
+    const detailsPanel = await screen.findByLabelText('Character details');
+
+    expect(
+      await within(detailsPanel).findByRole('heading', {
+        name: testCharacterDetails.name,
+      })
+    ).toBeVisible();
+
+    const deferredDetailsRequest =
+      createDeferredPromise<typeof testCharacterDetails>();
+
+    fetchCharacterPageMock.mockResolvedValueOnce(createCharacterPage());
+    fetchCharacterDetailsMock.mockReturnValueOnce(
+      deferredDetailsRequest.promise
+    );
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.results.refreshData,
+      })
+    );
+
+    expect(
+      within(detailsPanel).getByText(APP_MESSAGES.characterDetails.loading)
+    ).toBeVisible();
+
+    deferredDetailsRequest.resolve(testCharacterDetails);
+
+    expect(
+      await within(detailsPanel).findByRole('heading', {
+        name: testCharacterDetails.name,
+      })
+    ).toBeVisible();
   });
 });

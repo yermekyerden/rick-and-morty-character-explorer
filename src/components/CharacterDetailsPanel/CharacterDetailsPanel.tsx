@@ -113,7 +113,8 @@ function CharacterDetailsPanel() {
     errorMessage
   );
 
-  const isLoading = characterDetailsQuery.isPending;
+  const isLoading =
+    characterDetailsQuery.isPending || characterDetailsQuery.isFetching;
 
   return (
     <aside className={styles.panel} aria-label="Character details">
