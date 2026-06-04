@@ -16,19 +16,26 @@ import type {
   CharacterPageRequest,
 } from '../types/character';
 
-const HTTP_STATUS_NOT_FOUND = 404;
-const HTTP_STATUS_TOO_MANY_REQUESTS = 429;
+const HTTP_STATUS = {
+  notFound: 404,
+  tooManyRequests: 429,
+} as const;
+
+interface CharacterPageRequestUrlOptions {
+  currentPage: number;
+  searchTerm: string;
+}
 
 export async function fetchCharacterPage({
   searchTerm,
   page,
 }: CharacterPageRequest): Promise<CharacterPageModel> {
   const currentPage = normalizePageNumber(page);
-  const url = createCharacterRequestUrl({
+  const url = createCharacterPageRequestUrl({
+    currentPage,
     searchTerm,
-    page: currentPage,
   });
-  const response = await fetchResponse(url);
+  const response = await fetchCharacterApiResponse(url);
 
   if (!response.ok) {
     throw new Error(createCharacterApiErrorMessage(response.status));
@@ -47,9 +54,8 @@ export async function fetchCharacterPage({
 export async function fetchCharacterDetails(
   characterId: number
 ): Promise<CharacterDetailsModel> {
-  const normalizedCharacterId = normalizeCharacterId(characterId);
-  const url = `${RICK_AND_MORTY_API_BASE_URL}${CHARACTER_ENDPOINT_PATH}/${normalizedCharacterId}`;
-  const response = await fetchResponse(url);
+  const url = createCharacterDetailsRequestUrl(characterId);
+  const response = await fetchCharacterApiResponse(url);
 
   if (!response.ok) {
     throw new Error(createCharacterApiErrorMessage(response.status));
@@ -60,7 +66,7 @@ export async function fetchCharacterDetails(
   return mapCharacterDtoToDetailsModel(data);
 }
 
-async function fetchResponse(url: string): Promise<Response> {
+async function fetchCharacterApiResponse(url: string): Promise<Response> {
   try {
     return await fetch(url);
   } catch {
@@ -68,15 +74,15 @@ async function fetchResponse(url: string): Promise<Response> {
   }
 }
 
-function createCharacterRequestUrl({
+function createCharacterPageRequestUrl({
+  currentPage,
   searchTerm,
-  page,
-}: CharacterPageRequest): string {
+}: CharacterPageRequestUrlOptions): string {
   const url = new URL(
     `${RICK_AND_MORTY_API_BASE_URL}${CHARACTER_ENDPOINT_PATH}`
   );
 
-  url.searchParams.set('page', String(normalizePageNumber(page)));
+  url.searchParams.set('page', String(currentPage));
 
   const trimmedSearchTerm = searchTerm.trim();
 
@@ -85,6 +91,12 @@ function createCharacterRequestUrl({
   }
 
   return url.toString();
+}
+
+function createCharacterDetailsRequestUrl(characterId: number): string {
+  const normalizedCharacterId = normalizeCharacterId(characterId);
+
+  return `${RICK_AND_MORTY_API_BASE_URL}${CHARACTER_ENDPOINT_PATH}/${normalizedCharacterId}`;
 }
 
 function normalizePageNumber(page: number): number {
@@ -104,11 +116,11 @@ function normalizeCharacterId(characterId: number): number {
 }
 
 function createCharacterApiErrorMessage(statusCode: number): string {
-  if (statusCode === HTTP_STATUS_NOT_FOUND) {
+  if (statusCode === HTTP_STATUS.notFound) {
     return APP_MESSAGES.apiErrors.notFound;
   }
 
-  if (statusCode === HTTP_STATUS_TOO_MANY_REQUESTS) {
+  if (statusCode === HTTP_STATUS.tooManyRequests) {
     return APP_MESSAGES.apiErrors.networkOrRateLimit;
   }
 
