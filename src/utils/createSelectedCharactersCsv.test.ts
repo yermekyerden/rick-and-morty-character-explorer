@@ -7,7 +7,8 @@ import {
   createSelectedCharactersCsvFileName,
 } from './createSelectedCharactersCsv';
 
-const APP_BASE_URL = 'https://example.com/rs-react-2026/?page=5&search=Rick';
+const APP_BASE_URL =
+  'https://example.com/rick-and-morty-character-explorer/?page=5&search=Rick';
 
 describe('createSelectedCharactersCsv', () => {
   it('creates CSV with header and selected character row', () => {
@@ -19,7 +20,7 @@ describe('createSelectedCharactersCsv', () => {
     expect(csvContent).toBe(
       [
         '"Name","Status","Species","Gender","Location","Description","Details URL"',
-        '"Rick Sanchez","Alive","Human","Male","Citadel of Ricks","Human, Male. Last known location: Citadel of Ricks.","https://example.com/rs-react-2026/?page=1&details=1"',
+        '"Rick Sanchez","Alive","Human","Male","Citadel of Ricks","Human, Male. Last known location: Citadel of Ricks.","https://example.com/rick-and-morty-character-explorer/?page=1&details=1"',
       ].join('\n')
     );
   });
@@ -48,7 +49,7 @@ describe('createSelectedCharactersCsvFileName', () => {
 describe('createCharacterDetailsUrl', () => {
   it('creates canonical details URL from app base URL', () => {
     expect(createCharacterDetailsUrl(25, APP_BASE_URL)).toBe(
-      'https://example.com/rs-react-2026/?page=1&details=25'
+      'https://example.com/rick-and-morty-character-explorer/?page=1&details=25'
     );
   });
 });

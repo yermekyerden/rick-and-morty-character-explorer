@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
-const GITHUB_PAGES_BASE_PATH = '/rs-react-2026/';
+const GITHUB_PAGES_BASE_PATH = '/rick-and-morty-character-explorer/';
 const LOCAL_BASE_PATH = '/';
 
 export default defineConfig(({ command }) => ({
