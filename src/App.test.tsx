@@ -1,162 +1,168 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter, useLocation } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fetchCharacterCards } from './api/charactersApi';
 import App from './App';
-import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
+import { fetchCharacterDetails, fetchCharacterPage } from './api/charactersApi';
 import { APP_MESSAGES } from './constants/messages';
-import { LAST_SEARCH_TERM_STORAGE_KEY } from './constants/storageKeys';
-import {
-  testCharacterCard,
-  testMortyCharacterCard,
-} from './test/testCharacters';
+import { testCharacterCard, testCharacterDetails } from './test/testCharacters';
+import type { CharacterCardModel } from './types/character';
 import { delay } from './utils/delay';
 
 vi.mock('./api/charactersApi', () => ({
-  fetchCharacterCards: vi.fn(),
+  fetchCharacterDetails: vi.fn(),
+  fetchCharacterPage: vi.fn(),
 }));
 
 vi.mock('./utils/delay', () => ({
   delay: vi.fn(),
 }));
 
-const fetchCharacterCardsMock = vi.mocked(fetchCharacterCards);
+const fetchCharacterPageMock = vi.mocked(fetchCharacterPage);
+const fetchCharacterDetailsMock = vi.mocked(fetchCharacterDetails);
 const delayMock = vi.mocked(delay);
 
-describe('App', () => {
+function createCharacterPage(
+  characters: CharacterCardModel[] = [testCharacterCard],
+  currentPage = 1,
+  totalPages = 5
+) {
+  return {
+    characters,
+    currentPage,
+    totalCount: characters.length,
+    totalPages,
+  };
+}
+
+function LocationProbe() {
+  const location = useLocation();
+
+  return (
+    <output aria-label="current route">
+      {location.pathname}
+      {location.search}
+    </output>
+  );
+}
+
+function renderApp(initialRoute = '/') {
+  render(
+    <MemoryRouter initialEntries={[initialRoute]}>
+      <App />
+      <LocationProbe />
+    </MemoryRouter>
+  );
+}
+
+describe('App master-detail routing', () => {
   beforeEach(() => {
     localStorage.clear();
 
-    fetchCharacterCardsMock.mockReset();
+    fetchCharacterPageMock.mockReset();
+    fetchCharacterDetailsMock.mockReset();
     delayMock.mockReset();
 
-    fetchCharacterCardsMock.mockResolvedValue([testCharacterCard]);
+    fetchCharacterPageMock.mockResolvedValue(createCharacterPage());
+    fetchCharacterDetailsMock.mockResolvedValue(testCharacterDetails);
     delayMock.mockResolvedValue(undefined);
   });
 
-  it('renders application intro and search form', () => {
-    const expectedTitle = APP_MESSAGES.app.title;
-    const expectedDescription = APP_MESSAGES.app.description;
-    const expectedSearchLabel = APP_MESSAGES.search.label;
+  it('opens character details from URL details parameter', async () => {
+    renderApp('/?page=2&details=1');
 
-    render(<App />);
-
-    expect(screen.getByRole('heading', { name: expectedTitle })).toBeVisible();
-    expect(screen.getByText(expectedDescription)).toBeVisible();
-    expect(screen.getByLabelText(expectedSearchLabel)).toBeVisible();
-  });
-
-  it('loads first page of characters on initial render', async () => {
-    const expectedSearchTerm = '';
-    const expectedCharacterName = testCharacterCard.name;
-
-    render(<App />);
+    const detailsPanel = await screen.findByLabelText('Character details');
 
     expect(
-      await screen.findByRole('heading', { name: expectedCharacterName })
+      await within(detailsPanel).findByRole('heading', {
+        name: testCharacterDetails.name,
+      })
     ).toBeVisible();
-    expect(fetchCharacterCardsMock).toHaveBeenCalledWith(expectedSearchTerm);
-  });
 
-  it('uses saved localStorage search term for initial load', async () => {
-    const savedSearchTerm = 'Rick';
-    const expectedCharacterName = testCharacterCard.name;
+    expect(
+      within(detailsPanel).getByText(testCharacterDetails.originName)
+    ).toBeVisible();
 
-    localStorage.setItem(LAST_SEARCH_TERM_STORAGE_KEY, savedSearchTerm);
+    expect(fetchCharacterPageMock).toHaveBeenCalledWith({
+      searchTerm: '',
+      page: 2,
+    });
 
-    render(<App />);
-
-    expect(screen.getByLabelText(APP_MESSAGES.search.label)).toHaveValue(
-      savedSearchTerm
+    expect(fetchCharacterDetailsMock).toHaveBeenCalledWith(
+      testCharacterDetails.id
     );
-    expect(
-      await screen.findByRole('heading', { name: expectedCharacterName })
-    ).toBeVisible();
-    expect(fetchCharacterCardsMock).toHaveBeenCalledWith(savedSearchTerm);
+
+    expect(screen.getByLabelText('current route')).toHaveTextContent(
+      '/?page=2&details=1'
+    );
   });
 
-  it('shows loading state while characters are loading', () => {
-    fetchCharacterCardsMock.mockReturnValue(new Promise(() => {}));
-
-    render(<App />);
-
-    expect(screen.getByText(APP_MESSAGES.loader.message)).toBeVisible();
-  });
-
-  it('loads matching characters when user submits search', async () => {
+  it('opens details through Outlet and closes the details panel', async () => {
     const user = userEvent.setup();
-    const searchTerm = 'Morty';
-    const expectedCharacterName = testMortyCharacterCard.name;
 
-    render(<App />);
+    renderApp('/?page=1');
 
     await screen.findByRole('heading', {
       name: testCharacterCard.name,
     });
 
-    fetchCharacterCardsMock.mockResolvedValueOnce([testMortyCharacterCard]);
-
-    await user.type(
-      screen.getByLabelText(APP_MESSAGES.search.label),
-      searchTerm
-    );
     await user.click(
       screen.getByRole('button', {
-        name: APP_MESSAGES.search.button,
+        name: APP_MESSAGES.characterCard.openDetailsLabel(
+          testCharacterCard.name
+        ),
       })
     );
 
+    const detailsPanel = await screen.findByLabelText('Character details');
+
     expect(
-      await screen.findByRole('heading', { name: expectedCharacterName })
-    ).toBeVisible();
-    expect(fetchCharacterCardsMock).toHaveBeenLastCalledWith(searchTerm);
-  });
-
-  it('shows API error message when character loading fails', async () => {
-    const expectedErrorMessage = APP_MESSAGES.apiErrors.notFound;
-
-    fetchCharacterCardsMock.mockRejectedValue(new Error(expectedErrorMessage));
-
-    render(<App />);
-
-    expect(await screen.findByText(expectedErrorMessage)).toBeVisible();
-    expect(
-      screen.getByRole('heading', {
-        name: APP_MESSAGES.noResults.title,
+      await within(detailsPanel).findByRole('heading', {
+        name: testCharacterDetails.name,
       })
     ).toBeVisible();
-  });
 
-  it('shows unknown API error message when rejected value is not an Error', async () => {
-    const expectedErrorMessage = APP_MESSAGES.apiErrors.unknown;
+    expect(screen.getByLabelText('current route')).toHaveTextContent(
+      '/?page=1&details=1'
+    );
 
-    fetchCharacterCardsMock.mockRejectedValue('Unexpected API failure');
-
-    render(<App />);
-
-    expect(await screen.findByText(expectedErrorMessage)).toBeVisible();
-    expect(
-      screen.getByRole('heading', {
-        name: APP_MESSAGES.noResults.title,
+    await user.click(
+      within(detailsPanel).getByRole('button', {
+        name: APP_MESSAGES.characterDetails.closeLabel,
       })
-    ).toBeVisible();
-  });
+    );
 
-  it('stores submitted search term in localStorage', async () => {
-    const user = userEvent.setup();
-    const searchTerm = 'Summer';
-
-    render(<App />);
-
-    await screen.findByRole('heading', {
-      name: testCharacterCard.name,
+    await waitFor(() => {
+      expect(
+        screen.queryByLabelText('Character details')
+      ).not.toBeInTheDocument();
     });
 
-    fetchCharacterCardsMock.mockResolvedValueOnce([testCharacterCard]);
+    expect(screen.getByLabelText('current route')).toHaveTextContent(
+      '/?page=1'
+    );
+  });
 
+  it('closes selected details when user submits a new search', async () => {
+    const user = userEvent.setup();
+    const nextSearchTerm = 'Morty';
+
+    renderApp('/?page=2&search=Rick&details=1');
+
+    const detailsPanel = await screen.findByLabelText('Character details');
+
+    expect(
+      await within(detailsPanel).findByRole('heading', {
+        name: testCharacterDetails.name,
+      })
+    ).toBeVisible();
+
+    fetchCharacterPageMock.mockResolvedValueOnce(createCharacterPage());
+
+    await user.clear(screen.getByLabelText(APP_MESSAGES.search.label));
     await user.type(
       screen.getByLabelText(APP_MESSAGES.search.label),
-      searchTerm
+      nextSearchTerm
     );
     await user.click(
       screen.getByRole('button', {
@@ -165,42 +171,13 @@ describe('App', () => {
     );
 
     await waitFor(() => {
-      expect(localStorage.getItem(LAST_SEARCH_TERM_STORAGE_KEY)).toBe(
-        searchTerm
+      expect(screen.getByLabelText('current route')).toHaveTextContent(
+        '/?page=1&search=Morty'
       );
     });
-  });
-
-  it('shows error boundary fallback when simulated error is triggered', async () => {
-    const user = userEvent.setup();
-    const expectedFallbackTitle = APP_MESSAGES.errorBoundary.title;
-
-    const consoleError = vi
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
-
-    render(
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
-    );
-
-    await screen.findByRole('heading', {
-      name: testCharacterCard.name,
-    });
-
-    await user.click(
-      screen.getByRole('button', {
-        name: APP_MESSAGES.errorTest.button,
-      })
-    );
 
     expect(
-      screen.getByRole('heading', {
-        name: expectedFallbackTitle,
-      })
-    ).toBeVisible();
-
-    consoleError.mockRestore();
+      screen.queryByLabelText('Character details')
+    ).not.toBeInTheDocument();
   });
 });

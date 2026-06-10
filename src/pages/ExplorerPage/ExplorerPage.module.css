@@ -1,6 +1,6 @@
 .shell {
   min-height: 100vh;
-  padding: 48px 24px;
+  padding: clamp(2rem, 4vw, 4rem) clamp(1rem, 3vw, 3rem);
   background:
     radial-gradient(
       circle at 12% 8%,
@@ -20,14 +20,26 @@
     );
 }
 
-.searchSection,
+.searchSection {
+  width: min(100%, 1120px);
+  margin-inline: auto;
+  margin-bottom: 32px;
+}
+
 .resultsSection {
-  width: min(100%, var(--page-max-width));
+  width: min(100%, 1760px);
+  display: grid;
+  gap: 24px;
+  align-items: start;
   margin-inline: auto;
 }
 
-.searchSection {
-  margin-bottom: 32px;
+.resultsSectionWithDetails {
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 440px);
+}
+
+.resultsPanel {
+  min-width: 0;
 }
 
 .intro {
@@ -58,6 +70,20 @@
   margin: 22px auto 0;
   color: var(--color-text-secondary);
   font-size: 18px;
+}
+
+.detailsPanelSlot {
+  min-width: 0;
+}
+
+@media (max-width: 1180px) {
+  .resultsSectionWithDetails {
+    grid-template-columns: 1fr;
+  }
+
+  .detailsPanelSlot {
+    order: -1;
+  }
 }
 
 @media (max-width: 720px) {

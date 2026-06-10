@@ -1,9 +1,10 @@
-import { Component } from 'react';
+import { APP_MESSAGES } from '../../constants/messages';
 import type { CharacterCardModel } from '../../types/character';
 import styles from './CharacterCard.module.css';
 
 interface CharacterCardProps {
   character: CharacterCardModel;
+  onSelect?: (characterId: number) => void;
 }
 
 function getStatusClassName(status: CharacterCardModel['status']): string {
@@ -18,36 +19,61 @@ function getStatusClassName(status: CharacterCardModel['status']): string {
   return styles.unknown;
 }
 
-class CharacterCard extends Component<CharacterCardProps> {
-  render() {
-    return (
-      <article className={styles.card}>
+function CharacterCard({ character, onSelect }: CharacterCardProps) {
+  function handleDetailsClick() {
+    onSelect?.(character.id);
+  }
+
+  return (
+    <article
+      className={`${styles.card} ${getStatusClassName(character.status)}`}
+      aria-label={`${character.name} character dossier`}
+    >
+      <div className={styles.imageFrame}>
         <img
           className={styles.image}
-          src={this.props.character.imageUrl}
-          alt={this.props.character.name}
+          src={character.imageUrl}
+          alt={character.name}
         />
 
-        <div>
-          <div className={styles.header}>
-            <h3 className={styles.name}>{this.props.character.name}</h3>
+        <span className={styles.statusBadge}>{character.status}</span>
+      </div>
 
-            <span
-              className={`${styles.badge} ${getStatusClassName(
-                this.props.character.status
-              )}`}
-            >
-              {this.props.character.status}
-            </span>
+      <div className={styles.content}>
+        <h3 className={styles.name}>{character.name}</h3>
+
+        <dl className={styles.metaList}>
+          <div className={styles.metaRow}>
+            <dt>Species</dt>
+            <dd>{character.species}</dd>
           </div>
 
-          <p className={styles.description}>
-            {this.props.character.description}
-          </p>
-        </div>
-      </article>
-    );
-  }
+          <div className={styles.metaRow}>
+            <dt>Gender</dt>
+            <dd>{character.gender}</dd>
+          </div>
+
+          <div className={styles.metaRow}>
+            <dt>Location</dt>
+            <dd className={styles.locationValue}>{character.locationName}</dd>
+          </div>
+        </dl>
+
+        {onSelect !== undefined ? (
+          <button
+            className={styles.detailsButton}
+            type="button"
+            aria-label={APP_MESSAGES.characterCard.openDetailsLabel(
+              character.name
+            )}
+            onClick={handleDetailsClick}
+          >
+            {APP_MESSAGES.characterCard.openDetails}
+          </button>
+        ) : null}
+      </div>
+    </article>
+  );
 }
 
 export default CharacterCard;

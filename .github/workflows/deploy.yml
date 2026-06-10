@@ -1,8 +1,10 @@
-name: Deploy to GitHub Pages
+name: Validate and Deploy
 
 on:
   push:
-    branches: ['class-components']
+    branches: ['hooks-and-routing']
+  pull_request:
+    branches: ['unit-testing']
   workflow_dispatch:
 
 permissions:
@@ -15,7 +17,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Build project
+        run: npm run build
+
   deploy:
+    needs: validate
+    if: github.event_name == 'push'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -34,9 +63,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Check code
-        run: npm run lint
 
       - name: Build project
         run: npm run build

@@ -1,92 +1,227 @@
 .card {
-  display: grid;
-  grid-template-columns: 76px minmax(0, 1fr);
-  gap: 16px;
-  align-items: center;
-  padding: 12px;
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius-card);
-  background: var(--color-surface-card);
+  --status-rgb: 134 239 172;
+
+  position: relative;
+  height: 100%;
+  min-height: 388px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgb(var(--status-rgb) / 0.34);
+  border-radius: 24px;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgb(var(--status-rgb) / 0.18),
+      transparent 16rem
+    ),
+    linear-gradient(180deg, rgb(15 23 42 / 0.94), rgb(2 6 23 / 0.96));
+  box-shadow:
+    0 18px 52px rgb(0 0 0 / 0.24),
+    inset 0 0 0 1px rgb(255 255 255 / 0.04);
   transition:
     transform var(--transition-fast),
     border-color var(--transition-fast),
     box-shadow var(--transition-fast);
 }
 
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  z-index: 1;
+  pointer-events: none;
+  border: 1px solid rgb(var(--status-rgb) / 0.18);
+  border-radius: 18px;
+}
+
 .card:hover {
-  transform: translateY(-1px);
-  border-color: var(--border-subtle);
-  box-shadow: var(--shadow-card);
-}
-
-.image {
-  width: 76px;
-  height: 76px;
-  border-radius: var(--radius-image);
-  object-fit: cover;
-}
-
-.header {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 6px;
-}
-
-.name {
-  margin: 0;
-  color: var(--color-text-primary);
-  font-size: 18px;
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  min-height: 22px;
-  padding: 0 8px;
-  border-radius: var(--radius-pill);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  transform: translateY(-4px);
+  border-color: rgb(var(--status-rgb) / 0.6);
+  box-shadow:
+    0 24px 70px rgb(0 0 0 / 0.32),
+    0 0 36px rgb(var(--status-rgb) / 0.16),
+    inset 0 0 0 1px rgb(255 255 255 / 0.06);
 }
 
 .alive {
-  color: #bbf7d0;
-  background: rgba(34, 197, 94, 0.16);
-  border: 1px solid var(--border-accent);
+  --status-rgb: 134 239 172;
 }
 
 .dead {
-  color: var(--color-danger-text);
-  background: rgba(239, 68, 68, 0.16);
-  border: 1px solid var(--border-danger);
+  --status-rgb: 248 113 113;
 }
 
 .unknown {
-  color: var(--color-neutral);
-  background: rgba(148, 163, 184, 0.16);
-  border: 1px solid rgba(148, 163, 184, 0.28);
+  --status-rgb: 148 163 184;
 }
 
-.description {
+.imageFrame {
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  margin: 10px 10px 0;
+  border: 1px solid rgb(var(--status-rgb) / 0.26);
+  border-radius: 18px;
+  background: rgb(2 6 23 / 0.72);
+  flex-shrink: 0;
+}
+
+.imageFrame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      115deg,
+      transparent 0 28%,
+      rgb(255 255 255 / 0.14) 32%,
+      transparent 38%
+    ),
+    linear-gradient(180deg, transparent 52%, rgb(2 6 23 / 0.52));
+  mix-blend-mode: screen;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 240ms ease;
+}
+
+.card:hover .image {
+  transform: scale(1.04);
+}
+
+.statusBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border: 1px solid rgb(var(--status-rgb) / 0.42);
+  border-radius: var(--radius-pill);
+  color: rgb(var(--status-rgb));
+  background: rgb(2 6 23 / 0.72);
+  box-shadow: 0 0 24px rgb(var(--status-rgb) / 0.18);
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  min-height: 0;
+  flex: 1;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 0.8rem;
+  padding: 1rem 1.2rem 1.15rem;
+}
+
+.name {
+  min-height: 2.35em;
   margin: 0;
+  color: var(--color-text-primary);
+  font-size: clamp(1rem, 0.7vw + 0.82rem, 1.18rem);
+  line-height: 1.16;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.metaList {
+  min-height: 0;
+  display: grid;
+  gap: 0.56rem;
+  align-content: start;
+  margin: 0;
+  padding-left: 0.12rem;
+}
+
+.metaRow {
+  min-width: 0;
+  display: grid;
+  gap: 0.2rem;
+  align-content: start;
+}
+
+.metaRow dt {
   color: var(--color-text-muted);
-  font-size: 14px;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.metaRow dd {
+  min-width: 0;
+  margin: 0;
+  padding-left: 0.1rem;
+  color: var(--color-text-primary);
+  font-size: 0.86rem;
+  font-weight: 750;
+  line-height: 1.24;
+  overflow-wrap: anywhere;
+}
+
+.locationValue {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.detailsButton {
+  min-height: 36px;
+  border: 1px solid rgb(var(--status-rgb) / 0.3);
+  border-radius: var(--radius-control);
+  color: rgb(var(--status-rgb));
+  background: rgb(2 6 23 / 0.36);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  align-self: end;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    transform var(--transition-fast),
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.detailsButton:hover {
+  transform: translateY(-1px);
+  border-color: rgb(var(--status-rgb) / 0.58);
+  background: rgb(var(--status-rgb) / 0.1);
+  box-shadow: 0 12px 28px rgb(var(--status-rgb) / 0.12);
+}
+
+.detailsButton:focus-visible {
+  outline: 2px solid rgb(var(--status-rgb));
+  outline-offset: 2px;
 }
 
 @media (max-width: 720px) {
   .card {
-    grid-template-columns: 1fr;
-    text-align: center;
+    min-height: 360px;
   }
 
-  .image {
-    margin-inline: auto;
-  }
-
-  .header {
-    justify-content: center;
+  .content {
+    padding: 0.95rem 1rem 1rem;
   }
 }

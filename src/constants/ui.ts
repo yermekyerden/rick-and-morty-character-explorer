@@ -1,1 +1,1 @@
-export const SKELETON_CARD_COUNT = 5;
+export const SKELETON_CARD_COUNT = 20;

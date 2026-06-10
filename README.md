@@ -1,7 +1,49 @@
-# RS React 2026: Tiny Portal Lab
+# Character Explorer
 
-A private React training lab for RS School tasks.
+Rick and Morty character explorer built with React, TypeScript, React Router, and Vitest.
 
-Current mission: build a clean, typed, class-component React app without turning the codebase into an interdimensional mess.
+## Features
 
-The first portal opens with **Character Explorer** — a small Rick and Morty API app focused on search, local storage, API states, and error boundaries.
+- Character search with saved last query
+- URL-synced pagination
+- Master-detail view with React Router Outlet
+- Character dossier panel with loading, error, and close states
+- About and 404 pages
+- Error boundary
+- Responsive portal-themed UI
+
+## Stack
+
+- React
+- TypeScript
+- React Router
+- Vite
+- Vitest
+- React Testing Library
+- CSS Modules
+
+## Scripts
+
+```bash
+npm ci
+npm run dev
+npm run lint
+npm run test
+npm run test:coverage
+npm run build
+```
+
+## Coverage
+
+```text
+Statements: 93.57%
+Branches:   87.83%
+Functions:  98.75%
+Lines:      93.57%
+```
+
+## Author
+
+Yermek Yerdenov
+
+[RS School React Course](https://rs.school/courses/reactjs)

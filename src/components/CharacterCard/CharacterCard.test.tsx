@@ -1,24 +1,50 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
+import { APP_MESSAGES } from '../../constants/messages';
 import { testCharacterCard } from '../../test/testCharacters';
 import CharacterCard from './CharacterCard';
 
 describe('CharacterCard', () => {
-  it('renders character image, name, status and description', () => {
-    const expectedName = testCharacterCard.name;
-    const expectedStatus = testCharacterCard.status;
-    const expectedDescription = testCharacterCard.description;
-    const expectedImageUrl = testCharacterCard.imageUrl;
-
+  it('renders character image, name, status and structured dossier fields', () => {
     render(<CharacterCard character={testCharacterCard} />);
 
     const characterImage = screen.getByRole('img', {
-      name: expectedName,
+      name: testCharacterCard.name,
     });
 
-    expect(screen.getByRole('heading', { name: expectedName })).toBeVisible();
-    expect(screen.getByText(expectedStatus)).toBeVisible();
-    expect(screen.getByText(expectedDescription)).toBeVisible();
-    expect(characterImage).toHaveAttribute('src', expectedImageUrl);
+    expect(
+      screen.getByRole('article', {
+        name: `${testCharacterCard.name} character dossier`,
+      })
+    ).toBeVisible();
+    expect(
+      screen.getByRole('heading', { name: testCharacterCard.name })
+    ).toBeVisible();
+    expect(screen.getByText(testCharacterCard.status)).toBeVisible();
+    expect(screen.getByText('Species')).toBeVisible();
+    expect(screen.getByText(testCharacterCard.species)).toBeVisible();
+    expect(screen.getByText('Gender')).toBeVisible();
+    expect(screen.getByText(testCharacterCard.gender)).toBeVisible();
+    expect(screen.getByText('Location')).toBeVisible();
+    expect(screen.getByText(testCharacterCard.locationName)).toBeVisible();
+    expect(characterImage).toHaveAttribute('src', testCharacterCard.imageUrl);
+  });
+
+  it('calls onSelect with character id when user opens dossier', async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+
+    render(<CharacterCard character={testCharacterCard} onSelect={onSelect} />);
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.characterCard.openDetailsLabel(
+          testCharacterCard.name
+        ),
+      })
+    );
+
+    expect(onSelect).toHaveBeenCalledWith(testCharacterCard.id);
   });
 });
