@@ -1,0 +1,88 @@
+.card {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid rgba(248, 113, 113, 0.22);
+  border-radius: var(--radius-card);
+  background: rgba(127, 29, 29, 0.14);
+}
+
+.icon {
+  width: 76px;
+  height: 76px;
+  border-radius: var(--radius-image);
+  background:
+    radial-gradient(
+      circle at 35% 35%,
+      var(--color-danger-soft) 0 8%,
+      transparent 9%
+    ),
+    radial-gradient(
+      circle,
+      #fb7185 0 18%,
+      var(--color-danger-strong) 42%,
+      var(--color-danger-dark) 72%
+    );
+  box-shadow:
+    0 0 20px rgba(239, 68, 68, 0.38),
+    0 0 48px rgba(244, 63, 94, 0.18);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.title {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--border-danger);
+  border-radius: var(--radius-pill);
+  color: var(--color-danger-text);
+  background: rgba(239, 68, 68, 0.16);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.message {
+  margin: 0;
+  color: var(--color-danger-text);
+  font-size: 14px;
+}
+
+.hint {
+  margin: 6px 0 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+@media (max-width: 720px) {
+  .card {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .icon {
+    margin-inline: auto;
+  }
+
+  .header {
+    justify-content: center;
+  }
+}

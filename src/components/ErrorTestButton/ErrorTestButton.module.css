@@ -1,0 +1,27 @@
+.button {
+  min-width: 148px;
+  min-height: 44px;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: var(--radius-control);
+  color: var(--color-danger-text);
+  background: rgba(127, 29, 29, 0.22);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(248, 113, 113, 0.55);
+  background: rgba(127, 29, 29, 0.3);
+  box-shadow: var(--shadow-danger-button);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-danger);
+  outline-offset: 2px;
+}
