@@ -5,18 +5,34 @@ interface UseLocalStorageValueResult {
   setValue: (nextValue: string) => void;
 }
 
+function getStoredValue(storageKey: string, fallbackValue: string): string {
+  try {
+    return localStorage.getItem(storageKey) ?? fallbackValue;
+  } catch {
+    return fallbackValue;
+  }
+}
+
+function setStoredValue(storageKey: string, nextValue: string): void {
+  try {
+    localStorage.setItem(storageKey, nextValue);
+  } catch {
+    return;
+  }
+}
+
 export function useLocalStorageValue(
   storageKey: string,
   fallbackValue = ''
 ): UseLocalStorageValueResult {
   const initialValue = useMemo(
-    () => localStorage.getItem(storageKey) ?? fallbackValue,
+    () => getStoredValue(storageKey, fallbackValue),
     [fallbackValue, storageKey]
   );
 
   const setValue = useCallback(
     (nextValue: string) => {
-      localStorage.setItem(storageKey, nextValue);
+      setStoredValue(storageKey, nextValue);
     },
     [storageKey]
   );

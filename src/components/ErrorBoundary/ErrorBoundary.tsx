@@ -34,22 +34,34 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     if (this.state.hasError) {
       return (
         <main className={styles.shell}>
-          <section className={styles.card} aria-live="assertive">
+          <section className={styles.panel} aria-live="assertive">
             <p className={styles.kicker}>{APP_MESSAGES.errorBoundary.kicker}</p>
 
             <h1 className={styles.title}>{APP_MESSAGES.errorBoundary.title}</h1>
 
+            <div className={styles.diagnostics} aria-hidden="true">
+              <div className={styles.statusLight} />
+
+              <div className={styles.signalStack}>
+                <span className={styles.signalLine} />
+                <span className={styles.signalLineShort} />
+                <span className={styles.signalLineBroken} />
+              </div>
+
+              <p className={styles.diagnosticsLabel}>
+                {APP_MESSAGES.errorBoundary.diagnosticsLabel}
+              </p>
+            </div>
+
             <p className={styles.text}>{APP_MESSAGES.errorBoundary.text}</p>
 
-            <div className={styles.actions}>
-              <button
-                className={styles.button}
-                type="button"
-                onClick={this.handleReloadClick}
-              >
-                {APP_MESSAGES.errorBoundary.reloadButton}
-              </button>
-            </div>
+            <button
+              className={styles.button}
+              type="button"
+              onClick={this.handleReloadClick}
+            >
+              {APP_MESSAGES.errorBoundary.reloadButton}
+            </button>
           </section>
         </main>
       );

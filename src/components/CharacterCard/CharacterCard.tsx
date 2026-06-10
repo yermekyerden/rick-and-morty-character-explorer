@@ -1,34 +1,126 @@
+import type { ChangeEvent, MouseEvent } from 'react';
 import { APP_MESSAGES } from '../../constants/messages';
-import type { CharacterCardModel } from '../../types/character';
+import {
+  CHARACTER_STATUS,
+  type CharacterCardModel,
+} from '../../types/character';
 import styles from './CharacterCard.module.css';
 
 interface CharacterCardProps {
   character: CharacterCardModel;
+  isSelected?: boolean;
   onSelect?: (characterId: number) => void;
+  onSelectionToggle?: (character: CharacterCardModel) => void;
+}
+
+interface CreateCardClassNameOptions {
+  canOpenDossier: boolean;
+  isSelected: boolean;
+  status: CharacterCardModel['status'];
 }
 
 function getStatusClassName(status: CharacterCardModel['status']): string {
-  if (status === 'Alive') {
+  if (status === CHARACTER_STATUS.alive) {
     return styles.alive;
   }
 
-  if (status === 'Dead') {
+  if (status === CHARACTER_STATUS.dead) {
     return styles.dead;
   }
 
   return styles.unknown;
 }
 
-function CharacterCard({ character, onSelect }: CharacterCardProps) {
-  function handleDetailsClick() {
-    onSelect?.(character.id);
+function createCardClassName({
+  canOpenDossier,
+  isSelected,
+  status,
+}: CreateCardClassNameOptions): string {
+  const classNames = [styles.card, getStatusClassName(status)];
+
+  if (isSelected) {
+    classNames.push(styles.selected);
   }
+
+  if (canOpenDossier) {
+    classNames.push(styles.interactive);
+  }
+
+  return classNames.join(' ');
+}
+
+function CharacterCard({
+  character,
+  isSelected = false,
+  onSelect,
+  onSelectionToggle,
+}: CharacterCardProps) {
+  function openCharacterDossier() {
+    if (onSelect) {
+      onSelect(character.id);
+    }
+  }
+
+  function toggleCharacterSelection() {
+    if (onSelectionToggle) {
+      onSelectionToggle(character);
+    }
+  }
+
+  function handleCardClick() {
+    openCharacterDossier();
+  }
+
+  function handleDetailsButtonClick(event: MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation();
+    openCharacterDossier();
+  }
+
+  function handleSelectionChange(event: ChangeEvent<HTMLInputElement>) {
+    event.stopPropagation();
+    toggleCharacterSelection();
+  }
+
+  function handleSelectionClick(event: MouseEvent<HTMLInputElement>) {
+    event.stopPropagation();
+  }
+
+  function handleSelectionLabelClick(event: MouseEvent<HTMLLabelElement>) {
+    event.stopPropagation();
+  }
+
+  const canOpenDossier = Boolean(onSelect);
+  const canToggleSelection = Boolean(onSelectionToggle);
+  const cardClassName = createCardClassName({
+    canOpenDossier,
+    isSelected,
+    status: character.status,
+  });
 
   return (
     <article
-      className={`${styles.card} ${getStatusClassName(character.status)}`}
+      className={cardClassName}
       aria-label={`${character.name} character dossier`}
+      onClick={canOpenDossier ? handleCardClick : undefined}
     >
+      {canToggleSelection ? (
+        <label
+          className={styles.selectionControl}
+          onClick={handleSelectionLabelClick}
+        >
+          <input
+            className={styles.selectionInput}
+            type="checkbox"
+            checked={isSelected}
+            aria-label={`Select ${character.name}`}
+            onChange={handleSelectionChange}
+            onClick={handleSelectionClick}
+          />
+
+          <span className={styles.selectionBox} aria-hidden="true" />
+        </label>
+      ) : null}
+
       <div className={styles.imageFrame}>
         <img
           className={styles.image}
@@ -59,14 +151,14 @@ function CharacterCard({ character, onSelect }: CharacterCardProps) {
           </div>
         </dl>
 
-        {onSelect !== undefined ? (
+        {canOpenDossier ? (
           <button
             className={styles.detailsButton}
             type="button"
             aria-label={APP_MESSAGES.characterCard.openDetailsLabel(
               character.name
             )}
-            onClick={handleDetailsClick}
+            onClick={handleDetailsButtonClick}
           >
             {APP_MESSAGES.characterCard.openDetails}
           </button>

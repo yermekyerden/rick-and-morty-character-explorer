@@ -17,6 +17,9 @@ import type {
   CharacterPageRequest,
 } from '../types/character';
 
+const HTTP_STATUS_NOT_FOUND = 404;
+const HTTP_STATUS_TOO_MANY_REQUESTS = 429;
+
 export async function fetchCharacterCards(
   searchTerm: string
 ): Promise<CharacterCardModel[]> {
@@ -33,8 +36,11 @@ export async function fetchCharacterPage({
   page,
 }: CharacterPageRequest): Promise<CharacterPageModel> {
   const currentPage = normalizePageNumber(page);
-  const url = createCharacterRequestUrl({ searchTerm, page: currentPage });
-  const response = await fetchJson(url);
+  const url = createCharacterRequestUrl({
+    searchTerm,
+    page: currentPage,
+  });
+  const response = await fetchResponse(url);
 
   if (!response.ok) {
     throw new Error(createCharacterApiErrorMessage(response.status));
@@ -55,7 +61,7 @@ export async function fetchCharacterDetails(
 ): Promise<CharacterDetailsModel> {
   const normalizedCharacterId = normalizeCharacterId(characterId);
   const url = `${RICK_AND_MORTY_API_BASE_URL}${CHARACTER_ENDPOINT_PATH}/${normalizedCharacterId}`;
-  const response = await fetchJson(url);
+  const response = await fetchResponse(url);
 
   if (!response.ok) {
     throw new Error(createCharacterApiErrorMessage(response.status));
@@ -66,7 +72,7 @@ export async function fetchCharacterDetails(
   return mapCharacterDtoToDetailsModel(data);
 }
 
-async function fetchJson(url: string): Promise<Response> {
+async function fetchResponse(url: string): Promise<Response> {
   try {
     return await fetch(url);
   } catch {
@@ -110,11 +116,11 @@ function normalizeCharacterId(characterId: number): number {
 }
 
 function createCharacterApiErrorMessage(statusCode: number): string {
-  if (statusCode === 404) {
+  if (statusCode === HTTP_STATUS_NOT_FOUND) {
     return APP_MESSAGES.apiErrors.notFound;
   }
 
-  if (statusCode === 429) {
+  if (statusCode === HTTP_STATUS_TOO_MANY_REQUESTS) {
     return APP_MESSAGES.apiErrors.networkOrRateLimit;
   }
 

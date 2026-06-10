@@ -3,9 +3,14 @@ import { fetchCharacterDetails } from '../../api/charactersApi';
 import { APP_MESSAGES } from '../../constants/messages';
 import { MIN_LOADING_TIME_IN_MS } from '../../constants/timing';
 import { useCharacterSearchParams } from '../../hooks/useCharacterSearchParams';
-import type { CharacterDetailsModel } from '../../types/character';
+import {
+  CHARACTER_STATUS,
+  type CharacterDetailsModel,
+} from '../../types/character';
 import { delay } from '../../utils/delay';
 import styles from './CharacterDetailsPanel.module.css';
+
+const ISO_DATE_LENGTH = 10;
 
 type CharacterDetailsState =
   | {
@@ -22,12 +27,17 @@ type CharacterDetailsState =
       errorMessage: string;
     };
 
+interface CharacterDetailRow {
+  label: string;
+  value: string | number;
+}
+
 function getStatusClassName(status: CharacterDetailsModel['status']): string {
-  if (status === 'Alive') {
+  if (status === CHARACTER_STATUS.alive) {
     return styles.alive;
   }
 
-  if (status === 'Dead') {
+  if (status === CHARACTER_STATUS.dead) {
     return styles.dead;
   }
 
@@ -35,7 +45,51 @@ function getStatusClassName(status: CharacterDetailsModel['status']): string {
 }
 
 function formatCreatedDate(createdAt: string): string {
-  return createdAt.slice(0, 10);
+  return createdAt.slice(0, ISO_DATE_LENGTH);
+}
+
+function getCharacterDetailsErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return APP_MESSAGES.apiErrors.unknown;
+}
+
+function createCharacterDetailRows(
+  characterDetails: CharacterDetailsModel
+): CharacterDetailRow[] {
+  return [
+    {
+      label: APP_MESSAGES.characterDetails.fields.type,
+      value: characterDetails.type,
+    },
+    {
+      label: APP_MESSAGES.characterDetails.fields.origin,
+      value: characterDetails.originName,
+    },
+    {
+      label: APP_MESSAGES.characterDetails.fields.location,
+      value: characterDetails.locationName,
+    },
+    {
+      label: APP_MESSAGES.characterDetails.fields.episodes,
+      value: characterDetails.episodeCount,
+    },
+    {
+      label: APP_MESSAGES.characterDetails.fields.created,
+      value: formatCreatedDate(characterDetails.createdAt),
+    },
+  ];
+}
+
+function renderDetailRows(detailRows: CharacterDetailRow[]) {
+  return detailRows.map((detailRow) => (
+    <div className={styles.metaRow} key={detailRow.label}>
+      <dt>{detailRow.label}</dt>
+      <dd>{detailRow.value}</dd>
+    </div>
+  ));
 }
 
 function CharacterDetailsPanel() {
@@ -79,10 +133,7 @@ function CharacterDetailsPanel() {
         setDetailsState({
           status: 'failed',
           characterId,
-          errorMessage:
-            error instanceof Error
-              ? error.message
-              : APP_MESSAGES.apiErrors.unknown,
+          errorMessage: getCharacterDetailsErrorMessage(error),
         });
       }
     }
@@ -176,43 +227,24 @@ function CharacterDetailsPanel() {
           </div>
 
           <div className={styles.content}>
-            <h3 className={styles.name}>{characterDetails.name}</h3>
+            <div className={styles.identity}>
+              <p className={styles.identityLabel}>Dossier subject</p>
+
+              <h3 className={styles.name}>{characterDetails.name}</h3>
+
+              <div className={styles.factList}>
+                <span className={styles.factBadge}>
+                  {characterDetails.species}
+                </span>
+
+                <span className={styles.factBadge}>
+                  {characterDetails.gender}
+                </span>
+              </div>
+            </div>
 
             <dl className={styles.metaList}>
-              <div className={styles.metaRow}>
-                <dt>{APP_MESSAGES.characterDetails.fields.species}</dt>
-                <dd>{characterDetails.species}</dd>
-              </div>
-
-              <div className={styles.metaRow}>
-                <dt>{APP_MESSAGES.characterDetails.fields.type}</dt>
-                <dd>{characterDetails.type}</dd>
-              </div>
-
-              <div className={styles.metaRow}>
-                <dt>{APP_MESSAGES.characterDetails.fields.gender}</dt>
-                <dd>{characterDetails.gender}</dd>
-              </div>
-
-              <div className={styles.metaRow}>
-                <dt>{APP_MESSAGES.characterDetails.fields.origin}</dt>
-                <dd>{characterDetails.originName}</dd>
-              </div>
-
-              <div className={styles.metaRow}>
-                <dt>{APP_MESSAGES.characterDetails.fields.location}</dt>
-                <dd>{characterDetails.locationName}</dd>
-              </div>
-
-              <div className={styles.metaRow}>
-                <dt>{APP_MESSAGES.characterDetails.fields.episodes}</dt>
-                <dd>{characterDetails.episodeCount}</dd>
-              </div>
-
-              <div className={styles.metaRow}>
-                <dt>{APP_MESSAGES.characterDetails.fields.created}</dt>
-                <dd>{formatCreatedDate(characterDetails.createdAt)}</dd>
-              </div>
+              {renderDetailRows(createCharacterDetailRows(characterDetails))}
             </dl>
           </div>
         </article>

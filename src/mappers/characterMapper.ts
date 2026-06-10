@@ -1,9 +1,17 @@
-import type {
-  CharacterCardModel,
-  CharacterDetailsModel,
-  CharacterDto,
-  CharacterStatus,
+import {
+  CHARACTER_STATUS,
+  type CharacterCardModel,
+  type CharacterDetailsModel,
+  type CharacterDto,
+  type CharacterStatus,
 } from '../types/character';
+
+const FALLBACK_CHARACTER_TYPE = 'None';
+const CHARACTER_LOCATION_DESCRIPTION_LABEL = 'Last known location';
+
+type SupportedCharacterStatus =
+  | typeof CHARACTER_STATUS.alive
+  | typeof CHARACTER_STATUS.dead;
 
 export function mapCharacterDtoToCardModel(
   character: CharacterDto
@@ -28,7 +36,7 @@ export function mapCharacterDtoToDetailsModel(
     name: character.name,
     status: normalizeCharacterStatus(character.status),
     species: character.species,
-    type: character.type.length > 0 ? character.type : 'None',
+    type: createCharacterType(character.type),
     gender: character.gender,
     originName: character.origin.name,
     locationName: character.location.name,
@@ -39,16 +47,38 @@ export function mapCharacterDtoToDetailsModel(
 }
 
 function createCharacterDescription(character: CharacterDto): string {
-  const typeSuffix = character.type.length > 0 ? ` (${character.type})` : '';
+  const typeSuffix = createCharacterTypeSuffix(character.type);
   const locationName = character.location.name;
 
-  return `${character.species}${typeSuffix}, ${character.gender}. Last known location: ${locationName}.`;
+  return `${character.species}${typeSuffix}, ${character.gender}. ${CHARACTER_LOCATION_DESCRIPTION_LABEL}: ${locationName}.`;
+}
+
+function createCharacterType(characterType: string): string {
+  if (characterType.length === 0) {
+    return FALLBACK_CHARACTER_TYPE;
+  }
+
+  return characterType;
+}
+
+function createCharacterTypeSuffix(characterType: string): string {
+  if (characterType.length === 0) {
+    return '';
+  }
+
+  return ` (${characterType})`;
 }
 
 function normalizeCharacterStatus(status: string): CharacterStatus {
-  if (status === 'Alive' || status === 'Dead') {
+  if (isSupportedCharacterStatus(status)) {
     return status;
   }
 
-  return 'unknown';
+  return CHARACTER_STATUS.unknown;
+}
+
+function isSupportedCharacterStatus(
+  status: string
+): status is SupportedCharacterStatus {
+  return status === CHARACTER_STATUS.alive || status === CHARACTER_STATUS.dead;
 }

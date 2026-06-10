@@ -3,13 +3,46 @@ import { Outlet } from 'react-router';
 import { fetchCharacterPage } from '../../api/charactersApi';
 import ResultsSection from '../../components/ResultsSection/ResultsSection';
 import SearchPanel from '../../components/SearchPanel/SearchPanel';
+import SelectedCharactersFlyout from '../../components/SelectedCharactersFlyout/SelectedCharactersFlyout';
 import { FIRST_PAGE_NUMBER } from '../../constants/api';
 import { APP_MESSAGES } from '../../constants/messages';
 import { MIN_LOADING_TIME_IN_MS } from '../../constants/timing';
 import { useCharacterSearchParams } from '../../hooks/useCharacterSearchParams';
+import {
+  getSelectedCharacterCount,
+  useSelectedCharactersStore,
+} from '../../store/selectedCharactersStore';
 import type { CharacterCardModel } from '../../types/character';
 import { delay } from '../../utils/delay';
 import styles from './ExplorerPage.module.css';
+
+function createShellClassName(hasSelectedCharacters: boolean): string {
+  const classNames = [styles.shell];
+
+  if (hasSelectedCharacters) {
+    classNames.push(styles.shellWithSelectedFlyout);
+  }
+
+  return classNames.join(' ');
+}
+
+function createResultsSectionClassName(isDetailsOpen: boolean): string {
+  const classNames = [styles.resultsSection];
+
+  if (isDetailsOpen) {
+    classNames.push(styles.resultsSectionWithDetails);
+  }
+
+  return classNames.join(' ');
+}
+
+function getCharacterLoadErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return APP_MESSAGES.apiErrors.unknown;
+}
 
 function ExplorerPage() {
   const {
@@ -19,6 +52,10 @@ function ExplorerPage() {
     selectedCharacterId,
     updateSearchParams,
   } = useCharacterSearchParams();
+
+  const selectedCharactersById = useSelectedCharactersStore(
+    (state) => state.selectedCharactersById
+  );
 
   const [activeSearchTerm, setActiveSearchTerm] = useState('');
   const [characters, setCharacters] = useState<CharacterCardModel[]>([]);
@@ -66,11 +103,7 @@ function ExplorerPage() {
         setCharacters([]);
         setTotalPages(FIRST_PAGE_NUMBER);
         setIsLoading(false);
-        setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : APP_MESSAGES.apiErrors.unknown
-        );
+        setErrorMessage(getCharacterLoadErrorMessage(error));
       }
     }
 
@@ -123,7 +156,7 @@ function ExplorerPage() {
     [activeSearchTerm, isLoading, updateSearchParams]
   );
 
-  const handleTriggerError = useCallback(() => {
+  const triggerApplicationError = useCallback(() => {
     setShouldSimulateError(true);
   }, []);
 
@@ -142,10 +175,17 @@ function ExplorerPage() {
     throw new Error(APP_MESSAGES.errorBoundary.simulatedError);
   }
 
+  const selectedCharacterCount = getSelectedCharacterCount(
+    selectedCharactersById
+  );
+  const hasSelectedCharacters = selectedCharacterCount > 0;
   const isDetailsOpen = selectedCharacterId !== null;
+  const initialSearchTerm = hasSearchTerm ? urlSearchTerm : undefined;
+  const shellClassName = createShellClassName(hasSelectedCharacters);
+  const resultsSectionClassName = createResultsSectionClassName(isDetailsOpen);
 
   return (
-    <main className={styles.shell}>
+    <main className={shellClassName}>
       <section className={styles.searchSection} aria-label="Character search">
         <header className={styles.intro}>
           <p className={styles.kicker}>{APP_MESSAGES.app.kicker}</p>
@@ -156,18 +196,13 @@ function ExplorerPage() {
         </header>
 
         <SearchPanel
-          initialSearchTerm={hasSearchTerm ? urlSearchTerm : undefined}
+          initialSearchTerm={initialSearchTerm}
           onInitialSearchTermLoaded={handleInitialSearchTermLoaded}
           onSearch={handleSearch}
         />
       </section>
 
-      <section
-        className={`${styles.resultsSection} ${
-          isDetailsOpen ? styles.resultsSectionWithDetails : ''
-        }`}
-        aria-label="Search results"
-      >
+      <section className={resultsSectionClassName} aria-label="Search results">
         <div className={styles.resultsPanel}>
           <ResultsSection
             characters={characters}
@@ -176,7 +211,7 @@ function ExplorerPage() {
             isLoading={isLoading}
             onCharacterSelect={handleCharacterSelect}
             onPageChange={handlePageChange}
-            onTriggerError={handleTriggerError}
+            onTriggerError={triggerApplicationError}
             searchTerm={activeSearchTerm}
             totalPages={totalPages}
           />
@@ -188,6 +223,8 @@ function ExplorerPage() {
           </div>
         ) : null}
       </section>
+
+      <SelectedCharactersFlyout />
     </main>
   );
 }

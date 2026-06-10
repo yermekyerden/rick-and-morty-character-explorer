@@ -21,15 +21,15 @@
   display: grid;
   place-items: center;
   padding: clamp(24px, 4vw, 48px);
-  border: 1px solid rgb(103 232 249 / 0.18);
+  border: 1px solid var(--border-portal);
   border-radius: 28px;
   background:
     radial-gradient(
       circle at center top,
-      rgb(103 232 249 / 0.12),
+      var(--color-portal-cyan-soft),
       transparent 28rem
     ),
-    linear-gradient(180deg, rgb(15 23 42 / 0.62), rgb(2 6 23 / 0.74));
+    linear-gradient(180deg, var(--color-surface), var(--color-surface-strong));
   text-align: center;
 }
 

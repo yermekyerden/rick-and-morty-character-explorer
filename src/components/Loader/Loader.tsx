@@ -2,9 +2,9 @@ import { APP_MESSAGES } from '../../constants/messages';
 import { SKELETON_CARD_COUNT } from '../../constants/ui';
 import styles from './Loader.module.css';
 
-function renderSkeletonCards() {
-  return Array.from({ length: SKELETON_CARD_COUNT }, (_, itemIndex) => (
-    <li className={styles.card} key={itemIndex}>
+function renderSkeletonCard(skeletonCardIndex: number) {
+  return (
+    <li className={styles.card} key={`skeleton-card-${skeletonCardIndex}`}>
       <div className={styles.imageFrame} aria-hidden="true">
         <div className={styles.image} />
       </div>
@@ -30,7 +30,13 @@ function renderSkeletonCards() {
         </div>
       </div>
     </li>
-  ));
+  );
+}
+
+function renderSkeletonCards() {
+  return Array.from({ length: SKELETON_CARD_COUNT }, (_, skeletonCardIndex) =>
+    renderSkeletonCard(skeletonCardIndex)
+  );
 }
 
 function Loader() {

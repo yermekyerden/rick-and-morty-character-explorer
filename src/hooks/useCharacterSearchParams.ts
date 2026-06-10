@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router';
 import { FIRST_PAGE_NUMBER } from '../constants/api';
-
-const PAGE_SEARCH_PARAM = 'page';
-const SEARCH_TERM_SEARCH_PARAM = 'search';
-const DETAILS_SEARCH_PARAM = 'details';
+import {
+  DETAILS_SEARCH_PARAM,
+  PAGE_SEARCH_PARAM,
+  SEARCH_TERM_SEARCH_PARAM,
+} from '../constants/searchParams';
 
 interface UpdateCharacterSearchParamsOptions {
   detailsId?: number | null;
@@ -24,36 +25,18 @@ interface UseCharacterSearchParamsResult {
 export function useCharacterSearchParams(): UseCharacterSearchParamsResult {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const page = useMemo(
-    () => parsePageNumber(searchParams.get(PAGE_SEARCH_PARAM)),
-    [searchParams]
-  );
-
-  const hasSearchTerm = useMemo(
-    () => searchParams.has(SEARCH_TERM_SEARCH_PARAM),
-    [searchParams]
-  );
-
-  const searchTerm = useMemo(
-    () => searchParams.get(SEARCH_TERM_SEARCH_PARAM)?.trim() ?? '',
-    [searchParams]
-  );
-
-  const selectedCharacterId = useMemo(
-    () => parseOptionalPositiveInteger(searchParams.get(DETAILS_SEARCH_PARAM)),
-    [searchParams]
-  );
+  const page = getPageSearchParam(searchParams);
+  const hasSearchTerm = searchParams.has(SEARCH_TERM_SEARCH_PARAM);
+  const searchTerm = getSearchTermSearchParam(searchParams);
+  const selectedCharacterId = getSelectedCharacterIdSearchParam(searchParams);
 
   useEffect(() => {
-    const currentPageParam = searchParams.get(PAGE_SEARCH_PARAM);
-    const normalizedPageParam = String(page);
-
-    if (currentPageParam === normalizedPageParam) {
+    if (isPageSearchParamNormalized(searchParams, page)) {
       return;
     }
 
     const nextSearchParams = new URLSearchParams(searchParams);
-    nextSearchParams.set(PAGE_SEARCH_PARAM, normalizedPageParam);
+    setPageSearchParam(nextSearchParams, page);
 
     setSearchParams(nextSearchParams, {
       replace: true,
@@ -61,45 +44,12 @@ export function useCharacterSearchParams(): UseCharacterSearchParamsResult {
   }, [page, searchParams, setSearchParams]);
 
   const updateSearchParams = useCallback(
-    ({
-      detailsId,
-      page: nextPage,
-      replace = false,
-      searchTerm: nextSearchTerm,
-    }: UpdateCharacterSearchParamsOptions) => {
+    (options: UpdateCharacterSearchParamsOptions) => {
       setSearchParams(
-        (currentSearchParams) => {
-          const nextSearchParams = new URLSearchParams(currentSearchParams);
-
-          if (nextPage !== undefined) {
-            nextSearchParams.set(
-              PAGE_SEARCH_PARAM,
-              String(parsePageNumber(String(nextPage)))
-            );
-          }
-
-          if (nextSearchTerm !== undefined) {
-            const trimmedSearchTerm = nextSearchTerm.trim();
-
-            if (trimmedSearchTerm.length > 0) {
-              nextSearchParams.set(SEARCH_TERM_SEARCH_PARAM, trimmedSearchTerm);
-            } else {
-              nextSearchParams.delete(SEARCH_TERM_SEARCH_PARAM);
-            }
-          }
-
-          if (detailsId !== undefined) {
-            if (detailsId === null) {
-              nextSearchParams.delete(DETAILS_SEARCH_PARAM);
-            } else {
-              nextSearchParams.set(DETAILS_SEARCH_PARAM, String(detailsId));
-            }
-          }
-
-          return nextSearchParams;
-        },
+        (currentSearchParams) =>
+          createUpdatedCharacterSearchParams(currentSearchParams, options),
         {
-          replace,
+          replace: options.replace ?? false,
         }
       );
     },
@@ -115,28 +65,102 @@ export function useCharacterSearchParams(): UseCharacterSearchParamsResult {
   };
 }
 
-function parsePageNumber(value: string | null): number {
-  const parsedPage = Number(value);
+function createUpdatedCharacterSearchParams(
+  currentSearchParams: URLSearchParams,
+  { detailsId, page, searchTerm }: UpdateCharacterSearchParamsOptions
+): URLSearchParams {
+  const nextSearchParams = new URLSearchParams(currentSearchParams);
 
-  if (!Number.isFinite(parsedPage)) {
-    return FIRST_PAGE_NUMBER;
+  if (page !== undefined) {
+    setPageSearchParam(nextSearchParams, page);
   }
 
-  return Math.max(FIRST_PAGE_NUMBER, Math.trunc(parsedPage));
+  if (searchTerm !== undefined) {
+    setSearchTermSearchParam(nextSearchParams, searchTerm);
+  }
+
+  if (detailsId !== undefined) {
+    setDetailsSearchParam(nextSearchParams, detailsId);
+  }
+
+  return nextSearchParams;
 }
 
-function parseOptionalPositiveInteger(value: string | null): number | null {
-  if (value === null) {
-    return null;
+function getPageSearchParam(searchParams: URLSearchParams): number {
+  return parsePageNumber(searchParams.get(PAGE_SEARCH_PARAM));
+}
+
+function getSearchTermSearchParam(searchParams: URLSearchParams): string {
+  return searchParams.get(SEARCH_TERM_SEARCH_PARAM)?.trim() ?? '';
+}
+
+function getSelectedCharacterIdSearchParam(
+  searchParams: URLSearchParams
+): number | null {
+  return parseOptionalPositiveInteger(searchParams.get(DETAILS_SEARCH_PARAM));
+}
+
+function isPageSearchParamNormalized(
+  searchParams: URLSearchParams,
+  page: number
+): boolean {
+  return searchParams.get(PAGE_SEARCH_PARAM) === String(page);
+}
+
+function setPageSearchParam(searchParams: URLSearchParams, page: number): void {
+  searchParams.set(PAGE_SEARCH_PARAM, String(parsePageNumber(page)));
+}
+
+function setSearchTermSearchParam(
+  searchParams: URLSearchParams,
+  searchTerm: string
+): void {
+  const trimmedSearchTerm = searchTerm.trim();
+
+  if (trimmedSearchTerm.length > 0) {
+    searchParams.set(SEARCH_TERM_SEARCH_PARAM, trimmedSearchTerm);
+  } else {
+    searchParams.delete(SEARCH_TERM_SEARCH_PARAM);
+  }
+}
+
+function setDetailsSearchParam(
+  searchParams: URLSearchParams,
+  detailsId: number | null
+): void {
+  if (detailsId === null) {
+    searchParams.delete(DETAILS_SEARCH_PARAM);
+    return;
   }
 
+  const normalizedDetailsId = parseOptionalPositiveInteger(detailsId);
+
+  if (normalizedDetailsId === null) {
+    searchParams.delete(DETAILS_SEARCH_PARAM);
+    return;
+  }
+
+  searchParams.set(DETAILS_SEARCH_PARAM, String(normalizedDetailsId));
+}
+
+function parsePageNumber(value: number | string | null): number {
+  return parseOptionalPositiveInteger(value) ?? FIRST_PAGE_NUMBER;
+}
+
+function parseOptionalPositiveInteger(
+  value: number | string | null
+): number | null {
   const parsedValue = Number(value);
 
   if (!Number.isFinite(parsedValue)) {
     return null;
   }
 
-  const normalizedValue = Math.trunc(parsedValue);
+  const integerValue = Math.trunc(parsedValue);
 
-  return normalizedValue > 0 ? normalizedValue : null;
+  if (integerValue < FIRST_PAGE_NUMBER) {
+    return null;
+  }
+
+  return integerValue;
 }

@@ -2,9 +2,9 @@ name: Validate and Deploy
 
 on:
   push:
-    branches: ['hooks-and-routing']
+    branches: ['app-state-management']
   pull_request:
-    branches: ['unit-testing']
+    branches: ['hooks-and-routing']
   workflow_dispatch:
 
 permissions:

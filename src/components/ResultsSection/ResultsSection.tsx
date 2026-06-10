@@ -19,16 +19,28 @@ interface ResultsSectionProps {
   totalPages: number;
 }
 
+interface GetStatusTextOptions {
+  currentPage: number;
+  errorMessage: string | null;
+  isLoading: boolean;
+  searchTerm: string;
+  totalPages: number;
+}
+
+interface RenderResultsContentOptions {
+  characters: CharacterCardModel[];
+  errorMessage: string | null;
+  isLoading: boolean;
+  onCharacterSelect: (characterId: number) => void;
+}
+
 function getStatusText({
   currentPage,
   errorMessage,
   isLoading,
   searchTerm,
   totalPages,
-}: Pick<
-  ResultsSectionProps,
-  'currentPage' | 'errorMessage' | 'isLoading' | 'searchTerm' | 'totalPages'
->) {
+}: GetStatusTextOptions) {
   if (isLoading) {
     return APP_MESSAGES.results.status.loading;
   }
@@ -53,10 +65,7 @@ function renderResultsContent({
   errorMessage,
   isLoading,
   onCharacterSelect,
-}: Pick<
-  ResultsSectionProps,
-  'characters' | 'errorMessage' | 'isLoading' | 'onCharacterSelect'
->) {
+}: RenderResultsContentOptions) {
   if (isLoading) {
     return <Loader />;
   }

@@ -1,13 +1,16 @@
 # Character Explorer
 
-Rick and Morty character explorer built with React, TypeScript, React Router, and Vitest.
+Rick and Morty character explorer built with React, TypeScript, React Router, Zustand, Context API, and Vitest.
 
 ## Features
 
 - Character search with saved last query
 - URL-synced pagination
-- Master-detail view with React Router Outlet
-- Character dossier panel with loading, error, and close states
+- Character details panel
+- Selected characters with bottom flyout
+- CSV export for selected characters
+- Theme switcher with Context API
+- Application state management with Zustand
 - About and 404 pages
 - Error boundary
 - Responsive portal-themed UI
@@ -17,10 +20,16 @@ Rick and Morty character explorer built with React, TypeScript, React Router, an
 - React
 - TypeScript
 - React Router
+- Zustand
+- Context API
 - Vite
 - Vitest
 - React Testing Library
 - CSS Modules
+
+## Runtime
+
+Recommended runtime: Node.js 22.
 
 ## Scripts
 
@@ -36,10 +45,10 @@ npm run build
 ## Coverage
 
 ```text
-Statements: 93.57%
-Branches:   87.83%
-Functions:  98.75%
-Lines:      93.57%
+Statements: 93.71%
+Branches:   86.31%
+Functions:  98.72%
+Lines:      93.68%
 ```
 
 ## Author

@@ -1,3 +1,4 @@
+import { APP_MESSAGES } from '../../constants/messages';
 import styles from './AboutPage.module.css';
 
 const RS_SCHOOL_REACT_COURSE_URL = 'https://rs.school/courses/reactjs';
@@ -5,39 +6,66 @@ const RS_SCHOOL_REACT_COURSE_URL = 'https://rs.school/courses/reactjs';
 function AboutPage() {
   return (
     <main className={styles.shell}>
-      <section className={styles.card}>
-        <p className={styles.kicker}>Portal Lab Archive</p>
+      <section className={styles.panel} aria-labelledby="about-title">
+        <div className={styles.hero}>
+          <div className={styles.heroCopy}>
+            <p className={styles.kicker}>{APP_MESSAGES.about.kicker}</p>
 
-        <h1 className={styles.title}>About Character Explorer</h1>
+            <h1 className={styles.title} id="about-title">
+              {APP_MESSAGES.about.title}
+            </h1>
 
-        <div className={styles.content}>
-          <p className={styles.text}>
-            Character Explorer opens a small portal into the Rick and Morty API.
-            It helps you search characters, inspect results, and keep your last
-            search coordinates in this browser.
-          </p>
+            <p className={styles.lead}>{APP_MESSAGES.about.description}</p>
+          </div>
 
-          <section className={styles.authorCard} aria-labelledby="author-title">
-            <p className={styles.cardKicker}>Author dossier</p>
+          <div className={styles.portalCard} aria-hidden="true">
+            <div className={styles.portalOrb}>
+              <div className={styles.portalCore} />
+            </div>
 
-            <h2 className={styles.authorTitle} id="author-title">
-              Yermek Yerdenov
+            <p className={styles.portalLabel}>
+              {APP_MESSAGES.about.portalLabel}
+            </p>
+          </div>
+        </div>
+
+        <div className={styles.contentGrid}>
+          <section className={styles.infoCard} aria-labelledby="author-title">
+            <p className={styles.cardKicker}>
+              {APP_MESSAGES.about.authorKicker}
+            </p>
+
+            <h2 className={styles.cardTitle} id="author-title">
+              {APP_MESSAGES.about.authorName}
             </h2>
 
             <p className={styles.text}>
-              A software engineer from Kazakhstan who likes to code, solve
-              puzzles, play chess, and build things for fun.
+              {APP_MESSAGES.about.authorDescription}
             </p>
           </section>
 
-          <a
-            className={styles.courseLink}
-            href={RS_SCHOOL_REACT_COURSE_URL}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Open RS School React course
-          </a>
+          <section className={styles.infoCard} aria-labelledby="course-title">
+            <p className={styles.cardKicker}>
+              {APP_MESSAGES.about.courseKicker}
+            </p>
+
+            <h2 className={styles.cardTitle} id="course-title">
+              {APP_MESSAGES.about.courseTitle}
+            </h2>
+
+            <p className={styles.text}>
+              {APP_MESSAGES.about.courseDescription}
+            </p>
+
+            <a
+              className={styles.courseLink}
+              href={RS_SCHOOL_REACT_COURSE_URL}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {APP_MESSAGES.about.courseLink}
+            </a>
+          </section>
         </div>
       </section>
     </main>

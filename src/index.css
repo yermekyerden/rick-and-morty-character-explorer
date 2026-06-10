@@ -7,9 +7,9 @@
   --color-background-mid: #0f172a;
   --color-background-end: #111827;
 
-  --color-surface: rgba(15, 23, 42, 0.78);
-  --color-surface-strong: rgba(2, 6, 23, 0.78);
-  --color-surface-card: rgba(2, 6, 23, 0.42);
+  --color-surface: rgba(15, 23, 42, 0.84);
+  --color-surface-strong: rgba(2, 6, 23, 0.86);
+  --color-surface-card: rgba(2, 6, 23, 0.5);
 
   --color-text-primary: #f8fafc;
   --color-text-secondary: #cbd5e1;
@@ -22,19 +22,34 @@
   --color-accent-strong: #22c55e;
   --color-accent-dark: #065f46;
 
+  --color-portal-cyan: #67e8f9;
+  --color-portal-cyan-strong: #22d3ee;
+  --color-portal-cyan-soft: rgba(103, 232, 249, 0.14);
+
   --color-danger: #fca5a5;
   --color-danger-text: #fecaca;
   --color-danger-soft: #ffe4e6;
   --color-danger-strong: #ef4444;
   --color-danger-dark: #7f1d1d;
+  --color-danger-surface: rgba(127, 29, 29, 0.22);
 
   --color-neutral: #d1d5db;
+
+  --status-alive-rgb: 134 239 172;
+  --status-dead-rgb: 248 113 113;
+  --status-unknown-rgb: 148 163 184;
 
   --border-subtle: rgba(148, 163, 184, 0.24);
   --border-control: rgba(148, 163, 184, 0.32);
   --border-card: rgba(148, 163, 184, 0.18);
   --border-accent: rgba(34, 197, 94, 0.28);
   --border-danger: rgba(248, 113, 113, 0.28);
+  --border-portal: rgba(103, 232, 249, 0.26);
+
+  --glow-page-primary: rgba(110, 231, 183, 0.09);
+  --glow-page-secondary: rgba(56, 189, 248, 0.08);
+  --glow-accent-soft: rgba(34, 197, 94, 0.1);
+  --glow-danger-soft: rgba(244, 63, 94, 0.12);
 
   --radius-panel: 24px;
   --radius-card: 18px;
@@ -42,10 +57,10 @@
   --radius-image: 14px;
   --radius-pill: 999px;
 
-  --shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.32);
-  --shadow-card: 0 18px 48px rgba(0, 0, 0, 0.16);
-  --shadow-accent-button: 0 14px 32px rgba(34, 197, 94, 0.24);
-  --shadow-danger-button: 0 12px 28px rgba(127, 29, 29, 0.22);
+  --shadow-panel: 0 20px 46px rgba(0, 0, 0, 0.24);
+  --shadow-card: 0 14px 30px rgba(0, 0, 0, 0.12);
+  --shadow-accent-button: 0 10px 22px rgba(34, 197, 94, 0.16);
+  --shadow-danger-button: 0 10px 22px rgba(127, 29, 29, 0.16);
 
   --transition-fast: 160ms ease;
 
@@ -60,8 +75,69 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+:root[data-theme='light'] {
+  --color-background: #f6f8fb;
+  --color-background-mid: #eef2f7;
+  --color-background-end: #edf7f3;
+
+  --color-surface: rgb(255 255 255 / 0.92);
+  --color-surface-strong: rgb(255 255 255 / 0.98);
+  --color-surface-card: rgb(248 250 252 / 0.9);
+
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-muted: #64748b;
+  --color-text-soft: #1e293b;
+  --color-text-placeholder: #64748b;
+  --color-text-inverse: #f8fafc;
+
+  --color-accent: #16a34a;
+  --color-accent-strong: #15803d;
+  --color-accent-dark: #14532d;
+
+  --color-portal-cyan: #0891b2;
+  --color-portal-cyan-strong: #0e7490;
+  --color-portal-cyan-soft: rgb(8 145 178 / 0.08);
+
+  --color-danger: #dc2626;
+  --color-danger-text: #991b1b;
+  --color-danger-soft: #fee2e2;
+  --color-danger-strong: #dc2626;
+  --color-danger-dark: #7f1d1d;
+  --color-danger-surface: rgb(254 226 226 / 0.7);
+
+  --color-neutral: #475569;
+
+  --status-alive-rgb: 22 163 74;
+  --status-dead-rgb: 220 38 38;
+  --status-unknown-rgb: 71 85 105;
+
+  --border-subtle: rgb(15 23 42 / 0.13);
+  --border-control: rgb(15 23 42 / 0.18);
+  --border-card: rgb(15 23 42 / 0.12);
+  --border-accent: rgb(22 163 74 / 0.28);
+  --border-danger: rgb(220 38 38 / 0.26);
+  --border-portal: rgb(8 145 178 / 0.2);
+
+  --glow-page-primary: rgb(34 197 94 / 0.055);
+  --glow-page-secondary: rgb(8 145 178 / 0.045);
+  --glow-accent-soft: rgb(22 163 74 / 0.085);
+  --glow-danger-soft: rgb(220 38 38 / 0.1);
+
+  --shadow-panel: 0 18px 42px rgb(15 23 42 / 0.11);
+  --shadow-card: 0 12px 28px rgb(15 23 42 / 0.08);
+  --shadow-accent-button: 0 10px 22px rgb(22 163 74 / 0.14);
+  --shadow-danger-button: 0 10px 22px rgb(127 29 29 / 0.1);
+}
+
 * {
   box-sizing: border-box;
+}
+
+:root.theme-transition-lock *,
+:root.theme-transition-lock *::before,
+:root.theme-transition-lock *::after {
+  transition: none !important;
 }
 
 html {
