@@ -9,6 +9,8 @@ import { testCharacterCard, testCharacterDetails } from './test/testCharacters';
 import type { CharacterCardModel } from './types/character';
 import { delay } from './utils/delay';
 import ThemeProvider from './theme/ThemeProvider';
+import QueryProvider from './query/QueryProvider';
+import { createAppQueryClient } from './query/queryClient';
 
 vi.mock('./api/charactersApi', () => ({
   fetchCharacterDetails: vi.fn(),
@@ -36,6 +38,19 @@ function createCharacterPage(
   };
 }
 
+function createDeferredPromise<T>() {
+  let resolvePromise!: (value: T) => void;
+
+  const promise = new Promise<T>((resolve) => {
+    resolvePromise = resolve;
+  });
+
+  return {
+    promise,
+    resolve: resolvePromise,
+  };
+}
+
 function LocationProbe() {
   const location = useLocation();
 
@@ -48,12 +63,16 @@ function LocationProbe() {
 }
 
 function renderApp(initialRoute = '/') {
+  const queryClient = createAppQueryClient();
+
   render(
     <ThemeProvider>
-      <MemoryRouter initialEntries={[initialRoute]}>
-        <App />
-        <LocationProbe />
-      </MemoryRouter>
+      <QueryProvider queryClient={queryClient}>
+        <MemoryRouter initialEntries={[initialRoute]}>
+          <App />
+          <LocationProbe />
+        </MemoryRouter>
+      </QueryProvider>
     </ThemeProvider>
   );
 }
@@ -182,5 +201,142 @@ describe('App master-detail routing', () => {
     expect(
       screen.queryByLabelText('Character details')
     ).not.toBeInTheDocument();
+  });
+
+  it('reuses cached character details when the same dossier is reopened', async () => {
+    const user = userEvent.setup();
+
+    renderApp('/?page=1');
+
+    await screen.findByRole('heading', {
+      name: testCharacterCard.name,
+    });
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.characterCard.openDetailsLabel(
+          testCharacterCard.name
+        ),
+      })
+    );
+
+    const firstDetailsPanel = await screen.findByLabelText('Character details');
+
+    expect(
+      await within(firstDetailsPanel).findByRole('heading', {
+        name: testCharacterDetails.name,
+      })
+    ).toBeVisible();
+
+    expect(fetchCharacterDetailsMock).toHaveBeenCalledTimes(1);
+
+    await user.click(
+      within(firstDetailsPanel).getByRole('button', {
+        name: APP_MESSAGES.characterDetails.closeLabel,
+      })
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.queryByLabelText('Character details')
+      ).not.toBeInTheDocument();
+    });
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.characterCard.openDetailsLabel(
+          testCharacterCard.name
+        ),
+      })
+    );
+
+    const secondDetailsPanel =
+      await screen.findByLabelText('Character details');
+
+    expect(
+      await within(secondDetailsPanel).findByRole('heading', {
+        name: testCharacterDetails.name,
+      })
+    ).toBeVisible();
+
+    expect(fetchCharacterDetailsMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('refreshes selected character details when refresh data is clicked', async () => {
+    const user = userEvent.setup();
+    const refreshedCharacterDetails = {
+      ...testCharacterDetails,
+      name: 'Refreshed Rick Sanchez',
+      locationName: 'Refreshed Dimension',
+    };
+
+    renderApp('/?page=1&details=1');
+
+    const detailsPanel = await screen.findByLabelText('Character details');
+
+    expect(
+      await within(detailsPanel).findByRole('heading', {
+        name: testCharacterDetails.name,
+      })
+    ).toBeVisible();
+
+    expect(fetchCharacterDetailsMock).toHaveBeenCalledTimes(1);
+
+    fetchCharacterPageMock.mockResolvedValueOnce(createCharacterPage());
+    fetchCharacterDetailsMock.mockResolvedValueOnce(refreshedCharacterDetails);
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.results.refreshData,
+      })
+    );
+
+    expect(
+      await within(detailsPanel).findByRole('heading', {
+        name: refreshedCharacterDetails.name,
+      })
+    ).toBeVisible();
+
+    expect(fetchCharacterDetailsMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('shows loading state in character details while selected dossier is refreshing', async () => {
+    const user = userEvent.setup();
+
+    renderApp('/?page=1&details=1');
+
+    const detailsPanel = await screen.findByLabelText('Character details');
+
+    expect(
+      await within(detailsPanel).findByRole('heading', {
+        name: testCharacterDetails.name,
+      })
+    ).toBeVisible();
+
+    const deferredDetailsRequest =
+      createDeferredPromise<typeof testCharacterDetails>();
+
+    fetchCharacterPageMock.mockResolvedValueOnce(createCharacterPage());
+    fetchCharacterDetailsMock.mockReturnValueOnce(
+      deferredDetailsRequest.promise
+    );
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.results.refreshData,
+      })
+    );
+
+    expect(
+      within(detailsPanel).getByText(APP_MESSAGES.characterDetails.loading)
+    ).toBeVisible();
+
+    deferredDetailsRequest.resolve(testCharacterDetails);
+
+    expect(
+      await within(detailsPanel).findByRole('heading', {
+        name: testCharacterDetails.name,
+      })
+    ).toBeVisible();
   });
 });

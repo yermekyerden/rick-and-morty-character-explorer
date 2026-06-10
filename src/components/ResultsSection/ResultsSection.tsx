@@ -14,6 +14,7 @@ interface ResultsSectionProps {
   isLoading: boolean;
   onCharacterSelect: (characterId: number) => void;
   onPageChange: (page: number) => void;
+  onRefreshData: () => void;
   onTriggerError: () => void;
   searchTerm: string;
   totalPages: number;
@@ -97,6 +98,7 @@ function ResultsSection({
   isLoading,
   onCharacterSelect,
   onPageChange,
+  onRefreshData,
   onTriggerError,
   searchTerm,
   totalPages,
@@ -115,7 +117,9 @@ function ResultsSection({
     <div className={styles.panel}>
       <ResultsToolbar
         isLoading={isLoading}
+        isRefreshDisabled={isLoading}
         isUnstable={isPortalUnstable}
+        onRefreshData={onRefreshData}
         onTriggerError={onTriggerError}
         statusText={statusText}
       />

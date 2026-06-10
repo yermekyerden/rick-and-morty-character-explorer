@@ -1,20 +1,30 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Outlet } from 'react-router';
-import { fetchCharacterPage } from '../../api/charactersApi';
+
 import ResultsSection from '../../components/ResultsSection/ResultsSection';
 import SearchPanel from '../../components/SearchPanel/SearchPanel';
 import SelectedCharactersFlyout from '../../components/SelectedCharactersFlyout/SelectedCharactersFlyout';
 import { FIRST_PAGE_NUMBER } from '../../constants/api';
 import { APP_MESSAGES } from '../../constants/messages';
-import { MIN_LOADING_TIME_IN_MS } from '../../constants/timing';
 import { useCharacterSearchParams } from '../../hooks/useCharacterSearchParams';
+import { useCharacterPageQuery } from '../../query/useCharacterPageQuery';
+import { useRefreshCharacterQueries } from '../../query/useRefreshCharacterQueries';
 import {
   getSelectedCharacterCount,
   useSelectedCharactersStore,
 } from '../../store/selectedCharactersStore';
-import type { CharacterCardModel } from '../../types/character';
-import { delay } from '../../utils/delay';
+import type { CharacterPageModel } from '../../types/character';
 import styles from './ExplorerPage.module.css';
+
+interface CharacterPageViewData {
+  characters: CharacterPageModel['characters'];
+  totalPages: number;
+}
+
+interface GetCharacterPageViewDataOptions {
+  characterPage: CharacterPageModel | undefined;
+  errorMessage: string | null;
+}
 
 function createShellClassName(hasSelectedCharacters: boolean): string {
   const classNames = [styles.shell];
@@ -44,6 +54,23 @@ function getCharacterLoadErrorMessage(error: unknown): string {
   return APP_MESSAGES.apiErrors.unknown;
 }
 
+function getCharacterPageViewData({
+  characterPage,
+  errorMessage,
+}: GetCharacterPageViewDataOptions): CharacterPageViewData {
+  if (errorMessage !== null || characterPage === undefined) {
+    return {
+      characters: [],
+      totalPages: FIRST_PAGE_NUMBER,
+    };
+  }
+
+  return {
+    characters: characterPage.characters,
+    totalPages: characterPage.totalPages,
+  };
+}
+
 function ExplorerPage() {
   const {
     hasSearchTerm,
@@ -58,61 +85,21 @@ function ExplorerPage() {
   );
 
   const [activeSearchTerm, setActiveSearchTerm] = useState('');
-  const [characters, setCharacters] = useState<CharacterCardModel[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isInitialSearchTermReady, setIsInitialSearchTermReady] =
     useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [shouldSimulateError, setShouldSimulateError] = useState(false);
-  const [totalPages, setTotalPages] = useState(FIRST_PAGE_NUMBER);
 
-  useEffect(() => {
-    if (!isInitialSearchTermReady) {
-      return;
-    }
+  const characterPageQuery = useCharacterPageQuery({
+    isEnabled: isInitialSearchTermReady,
+    page,
+    searchTerm: activeSearchTerm,
+  });
 
-    let isRequestActive = true;
-
-    async function loadCharacters() {
-      setIsLoading(true);
-      setErrorMessage(null);
-
-      try {
-        const [characterPage] = await Promise.all([
-          fetchCharacterPage({
-            searchTerm: activeSearchTerm,
-            page,
-          }),
-          delay(MIN_LOADING_TIME_IN_MS),
-        ]);
-
-        if (!isRequestActive) {
-          return;
-        }
-
-        setCharacters(characterPage.characters);
-        setTotalPages(characterPage.totalPages);
-        setIsLoading(false);
-      } catch (error) {
-        await delay(MIN_LOADING_TIME_IN_MS);
-
-        if (!isRequestActive) {
-          return;
-        }
-
-        setCharacters([]);
-        setTotalPages(FIRST_PAGE_NUMBER);
-        setIsLoading(false);
-        setErrorMessage(getCharacterLoadErrorMessage(error));
-      }
-    }
-
-    void loadCharacters();
-
-    return () => {
-      isRequestActive = false;
-    };
-  }, [activeSearchTerm, isInitialSearchTermReady, page]);
+  const refreshCharacterQueries = useRefreshCharacterQueries({
+    page,
+    searchTerm: activeSearchTerm,
+    selectedCharacterId,
+  });
 
   const handleInitialSearchTermLoaded = useCallback(
     (searchTerm: string) => {
@@ -141,6 +128,11 @@ function ExplorerPage() {
     [updateSearchParams]
   );
 
+  const isCharacterPageQueryActive = isInitialSearchTermReady;
+  const isLoading =
+    isCharacterPageQueryActive &&
+    (characterPageQuery.isPending || characterPageQuery.isFetching);
+
   const handlePageChange = useCallback(
     (nextPage: number) => {
       if (isLoading) {
@@ -155,6 +147,10 @@ function ExplorerPage() {
     },
     [activeSearchTerm, isLoading, updateSearchParams]
   );
+
+  function handleRefreshDataClick() {
+    void refreshCharacterQueries();
+  }
 
   const triggerApplicationError = useCallback(() => {
     setShouldSimulateError(true);
@@ -181,6 +177,20 @@ function ExplorerPage() {
   const hasSelectedCharacters = selectedCharacterCount > 0;
   const isDetailsOpen = selectedCharacterId !== null;
   const initialSearchTerm = hasSearchTerm ? urlSearchTerm : undefined;
+
+  const hasLoadingError =
+    isCharacterPageQueryActive && characterPageQuery.isError;
+
+  const errorMessage = hasLoadingError
+    ? getCharacterLoadErrorMessage(characterPageQuery.error)
+    : null;
+
+  const characterPageViewData = getCharacterPageViewData({
+    characterPage: characterPageQuery.data,
+    errorMessage,
+  });
+  const { characters, totalPages } = characterPageViewData;
+
   const shellClassName = createShellClassName(hasSelectedCharacters);
   const resultsSectionClassName = createResultsSectionClassName(isDetailsOpen);
 
@@ -211,6 +221,7 @@ function ExplorerPage() {
             isLoading={isLoading}
             onCharacterSelect={handleCharacterSelect}
             onPageChange={handlePageChange}
+            onRefreshData={handleRefreshDataClick}
             onTriggerError={triggerApplicationError}
             searchTerm={activeSearchTerm}
             totalPages={totalPages}

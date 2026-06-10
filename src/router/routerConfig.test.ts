@@ -3,7 +3,9 @@ import { createRouterBasename } from './routerConfig';
 
 describe('createRouterBasename', () => {
   it('removes trailing slash from nested base URL', () => {
-    expect(createRouterBasename('/rs-react-2026/')).toBe('/rs-react-2026');
+    expect(createRouterBasename('/rick-and-morty-character-explorer/')).toBe(
+      '/rick-and-morty-character-explorer'
+    );
   });
 
   it('keeps root basename for root base URL', () => {

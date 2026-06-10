@@ -26,7 +26,7 @@ export const APP_MESSAGES = {
     courseKicker: 'Training signal',
     courseTitle: 'Rolling Scopes School',
     courseDescription:
-      'This project is part of the RS School React course, built as a small character archive with a portal-themed interface.',
+      'Originally built during the RS School React course, this app is a small Rick and Morty character archive with a portal-themed interface.',
     courseLink: 'Open RS School React course',
   },
 
@@ -61,6 +61,7 @@ export const APP_MESSAGES = {
 
   results: {
     title: 'Character results',
+    refreshData: 'Refresh data',
     status: {
       loading: 'Opening portal',
       unstable: 'Portal unstable',

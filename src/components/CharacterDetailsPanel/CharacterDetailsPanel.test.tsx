@@ -7,6 +7,8 @@ import { APP_MESSAGES } from '../../constants/messages';
 import { testCharacterDetails } from '../../test/testCharacters';
 import { delay } from '../../utils/delay';
 import CharacterDetailsPanel from './CharacterDetailsPanel';
+import QueryProvider from '../../query/QueryProvider';
+import { createAppQueryClient } from '../../query/queryClient';
 
 vi.mock('../../api/charactersApi', () => ({
   fetchCharacterDetails: vi.fn(),
@@ -31,11 +33,15 @@ function LocationProbe() {
 }
 
 function renderCharacterDetailsPanel(initialRoute = '/?page=1&details=1') {
+  const queryClient = createAppQueryClient();
+
   render(
-    <MemoryRouter initialEntries={[initialRoute]}>
-      <CharacterDetailsPanel />
-      <LocationProbe />
-    </MemoryRouter>
+    <QueryProvider queryClient={queryClient}>
+      <MemoryRouter initialEntries={[initialRoute]}>
+        <CharacterDetailsPanel />
+        <LocationProbe />
+      </MemoryRouter>
+    </QueryProvider>
   );
 }
 

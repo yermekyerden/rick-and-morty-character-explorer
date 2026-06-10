@@ -12,6 +12,8 @@ import {
 } from '../../test/testCharacters';
 import { delay } from '../../utils/delay';
 import ExplorerPage from './ExplorerPage';
+import QueryProvider from '../../query/QueryProvider';
+import { createAppQueryClient } from '../../query/queryClient';
 
 vi.mock('../../api/charactersApi', () => ({
   fetchCharacterPage: vi.fn(),
@@ -49,21 +51,29 @@ function LocationProbe() {
 }
 
 function renderExplorerPage(initialRoute = '/') {
+  const queryClient = createAppQueryClient();
+
   render(
-    <MemoryRouter initialEntries={[initialRoute]}>
-      <ExplorerPage />
-      <LocationProbe />
-    </MemoryRouter>
+    <QueryProvider queryClient={queryClient}>
+      <MemoryRouter initialEntries={[initialRoute]}>
+        <ExplorerPage />
+        <LocationProbe />
+      </MemoryRouter>
+    </QueryProvider>
   );
 }
 
 function renderExplorerPageWithBoundary(initialRoute = '/') {
+  const queryClient = createAppQueryClient();
+
   render(
-    <MemoryRouter initialEntries={[initialRoute]}>
-      <ErrorBoundary>
-        <ExplorerPage />
-      </ErrorBoundary>
-    </MemoryRouter>
+    <QueryProvider queryClient={queryClient}>
+      <MemoryRouter initialEntries={[initialRoute]}>
+        <ErrorBoundary>
+          <ExplorerPage />
+        </ErrorBoundary>
+      </MemoryRouter>
+    </QueryProvider>
   );
 }
 
@@ -288,6 +298,37 @@ describe('ExplorerPage', () => {
     });
   });
 
+  it('refreshes current character page when user clicks refresh data', async () => {
+    const user = userEvent.setup();
+
+    renderExplorerPage();
+
+    await screen.findByRole('heading', {
+      name: testCharacterCard.name,
+    });
+
+    fetchCharacterPageMock.mockResolvedValueOnce(
+      createCharacterPage([testMortyCharacterCard], 1, 5)
+    );
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.results.refreshData,
+      })
+    );
+
+    expect(
+      await screen.findByRole('heading', {
+        name: testMortyCharacterCard.name,
+      })
+    ).toBeVisible();
+
+    expect(fetchCharacterPageMock).toHaveBeenLastCalledWith({
+      searchTerm: '',
+      page: 1,
+    });
+  });
+
   it('shows error boundary fallback when simulated error is triggered', async () => {
     const user = userEvent.setup();
     const expectedFallbackTitle = APP_MESSAGES.errorBoundary.title;
@@ -339,5 +380,57 @@ describe('ExplorerPage', () => {
         '/?page=1&details=1'
       );
     });
+  });
+
+  it('reuses cached character page when user returns to a previously loaded page', async () => {
+    const user = userEvent.setup();
+
+    renderExplorerPage();
+
+    await screen.findByRole('heading', {
+      name: testCharacterCard.name,
+    });
+
+    expect(fetchCharacterPageMock).toHaveBeenCalledTimes(1);
+    expect(fetchCharacterPageMock).toHaveBeenLastCalledWith({
+      searchTerm: '',
+      page: 1,
+    });
+
+    fetchCharacterPageMock.mockResolvedValueOnce(
+      createCharacterPage([testMortyCharacterCard], 2, 5)
+    );
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.pagination.next,
+      })
+    );
+
+    expect(
+      await screen.findByRole('heading', {
+        name: testMortyCharacterCard.name,
+      })
+    ).toBeVisible();
+
+    expect(fetchCharacterPageMock).toHaveBeenCalledTimes(2);
+    expect(fetchCharacterPageMock).toHaveBeenLastCalledWith({
+      searchTerm: '',
+      page: 2,
+    });
+
+    await user.click(
+      screen.getByRole('button', {
+        name: APP_MESSAGES.pagination.previous,
+      })
+    );
+
+    expect(
+      await screen.findByRole('heading', {
+        name: testCharacterCard.name,
+      })
+    ).toBeVisible();
+
+    expect(fetchCharacterPageMock).toHaveBeenCalledTimes(2);
   });
 });
